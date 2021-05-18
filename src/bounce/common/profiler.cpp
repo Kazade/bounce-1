@@ -128,7 +128,7 @@ void b3Profiler::BeginScope(const char* name)
 
 void b3Profiler::EndScope()
 {
-	assert(m_top != nullptr);
+	B3_ASSERT(m_top != nullptr);
 
 	--m_top->recursionCallCount;
 	if (m_top->recursionCallCount > 0)
