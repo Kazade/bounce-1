@@ -345,8 +345,8 @@ struct b3SphereMesh
 
 	u32 GetVertex(u32 i, u32 j)
 	{
-		assert(i < H + 1);
-		assert(j < W + 1);
+		B3_ASSERT(i < H + 1);
+		B3_ASSERT(j < W + 1);
 		return i * (W + 1) + j;
 	}
 };
@@ -531,8 +531,8 @@ struct b3CylinderMesh
 	
 	u32 GetVertex(u32 i, u32 j)
 	{
-		assert(i < H + 1);
-		assert(j < W + 1);
+		B3_ASSERT(i < H + 1);
+		B3_ASSERT(j < W + 1);
 		return i * (W + 1) + j;
 	}
 };
