@@ -35,7 +35,11 @@ public:
 	bool TestOverlap();
 
 	void Collide();
-	
+
+	void SynchronizeShape() { }
+
+	void FindPairs() { }
+
 	b3Manifold m_stackManifold;
 	b3ConvexCache m_cache;
 };

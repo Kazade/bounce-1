@@ -105,10 +105,10 @@ public:
 	void AddAzimuthalAngle(scalar angle);	
 	
 	// Look at a given target position from a given eye position.
-	void LookAt(b3Vec3 eye_position, b3Vec3 target_position);
+	void LookAt(const b3Vec3& eyePosition, const b3Vec3& targetPosition);
 	
 	// Set the camera position from three Cartesian coordinates.
-	void SetPosition(b3Vec3 pw);
+	void SetPosition(const b3Vec3& pw);
 	
 	// Get the camera position in Cartesian coordinates.
 	b3Vec3 BuildPosition() const;
@@ -132,19 +132,26 @@ public:
 	b3Mat44 BuildProjectionMatrix() const;
 	
 	// Convert a point in world space to screen space.
-	b3Vec2 ConvertWorldToScreen(b3Vec3 pw) const;
+	b3Vec2 ConvertWorldToScreen(const b3Vec3& pw) const;
 	
 	// Convert a point in screen space to world space.
-	b3Vec3 ConvertScreenToWorld(b3Vec2 ps) const;
+	b3Vec3 ConvertScreenToWorld(const b3Vec2& ps) const;
 private:
 	scalar m_width, m_height;
 	scalar m_z_near;
 	scalar m_z_far;
 	scalar m_y_fov;
 	
+	// Radius
 	scalar m_r;
+
+	// Polar angle
 	scalar m_theta;
+
+	// Azimuthal angle
 	scalar m_phi;
+
+	// Center 
 	b3Vec3 m_center;
 };
 

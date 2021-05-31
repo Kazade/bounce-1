@@ -37,7 +37,6 @@ set(TESTBED_SOURCE_FILES
 	tests/capsule_spin.h
 	tests/capsule_stack.h
 	tests/cluster.h
-	tests/collide_test.h
 	tests/compound_body.h
 	tests/cone_test.h
 	tests/convex_hull.h

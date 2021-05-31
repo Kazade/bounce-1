@@ -19,7 +19,7 @@
 #ifndef BOX_EDGE_CONTACT_H
 #define BOX_EDGE_CONTACT_H
 
-class BoxEdgeContact : public Collide
+class BoxEdgeContact : public Test
 {
 public:
 	BoxEdgeContact()
@@ -29,14 +29,86 @@ public:
 		m_sA.m_hull = &m_box;
 		m_xfA.translation.Set(1.500000, 1.000000, 0.000000);
 		m_xfA.rotation.SetIdentity();
-		m_shapeA = &m_sA;
 
 		m_sB.m_hull = &m_box;
 		m_xfB.translation.Set(-1.29999995, 1.34999979, 0.000000000);
 		m_xfB.rotation.Set(0.810514629, 0.342624813, 0.334119707, 0.337692767);
-		m_shapeB = &m_sB;
+	}
+	
+	void Step()
+	{
+		b3ConvexCache cache;
+		cache.simplexCache.count = 0;
+		cache.featureCache.m_featurePair.state = b3SATCacheType::e_empty;
 
-		m_cache.count = 0;
+		b3Manifold manifold;
+		manifold.Initialize();
+
+		b3CollideHullAndHull(manifold, m_xfA, &m_sA, m_xfB, &m_sB, &cache);
+
+		for (u32 i = 0; i < manifold.pointCount; ++i)
+		{
+			b3WorldManifold wm;
+			wm.Initialize(&manifold, m_sA.m_radius, m_xfA, m_sB.m_radius, m_xfB);
+
+			b3Vec3 pw = wm.points[i].point;
+
+			b3DrawPoint(g_debugDraw, pw, 4.0f, b3Color_green, false);
+			b3DrawSegment(g_debugDraw, pw, pw + wm.points[i].normal, b3Color_white, false);
+		}
+
+		m_sA.Draw(m_xfA, b3Color_black);
+		m_sB.Draw(m_xfB, b3Color_black);
+
+		m_sA.DrawSolid(m_xfA, b3Color(1.0f, 1.0f, 1.0f, 0.25f));
+		m_sB.DrawSolid(m_xfB, b3Color(1.0f, 1.0f, 1.0f, 0.25f));
+
+		DrawString(b3Color_white, "Left/Right/Up/Down Arrow - Translate shape");
+		DrawString(b3Color_white, "X/Y/Z - Rotate shape");
+	}
+
+	void KeyDown(int key)
+	{
+		if (key == GLFW_KEY_LEFT)
+		{
+			m_xfB.translation.x -= 0.05f;
+		}
+
+		if (key == GLFW_KEY_RIGHT)
+		{
+			m_xfB.translation.x += 0.05f;
+		}
+
+		if (key == GLFW_KEY_UP)
+		{
+			m_xfB.translation.y += 0.05f;
+		}
+
+		if (key == GLFW_KEY_DOWN)
+		{
+			m_xfB.translation.y -= 0.05f;
+		}
+
+		if (key == GLFW_KEY_X)
+		{
+			b3Quat qx = b3QuatRotationX(0.05f * B3_PI);
+
+			m_xfB.rotation = m_xfB.rotation * qx;
+		}
+
+		if (key == GLFW_KEY_Y)
+		{
+			b3Quat qy = b3QuatRotationY(0.05f * B3_PI);
+
+			m_xfB.rotation = m_xfB.rotation * qy;
+		}
+
+		if (key == GLFW_KEY_Z)
+		{
+			b3Quat qz = b3QuatRotationZ(0.05f * B3_PI);
+
+			m_xfB.rotation = m_xfB.rotation * qz;
+		}
 	}
 	
 	static Test* Create()
@@ -45,7 +117,11 @@ public:
 	}
 
 	b3BoxHull m_box;
+	
+	b3Transform m_xfA;
 	b3HullShape m_sA;
+	
+	b3Transform m_xfB;
 	b3HullShape m_sB;
 };
 

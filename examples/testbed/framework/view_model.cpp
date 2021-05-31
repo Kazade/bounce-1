@@ -29,7 +29,6 @@
 #include "tests/linear_time_of_impact.h"
 #include "tests/time_of_impact.h"
 #include "tests/aabb_time_of_impact.h"
-#include "tests/collide_test.h"
 #include "tests/capsule_collision.h"
 #include "tests/hull_collision.h"
 #include "tests/deep_capsule.h"

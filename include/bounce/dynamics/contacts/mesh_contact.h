@@ -33,16 +33,6 @@ struct b3TriangleCache
 	b3ConvexCache cache;
 };
 
-class b3MeshContact;
-
-// Links for the world mesh contact link list.
-struct b3MeshContactLink
-{
-	b3MeshContact* m_c;
-	b3MeshContactLink* m_prev;
-	b3MeshContactLink* m_next;
-};
-
 class b3MeshContact : public b3Contact
 {
 public:
@@ -56,11 +46,11 @@ public:
 
 	void Collide();
 
-	void SynchronizeShapes();
+	void SynchronizeShape();
 
 	bool MoveAABB(const b3AABB& aabb, const b3Vec3& displacement);
 
-	void FindNewPairs();
+	void FindPairs();
 
 	// Static tree callback. There is no midphase. 
 	bool Report(u32 proxyId);
@@ -78,9 +68,6 @@ public:
 
 	// Contact manifolds.
 	b3Manifold m_stackManifolds[B3_MAX_MANIFOLDS];
-
-	// Link to the world mesh contact list.
-	b3MeshContactLink m_link;
 };
 
 #endif

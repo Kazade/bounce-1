@@ -129,40 +129,26 @@ void b3ContactManager::AddPair(void* dataA, void* dataB)
 
 	// Add the contact to the world contact list.
 	m_contactList.PushFront(c);
-
-	if (c->m_type == e_meshContact)
-	{
-		// Add the contact to the world mesh contact list.
-		b3MeshContact* mc = (b3MeshContact*)c;
-
-		// Find new shape-child overlapping pairs.
-		mc->FindNewPairs();
-
-		b3MeshContactLink* link = &mc->m_link;
-		link->m_c = mc;
-		m_meshContactList.PushFront(link);
-	}
 }
 
 void b3ContactManager::SynchronizeShapes()
 {
-	b3MeshContactLink* c = m_meshContactList.m_head;
+	b3Contact* c = m_contactList.m_head;
 	while (c)
 	{
-		c->m_c->SynchronizeShapes();
+		c->SynchronizeShape();
 		c = c->m_next;
 	}
 }
 
-// Find potentially overlapping shape pairs.
 void b3ContactManager::FindNewContacts()
 {
 	m_broadPhase.FindPairs(this);
 
-	b3MeshContactLink* c = m_meshContactList.m_head;
+	b3Contact* c = m_contactList.m_head;
 	while (c)
 	{
-		c->m_c->FindNewPairs();
+		c->FindPairs();
 		c = c->m_next;
 	}
 }
@@ -259,13 +245,6 @@ void b3ContactManager::Destroy(b3Contact* c)
 
 	// Remove the contact from the world contact list.
 	m_contactList.Remove(c);
-
-	if (c->m_type == e_meshContact)
-	{
-		// Remove the mesh contact from the world mesh contact list.
-		b3MeshContact* mc = (b3MeshContact*)c;
-		m_meshContactList.Remove(&mc->m_link);
-	}
 
 	// Free the contact.
 	b3Contact::Destroy(c, m_allocators);

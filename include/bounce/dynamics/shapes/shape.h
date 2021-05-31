@@ -180,6 +180,7 @@ public:
 	// This function is used internally.
 	void SetShape(b3Shape* shape);
 
+	// Shape radius.
 	scalar m_radius;
 protected:
 	friend class b3World;

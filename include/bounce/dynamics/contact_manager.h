@@ -27,7 +27,6 @@
 class b3Shape;
 class b3ContactFilter;
 class b3ContactListener;
-struct b3MeshContactLink;
 
 // Contact delegator for b3World.
 class b3ContactManager 
@@ -38,12 +37,14 @@ public:
 	// The broad-phase callback.
 	void AddPair(void* proxyDataA, void* proxyDataB);
 
-	// Reference AABBs in mesh contacts need to be synchronized with the 
+	// Reference AABBs in some contacts need to be synchronized with the 
 	// synchronized body transforms.
 	void SynchronizeShapes();
 
+	// Perform broad-phase collision detection.
 	void FindNewContacts();
 	
+	// Perform narrow-phase collision detection.
 	void UpdateContacts();
 
 	b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB);
@@ -55,7 +56,6 @@ public:
 
 	b3BroadPhase m_broadPhase;	
 	b3List<b3Contact> m_contactList;
-	b3List<b3MeshContactLink> m_meshContactList;
 	b3ContactFilter* m_contactFilter;
 	b3ContactListener* m_contactListener;
 };

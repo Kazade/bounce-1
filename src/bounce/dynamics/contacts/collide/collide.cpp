@@ -206,8 +206,9 @@ typedef void(*b3CollideFcn)(b3Manifold&,
 	b3ConvexCache*);
 
 static b3CollideFcn s_functions[e_maxShapes][e_maxShapes];
+static bool s_functionsInitialized = false;
 
-static void b3SetCollideFunction(b3ShapeType typeA, b3ShapeType typeB, b3CollideFcn fcn)
+static void b3AddCollideFunction(b3ShapeType typeA, b3ShapeType typeB, b3CollideFcn fcn)
 {
 	B3_ASSERT(0 <= typeA && typeA < e_maxShapes);
 	B3_ASSERT(0 <= typeB && typeB < e_maxShapes);
@@ -217,18 +218,18 @@ static void b3SetCollideFunction(b3ShapeType typeA, b3ShapeType typeB, b3Collide
 
 static void b3InitializeCollideFunctions()
 {
-	b3SetCollideFunction(e_sphereShape, e_sphereShape, &b3CollideSphereAndSphereShapes);
+	b3AddCollideFunction(e_sphereShape, e_sphereShape, &b3CollideSphereAndSphereShapes);
 
-	b3SetCollideFunction(e_capsuleShape, e_sphereShape, &b3CollideCapsuleAndSphereShapes);
-	b3SetCollideFunction(e_capsuleShape, e_capsuleShape, &b3CollideCapsuleAndCapsuleShapes);
+	b3AddCollideFunction(e_capsuleShape, e_sphereShape, &b3CollideCapsuleAndSphereShapes);
+	b3AddCollideFunction(e_capsuleShape, e_capsuleShape, &b3CollideCapsuleAndCapsuleShapes);
 
-	b3SetCollideFunction(e_triangleShape, e_sphereShape, &b3CollideTriangleAndSphereShapes);
-	b3SetCollideFunction(e_triangleShape, e_capsuleShape, &b3CollideTriangleAndCapsuleShapes);
-	b3SetCollideFunction(e_triangleShape, e_hullShape, &b3CollideTriangleAndHullShapes);
+	b3AddCollideFunction(e_triangleShape, e_sphereShape, &b3CollideTriangleAndSphereShapes);
+	b3AddCollideFunction(e_triangleShape, e_capsuleShape, &b3CollideTriangleAndCapsuleShapes);
+	b3AddCollideFunction(e_triangleShape, e_hullShape, &b3CollideTriangleAndHullShapes);
 
-	b3SetCollideFunction(e_hullShape, e_capsuleShape, &b3CollideHullAndCapsuleShapes);
-	b3SetCollideFunction(e_hullShape, e_sphereShape, &b3CollideHullAndSphereShapes);
-	b3SetCollideFunction(e_hullShape, e_hullShape, &b3CollideHullAndHullShapes);
+	b3AddCollideFunction(e_hullShape, e_capsuleShape, &b3CollideHullAndCapsuleShapes);
+	b3AddCollideFunction(e_hullShape, e_sphereShape, &b3CollideHullAndSphereShapes);
+	b3AddCollideFunction(e_hullShape, e_hullShape, &b3CollideHullAndHullShapes);
 }
 
 void b3CollideShapeAndShape(b3Manifold& manifold, 
@@ -236,11 +237,10 @@ void b3CollideShapeAndShape(b3Manifold& manifold,
 	const b3Transform& xfB, const b3Shape* shapeB, 
 	b3ConvexCache* cache)
 {
-	static bool b3Collide_initilized = false;
-	if (b3Collide_initilized == false)
+	if (s_functionsInitialized == false)
 	{
 		b3InitializeCollideFunctions();
-		b3Collide_initilized = true;
+		s_functionsInitialized = true;
 	}
 
 	b3ShapeType typeA = shapeA->GetType();

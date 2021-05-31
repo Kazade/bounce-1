@@ -31,6 +31,7 @@ class b3Shape;
 class b3Body;
 class b3Contact;
 class b3ContactListener;
+struct b3ConvexCache;
 
 // A contact edge for the contact graph, 
 // where a shape is a vertex and a contact 
@@ -159,6 +160,14 @@ protected:
 
 	// Initialize contact constraints.
 	virtual void Collide() = 0;
+
+	// Some contacts store reference AABBs for internal queries and therefore 
+	// need to synchronize with body transforms.
+	virtual void SynchronizeShape() = 0;
+
+	// Some contacts act like a midphase and therefore need to find 
+	// new internal overlapping pairs.
+	virtual void FindPairs() = 0;
 
 	b3ContactType m_type;
 	u32 m_flags;

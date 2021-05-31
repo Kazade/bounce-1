@@ -81,10 +81,10 @@ void b3Camera::AddRadius(scalar distance)
 	}
 }
 
-void b3Camera::LookAt(b3Vec3 eye_position, b3Vec3 target_position)
+void b3Camera::LookAt(const b3Vec3& eyePosition, const b3Vec3& targetPosition)
 {
-	SetPosition(eye_position);
-	m_center = target_position;
+	SetPosition(eyePosition);
+	m_center = targetPosition;
 }
 
 void b3Camera::AddPolarAngle(scalar angle)
@@ -162,6 +162,7 @@ static scalar b3AzimuthalAngle(scalar x, scalar y)
 	}
 
 	B3_ASSERT(false);
+	return scalar(0);
 }
 
 // This detects the quadrant the given point is on  
@@ -210,22 +211,23 @@ static scalar b3PolarAngle(scalar x, scalar y)
 
 	if (x == scalar(0) && y == scalar(0))
 	{
-		return 0;
+		return scalar(0);
 	}
 
 	B3_ASSERT(false);
+	return scalar(0);
 }
 
-void b3Camera::SetPosition(b3Vec3 pw)
+void b3Camera::SetPosition(const b3Vec3& pw)
 {
 	scalar x = pw.x, y = pw.y, z = pw.z;
 
-	scalar r = sqrt(x * x + y * y + z * z);
+	scalar r = b3Sqrt(x * x + y * y + z * z);
 
 	scalar phi = b3AzimuthalAngle(z, x);
 	B3_ASSERT(phi >= scalar(0) && phi <= scalar(2) * B3_PI);
 
-	scalar s = sqrt(z * z + x * x);
+	scalar s = b3Sqrt(z * z + x * x);
 	scalar theta = b3PolarAngle(y, s);
 	B3_ASSERT(theta >= scalar(0) && theta <= B3_PI);
 
@@ -288,7 +290,7 @@ b3Mat44 b3Camera::BuildViewMatrix() const
 		b3Vec4(R.x.x, R.x.y, R.x.z, scalar(0)),
 		b3Vec4(R.y.x, R.y.y, R.y.z, scalar(0)),
 		b3Vec4(R.z.x, R.z.y, R.z.z, scalar(0)),
-		b3Vec4(t.x, t.y, t.z, 1.0f));
+		b3Vec4(t.x, t.y, t.z, scalar(1)));
 }
 
 b3Mat44 b3Camera::BuildProjectionMatrix() const
@@ -299,8 +301,8 @@ b3Mat44 b3Camera::BuildProjectionMatrix() const
 	scalar ratio = w / h;
 
 	scalar t = tan(scalar(0.5) * yfov);
-	scalar sx = 1.0f / (ratio * t);
-	scalar sy = 1.0f / t;
+	scalar sx = scalar(1) / (ratio * t);
+	scalar sy = scalar(1) / t;
 
 	scalar sz = (zn + zf) / (zn - zf);
 	scalar tz = (zf * zn) / (zn - zf);
@@ -308,36 +310,36 @@ b3Mat44 b3Camera::BuildProjectionMatrix() const
 	b3Mat44 m;
 	m.x = b3Vec4(sx, scalar(0), scalar(0), scalar(0));
 	m.y = b3Vec4(scalar(0), sy, scalar(0), scalar(0));
-	m.z = b3Vec4(scalar(0), scalar(0), sz, -1.0f);
+	m.z = b3Vec4(scalar(0), scalar(0), sz, scalar(-1));
 	m.w = b3Vec4(scalar(0), scalar(0), tz, scalar(0));
 	return m;
 }
 
-b3Vec2 b3Camera::ConvertWorldToScreen(b3Vec3 pw3) const
+b3Vec2 b3Camera::ConvertWorldToScreen(const b3Vec3& pw3) const
 {
 	scalar w = m_width, h = m_height;
 
 	b3Mat44 P = BuildProjectionMatrix();
 	b3Mat44 V = BuildViewMatrix();
 
-	b3Vec4 pw(pw3.x, pw3.y, pw3.z, 1.0f);
+	b3Vec4 pw(pw3.x, pw3.y, pw3.z, scalar(1));
 
 	b3Vec4 pp = P * V * pw;
 
 	b3Vec3 pn(pp.x, pp.y, pp.z);
-	scalar inv_w = pp.w != scalar(0) ? 1.0f / pp.w : 1.0f;
+	scalar inv_w = pp.w != scalar(0) ? scalar(1) / pp.w : scalar(1);
 	pn = inv_w * pn;
 
-	scalar u = scalar(0.5) * (pn.x + 1.0f);
-	scalar v = scalar(0.5) * (pn.y + 1.0f);
+	scalar u = scalar(0.5) * (pn.x + scalar(1));
+	scalar v = scalar(0.5) * (pn.y + scalar(1));
 
 	b3Vec2 ps;
 	ps.x = u * w;
-	ps.y = (1.0f - v) * h;
+	ps.y = (scalar(1) - v) * h;
 	return ps;
 }
 
-b3Vec3 b3Camera::ConvertScreenToWorld(b3Vec2 ps) const
+b3Vec3 b3Camera::ConvertScreenToWorld(const b3Vec2& ps) const
 {
 	scalar w = m_width, h = m_height;
 

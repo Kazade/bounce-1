@@ -79,7 +79,7 @@ void b3Hull::Validate(const b3HalfEdge* e) const
 
 void b3Hull::Scale(const b3Vec3& scale)
 {
-	// /2019/10/01/how-to-transform-a-plane,-with-scale/
+	// https://irlanrobson.github.io/2019/10/01/how-to-transform-a-plane,-with-scale/
 	B3_ASSERT(scale.x > scalar(0));
 	B3_ASSERT(scale.y > scalar(0));
 	B3_ASSERT(scale.z > scalar(0));
@@ -143,7 +143,7 @@ void b3Hull::Translate(const b3Vec3& translation)
 
 void b3Hull::Transform(const b3Transform& xf, const b3Vec3& scale)
 {
-	// /2019/10/01/how-to-transform-a-plane,-with-scale/
+	// https://irlanrobson.github.io/2019/10/01/how-to-transform-a-plane,-with-scale/
 	B3_ASSERT(scale.x > scalar(0));
 	B3_ASSERT(scale.y > scalar(0));
 	B3_ASSERT(scale.z > scalar(0));

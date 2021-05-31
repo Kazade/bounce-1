@@ -19,7 +19,7 @@
 #ifndef HULL_COLLISION_H
 #define HULL_COLLISION_H
 
-class HullCollision : public Collide
+class HullCollision : public Test
 {
 public:
 	enum
@@ -29,53 +29,90 @@ public:
 
 	HullCollision()
 	{
+		m_hullA = nullptr;
 		m_xfA.translation.Set(0.0f, 1.5f, 0.0f);
 		m_xfA.rotation.SetIdentity();
 
+		m_hullB = nullptr;
 		m_xfB.SetIdentity();
 
-		m_cache.count = 0;
-
-		m_hull1 = nullptr;
-		m_hull2 = nullptr;
 		Generate();
 	}
 
 	~HullCollision()
 	{
-		if (m_hull1)
+		if (m_hullA)
 		{
-			DestroyHull(m_hull1);
+			DestroyHull(m_hullA);
 		}
 
-		if (m_hull2)
+		if (m_hullB)
 		{
-			DestroyHull(m_hull2);
+			DestroyHull(m_hullB);
 		}
 	}
 
-	void KeyDown(int button)
+	void KeyDown(int key)
 	{
-		if (button == GLFW_KEY_G)
+		if (key == GLFW_KEY_G)
 		{
 			Generate();
 		}
 		
-		Collide::KeyDown(button);
+		if (key == GLFW_KEY_LEFT)
+		{
+			m_xfB.translation.x -= 0.05f;
+		}
+
+		if (key == GLFW_KEY_RIGHT)
+		{
+			m_xfB.translation.x += 0.05f;
+		}
+
+		if (key == GLFW_KEY_UP)
+		{
+			m_xfB.translation.y += 0.05f;
+		}
+
+		if (key == GLFW_KEY_DOWN)
+		{
+			m_xfB.translation.y -= 0.05f;
+		}
+
+		if (key == GLFW_KEY_X)
+		{
+			b3Quat qx = b3QuatRotationX(0.05f * B3_PI);
+
+			m_xfB.rotation = m_xfB.rotation * qx;
+		}
+
+		if (key == GLFW_KEY_Y)
+		{
+			b3Quat qy = b3QuatRotationY(0.05f * B3_PI);
+
+			m_xfB.rotation = m_xfB.rotation * qy;
+		}
+
+		if (key == GLFW_KEY_Z)
+		{
+			b3Quat qz = b3QuatRotationZ(0.05f * B3_PI);
+
+			m_xfB.rotation = m_xfB.rotation * qz;
+		}
 	}
 
 	void Generate()
 	{
-		if (m_hull1)
+		if (m_hullA)
 		{
-			DestroyHull(m_hull1);
-			m_hull1 = nullptr;
+			DestroyHull(m_hullA);
+			m_hullA = nullptr;
 		}
 
-		if (m_hull2)
+		if (m_hullB)
 		{
-			DestroyHull(m_hull2);
-			m_hull2 = nullptr;
+			DestroyHull(m_hullB);
+			m_hullB = nullptr;
 		}
 
 		b3Vec3 points1[e_count];
@@ -94,7 +131,7 @@ public:
 			points1[i] = p;
 		}
 
-		m_hull1 = CreateHull(points1, e_count);
+		m_hullA = CreateHull(points1, e_count);
 		
 		b3Vec3 points2[e_count];
 		for (u32 i = 0; i < e_count; ++i)
@@ -112,27 +149,52 @@ public:
 			points2[i] = p;
 		}
 
-		m_hull2 = CreateHull(points2, e_count);
+		m_hullB = CreateHull(points2, e_count);
 	}
 	
 	void Step()
 	{
 		DrawString(b3Color_white, "G - Generate random convex hulls");
 
-		if (!m_hull1 || !m_hull2)
+		if (!m_hullA || !m_hullB)
 		{
 			return;
 		}
 
 		b3HullShape sA;
-		sA.m_hull = m_hull1;
-		m_shapeA = &sA;
+		sA.m_hull = m_hullA;
 
 		b3HullShape sB;
-		sB.m_hull = m_hull2;
-		m_shapeB = &sB;
+		sB.m_hull = m_hullB;
 
-		Collide::Step();
+		b3ConvexCache cache;
+		cache.simplexCache.count = 0;
+		cache.featureCache.m_featurePair.state = b3SATCacheType::e_empty;
+
+		b3Manifold manifold;
+		manifold.Initialize();
+
+		b3CollideHullAndHull(manifold, m_xfA, &sA, m_xfB, &sB, &cache);
+
+		for (u32 i = 0; i < manifold.pointCount; ++i)
+		{
+			b3WorldManifold wm;
+			wm.Initialize(&manifold, sA.m_radius, m_xfA, sB.m_radius, m_xfB);
+
+			b3Vec3 pw = wm.points[i].point;
+
+			b3DrawPoint(g_debugDraw, pw, 4.0f, b3Color_green, false);
+			b3DrawSegment(g_debugDraw, pw, pw + wm.points[i].normal, b3Color_white, false);
+		}
+
+		sA.Draw(m_xfA, b3Color_black);
+		sB.Draw(m_xfB, b3Color_black);
+
+		sA.DrawSolid(m_xfA, b3Color(1.0f, 1.0f, 1.0f, 0.25f));
+		sB.DrawSolid(m_xfB, b3Color(1.0f, 1.0f, 1.0f, 0.25f));
+
+		DrawString(b3Color_white, "Left/Right/Up/Down Arrow - Translate shape");
+		DrawString(b3Color_white, "X/Y/Z - Rotate shape");
 	}
 
 	static Test* Create()
@@ -140,8 +202,11 @@ public:
 		return new HullCollision();
 	}
 
-	b3Hull* m_hull1;
-	b3Hull* m_hull2;
+	b3Hull* m_hullA;
+	b3Transform m_xfA;
+	
+	b3Hull* m_hullB;
+	b3Transform m_xfB;
 };
 
 #endif

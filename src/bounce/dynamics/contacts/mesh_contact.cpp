@@ -88,7 +88,7 @@ b3MeshContact::~b3MeshContact()
 	b3Free(m_triangles);
 }
 
-void b3MeshContact::SynchronizeShapes()
+void b3MeshContact::SynchronizeShape()
 {
 	b3Shape* shapeA = GetShapeA();
 	b3Body* bodyA = shapeA->GetBody();
@@ -179,7 +179,7 @@ bool b3MeshContact::MoveAABB(const b3AABB& aabb, const b3Vec3& displacement)
 	return true;
 }
 
-void b3MeshContact::FindNewPairs()
+void b3MeshContact::FindPairs()
 {
 	// Reuse the overlapping buffer if the AABB didn't move
 	// significantly.
