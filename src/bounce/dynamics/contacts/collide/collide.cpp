@@ -17,11 +17,16 @@
 */
 
 #include <bounce/dynamics/contacts/collide/collide.h>
+#include <bounce/dynamics/contacts/convex_contact.h>
+#include <bounce/dynamics/contacts/mesh_contact.h>
+#include <bounce/dynamics/contacts/contact_cluster.h>
 #include <bounce/dynamics/shapes/sphere_shape.h>
 #include <bounce/dynamics/shapes/capsule_shape.h>
 #include <bounce/dynamics/shapes/triangle_shape.h>
 #include <bounce/dynamics/shapes/hull_shape.h>
 #include <bounce/dynamics/shapes/mesh_shape.h>
+#include <bounce/dynamics/body.h>
+#include <bounce/dynamics/world.h>
 #include <bounce/collision/shapes/sphere.h>
 #include <bounce/collision/shapes/capsule.h>
 #include <bounce/collision/shapes/hull.h>
@@ -103,151 +108,314 @@ bool b3TestOverlap(const b3Transform& xfA, u32 indexA, const b3Shape* shapeA,
 	return distance.distance <= kTol;
 }
 
-void b3CollideSphereAndSphereShapes(b3Manifold& manifold, 
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB,
-	b3ConvexCache* cache)
+void b3Contact::CollideSphereAndSphereShapes(b3Contact* contact)
 {
-	B3_NOT_USED(cache);
+	b3ConvexContact* convexContact = (b3ConvexContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+
 	b3SphereShape* sphereA = (b3SphereShape*)shapeA;
 	b3SphereShape* sphereB = (b3SphereShape*)shapeB;
-	b3CollideSphereAndSphere(manifold, xfA, sphereA, xfB, sphereB);
+	
+	B3_ASSERT(contact->m_manifoldCount == 0);
+	b3CollideSphereAndSphere(convexContact->m_stackManifold, xfA, sphereA, xfB, sphereB);
+	contact->m_manifoldCount = 1;
 }
 
-void b3CollideCapsuleAndSphereShapes(b3Manifold& manifold,
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB,
-	b3ConvexCache* cache)
+void b3Contact::CollideCapsuleAndSphereShapes(b3Contact* contact)
 {
-	B3_NOT_USED(cache);
+	b3ConvexContact* convexContact = (b3ConvexContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+	
 	b3CapsuleShape* capsuleA = (b3CapsuleShape*)shapeA;
 	b3SphereShape* sphereB = (b3SphereShape*)shapeB;
-	b3CollideCapsuleAndSphere(manifold, xfA, capsuleA, xfB, sphereB);
+	
+	B3_ASSERT(contact->m_manifoldCount == 0);
+	b3CollideCapsuleAndSphere(convexContact->m_stackManifold, xfA, capsuleA, xfB, sphereB);
+	contact->m_manifoldCount = 1;
 }
 
-void b3CollideCapsuleAndCapsuleShapes(b3Manifold& manifold,
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB,
-	b3ConvexCache* cache)
+void b3Contact::CollideCapsuleAndCapsuleShapes(b3Contact* contact)
 {
-	B3_NOT_USED(cache);
+	b3ConvexContact* convexContact = (b3ConvexContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+
 	b3CapsuleShape* capsuleA = (b3CapsuleShape*)shapeA;
 	b3CapsuleShape* capsuleB = (b3CapsuleShape*)shapeB;
-	b3CollideCapsuleAndCapsule(manifold, xfA, capsuleA, xfB, capsuleB);
+	
+	B3_ASSERT(contact->m_manifoldCount == 0);
+	b3CollideCapsuleAndCapsule(convexContact->m_stackManifold, xfA, capsuleA, xfB, capsuleB);
+	contact->m_manifoldCount = 1;
 }
 
-void b3CollideTriangleAndSphereShapes(b3Manifold& manifold,
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB,
-	b3ConvexCache* cache)
+void b3Contact::CollideTriangleAndSphereShapes(b3Contact* contact)
 {
-	B3_NOT_USED(cache);
+	b3ConvexContact* convexContact = (b3ConvexContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+	
 	b3TriangleShape* triangleA = (b3TriangleShape*)shapeA;
 	b3SphereShape* sphereB = (b3SphereShape*)shapeB;
-	b3CollideTriangleAndSphere(manifold, xfA, triangleA, xfB, sphereB);
+
+	B3_ASSERT(contact->m_manifoldCount == 0);
+	b3CollideTriangleAndSphere(convexContact->m_stackManifold, xfA, triangleA, xfB, sphereB);
+	contact->m_manifoldCount = 1;
 }
 
-void b3CollideTriangleAndCapsuleShapes(b3Manifold& manifold,
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB,
-	b3ConvexCache* cache)
+void b3Contact::CollideTriangleAndCapsuleShapes(b3Contact* contact)
 {
-	B3_NOT_USED(cache);
+	b3ConvexContact* convexContact = (b3ConvexContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+	
 	b3TriangleShape* triangleA = (b3TriangleShape*)shapeA;
 	b3CapsuleShape* capsuleB = (b3CapsuleShape*)shapeB;
-	b3CollideTriangleAndCapsule(manifold, xfA, triangleA, xfB, capsuleB);
+	
+	B3_ASSERT(contact->m_manifoldCount == 0);
+	b3CollideTriangleAndCapsule(convexContact->m_stackManifold, xfA, triangleA, xfB, capsuleB);
+	contact->m_manifoldCount = 1;
 }
 
-void b3CollideTriangleAndHullShapes(b3Manifold& manifold,
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB,
-	b3ConvexCache* cache)
+void b3Contact::CollideTriangleAndHullShapes(b3Contact* contact)
 {
+	b3ConvexContact* convexContact = (b3ConvexContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+
 	b3TriangleShape* triangleA = (b3TriangleShape*)shapeA;
 	b3HullShape* hullB = (b3HullShape*)shapeB;
-	b3CollideTriangleAndHull(manifold, xfA, triangleA, xfB, hullB, cache);
+	
+	B3_ASSERT(contact->m_manifoldCount == 0);
+	b3CollideTriangleAndHull(convexContact->m_stackManifold, xfA, triangleA, xfB, hullB, &convexContact->m_cache);
+	contact->m_manifoldCount = 1;
 }
 
-void b3CollideHullAndSphereShapes(b3Manifold& manifold,
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB,
-	b3ConvexCache* cache)
+void b3Contact::CollideHullAndSphereShapes(b3Contact* contact)
 {
-	B3_NOT_USED(cache);
+	b3ConvexContact* convexContact = (b3ConvexContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+	
 	b3HullShape* hullA = (b3HullShape*)shapeA;
 	b3SphereShape* sphereB = (b3SphereShape*)shapeB;
-	b3CollideHullAndSphere(manifold, xfA, hullA, xfB, sphereB);
+	
+	B3_ASSERT(contact->m_manifoldCount == 0);
+	b3CollideHullAndSphere(convexContact->m_stackManifold, xfA, hullA, xfB, sphereB);
+	contact->m_manifoldCount = 1;
 }
 
-void b3CollideHullAndCapsuleShapes(b3Manifold& manifold,
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB,
-	b3ConvexCache* cache)
+void b3Contact::CollideHullAndCapsuleShapes(b3Contact* contact)
 {
-	B3_NOT_USED(cache);
+	b3ConvexContact* convexContact = (b3ConvexContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+	
 	b3HullShape* hullA = (b3HullShape*)shapeA;
 	b3CapsuleShape* capsuleB = (b3CapsuleShape*)shapeB;
-	b3CollideHullAndCapsule(manifold, xfA, hullA, xfB, capsuleB);
+	
+	B3_ASSERT(contact->m_manifoldCount == 0);
+	b3CollideHullAndCapsule(convexContact->m_stackManifold, xfA, hullA, xfB, capsuleB);
+	contact->m_manifoldCount = 1;
 }
 
-void b3CollideHullAndHullShapes(b3Manifold& manifold,
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB,
-	b3ConvexCache* cache)
+void b3Contact::CollideHullAndHullShapes(b3Contact* contact)
 {
+	b3ConvexContact* convexContact = (b3ConvexContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+
 	b3HullShape* hullA = (b3HullShape*)shapeA;
 	b3HullShape* hullB = (b3HullShape*)shapeB;
-	b3CollideHullAndHull(manifold, xfA, hullA, xfB, hullB, cache);
+	
+	B3_ASSERT(contact->m_manifoldCount == 0);
+	b3CollideHullAndHull(convexContact->m_stackManifold, xfA, hullA, xfB, hullB, &convexContact->m_cache);
+	contact->m_manifoldCount = 1;
 }
 
-typedef void(*b3CollideFcn)(b3Manifold&,
-	const b3Transform&, const b3Shape*,
-	const b3Transform&, const b3Shape*,
-	b3ConvexCache*);
-
-static b3CollideFcn s_functions[e_maxShapes][e_maxShapes];
-static bool s_functionsInitialized = false;
-
-static void b3AddCollideFunction(b3ShapeType typeA, b3ShapeType typeB, b3CollideFcn fcn)
+void b3Contact::CollideMeshAndSphereShapes(b3Contact* contact)
 {
-	B3_ASSERT(0 <= typeA && typeA < e_maxShapes);
-	B3_ASSERT(0 <= typeB && typeB < e_maxShapes);
+	b3MeshContact* meshContact = (b3MeshContact*)contact;
+	
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
 
-	s_functions[typeA][typeB] = fcn;
-}
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
 
-static void b3InitializeCollideFunctions()
-{
-	b3AddCollideFunction(e_sphereShape, e_sphereShape, &b3CollideSphereAndSphereShapes);
+	b3MeshShape* meshShapeA = (b3MeshShape*)shapeA;
+	b3SphereShape* sphereB = (b3SphereShape*)shapeB;
 
-	b3AddCollideFunction(e_capsuleShape, e_sphereShape, &b3CollideCapsuleAndSphereShapes);
-	b3AddCollideFunction(e_capsuleShape, e_capsuleShape, &b3CollideCapsuleAndCapsuleShapes);
+	b3StackAllocator* allocator = &shapeA->GetBody()->GetWorld()->m_stackAllocator;
 
-	b3AddCollideFunction(e_triangleShape, e_sphereShape, &b3CollideTriangleAndSphereShapes);
-	b3AddCollideFunction(e_triangleShape, e_capsuleShape, &b3CollideTriangleAndCapsuleShapes);
-	b3AddCollideFunction(e_triangleShape, e_hullShape, &b3CollideTriangleAndHullShapes);
+	// Create one temporary manifold per overlapping triangle.
+	b3Manifold* tempManifolds = (b3Manifold*)allocator->Allocate(meshContact->m_triangleCount * sizeof(b3Manifold));
+	u32 tempCount = 0;
 
-	b3AddCollideFunction(e_hullShape, e_capsuleShape, &b3CollideHullAndCapsuleShapes);
-	b3AddCollideFunction(e_hullShape, e_sphereShape, &b3CollideHullAndSphereShapes);
-	b3AddCollideFunction(e_hullShape, e_hullShape, &b3CollideHullAndHullShapes);
-}
-
-void b3CollideShapeAndShape(b3Manifold& manifold, 
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB, 
-	b3ConvexCache* cache)
-{
-	if (s_functionsInitialized == false)
+	const b3Mesh* meshA = meshShapeA->m_mesh;
+	for (u32 i = 0; i < meshContact->m_triangleCount; ++i)
 	{
-		b3InitializeCollideFunctions();
-		s_functionsInitialized = true;
+		b3TriangleCache* triangleCache = meshContact->m_triangles + i;
+		u32 triangleIndex = triangleCache->index;
+
+		b3TriangleShape triangleShapeA;
+		meshShapeA->GetChildTriangle(&triangleShapeA, triangleIndex);
+
+		b3Manifold* manifold = tempManifolds + tempCount;
+		manifold->Initialize();
+
+		b3CollideTriangleAndSphere(*manifold, xfA, &triangleShapeA, xfB, sphereB);
+
+		for (u32 j = 0; j < manifold->pointCount; ++j)
+		{
+			manifold->points[j].key.triangleKey = triangleIndex;
+		}
+
+		++tempCount;
 	}
 
-	b3ShapeType typeA = shapeA->GetType();
-	b3ShapeType typeB = shapeB->GetType();
+	// Send contact manifolds for clustering. This is an important optimization.
+	B3_ASSERT(contact->m_manifoldCount == 0);
 
-	b3CollideFcn fcn = s_functions[typeA][typeB];
-	
-	B3_ASSERT(fcn != nullptr);
-	fcn(manifold, xfA, shapeA, xfB, shapeB, cache);
+	b3ClusterSolver clusterSolver;
+	clusterSolver.Run(meshContact->m_stackManifolds, contact->m_manifoldCount, tempManifolds, tempCount, xfA, B3_HULL_RADIUS, xfB, shapeB->m_radius);
+
+	allocator->Free(tempManifolds);
+}
+
+void b3Contact::CollideMeshAndCapsuleShapes(b3Contact* contact)
+{
+	b3MeshContact* meshContact = (b3MeshContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+
+	b3MeshShape* meshShapeA = (b3MeshShape*)shapeA;
+	b3CapsuleShape* capsuleB = (b3CapsuleShape*)shapeB;
+
+	b3StackAllocator* allocator = &shapeA->GetBody()->GetWorld()->m_stackAllocator;
+
+	// Create one temporary manifold per overlapping triangle.
+	b3Manifold* tempManifolds = (b3Manifold*)allocator->Allocate(meshContact->m_triangleCount * sizeof(b3Manifold));
+	u32 tempCount = 0;
+
+	const b3Mesh* meshA = meshShapeA->m_mesh;
+	for (u32 i = 0; i < meshContact->m_triangleCount; ++i)
+	{
+		b3TriangleCache* triangleCache = meshContact->m_triangles + i;
+		u32 triangleIndex = triangleCache->index;
+
+		b3TriangleShape triangleShapeA;
+		meshShapeA->GetChildTriangle(&triangleShapeA, triangleIndex);
+
+		b3Manifold* manifold = tempManifolds + tempCount;
+		manifold->Initialize();
+
+		b3CollideTriangleAndCapsule(*manifold, xfA, &triangleShapeA, xfB, capsuleB);
+
+		for (u32 j = 0; j < manifold->pointCount; ++j)
+		{
+			manifold->points[j].key.triangleKey = triangleIndex;
+		}
+
+		++tempCount;
+	}
+
+	// Send contact manifolds for clustering. This is an important optimization.
+	B3_ASSERT(contact->m_manifoldCount == 0);
+
+	b3ClusterSolver clusterSolver;
+	clusterSolver.Run(meshContact->m_stackManifolds, contact->m_manifoldCount, tempManifolds, tempCount, xfA, B3_HULL_RADIUS, xfB, shapeB->m_radius);
+
+	allocator->Free(tempManifolds);
+}
+
+void b3Contact::CollideMeshAndHullShapes(b3Contact* contact)
+{
+	b3MeshContact* meshContact = (b3MeshContact*)contact;
+
+	b3Shape* shapeA = contact->GetShapeA();
+	b3Shape* shapeB = contact->GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+
+	b3MeshShape* meshShapeA = (b3MeshShape*)shapeA;
+	b3HullShape* hullB = (b3HullShape*)shapeB;
+
+	b3StackAllocator* allocator = &shapeA->GetBody()->GetWorld()->m_stackAllocator;
+
+	// Create one temporary manifold per overlapping triangle.
+	b3Manifold* tempManifolds = (b3Manifold*)allocator->Allocate(meshContact->m_triangleCount * sizeof(b3Manifold));
+	u32 tempCount = 0;
+
+	const b3Mesh* meshA = meshShapeA->m_mesh;
+	for (u32 i = 0; i < meshContact->m_triangleCount; ++i)
+	{
+		b3TriangleCache* triangleCache = meshContact->m_triangles + i;
+		u32 triangleIndex = triangleCache->index;
+
+		b3TriangleShape triangleShapeA;
+		meshShapeA->GetChildTriangle(&triangleShapeA, triangleIndex);
+
+		b3Manifold* manifold = tempManifolds + tempCount;
+		manifold->Initialize();
+
+		b3CollideTriangleAndHull(*manifold, xfA, &triangleShapeA, xfB, hullB, &triangleCache->cache);
+
+		for (u32 j = 0; j < manifold->pointCount; ++j)
+		{
+			manifold->points[j].key.triangleKey = triangleIndex;
+		}
+
+		++tempCount;
+	}
+
+	// Send contact manifolds for clustering. This is an important optimization.
+	B3_ASSERT(contact->m_manifoldCount == 0);
+
+	b3ClusterSolver clusterSolver;
+	clusterSolver.Run(meshContact->m_stackManifolds, contact->m_manifoldCount, tempManifolds, tempCount, xfA, B3_HULL_RADIUS, xfB, shapeB->m_radius);
+
+	allocator->Free(tempManifolds);
 }

@@ -34,8 +34,6 @@ public:
 
 	bool TestOverlap();
 
-	void Collide();
-
 	void SynchronizeShape() { }
 
 	void FindPairs() { }

@@ -66,18 +66,14 @@ enum b3ContactType
 
 typedef b3Contact* b3ContactCreateFcn(b3Shape* shapeA, b3Shape* shapeB, b3BlockPool* allocator);
 typedef void b3ContactDestroyFcn(b3Contact* contact, b3BlockPool* allocator);
+typedef void b3ContactCollideFcn(b3Contact* contact);
 
 struct b3ContactRegister
 {
-	b3ContactRegister()
-	{
-		createFcn = nullptr;
-		destroyFcn = nullptr;
-	}
-
 	b3ContactType contactType;
-	b3ContactCreateFcn* createFcn;
-	b3ContactDestroyFcn* destroyFcn;
+	b3ContactCreateFcn* createFcn = nullptr;
+	b3ContactDestroyFcn* destroyFcn = nullptr;
+	b3ContactCollideFcn* collideFcn = nullptr;
 	bool primary;
 };
 
@@ -140,11 +136,11 @@ protected:
 	static b3ContactRegister s_registers[e_maxShapes][e_maxShapes];
 	static bool s_initialized;
 	
-	static void AddPrimaryRegister(b3ContactCreateFcn* createFcn, b3ContactDestroyFcn* destoryFcn,
+	static void AddType(b3ContactCreateFcn* createFcn, b3ContactDestroyFcn* destoryFcn, b3ContactCollideFcn* collideFcn,
 		b3ShapeType type1, b3ShapeType type2, 
 		b3ContactType contactType);
 	
-	static void InitializePrimaryRegisters();
+	static void InitializeRegisters();
 
 	// Factory create.
 	static b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockPool* allocators[e_maxContact]);
@@ -152,14 +148,28 @@ protected:
 	// Factory destroy.
 	static void Destroy(b3Contact* contact, b3BlockPool* allocators[e_maxContact]);
 
+	// Collide function.
+	static void Collide(b3Contact* contact);
+
+	// Primary collide functions.
+	static void CollideSphereAndSphereShapes(b3Contact* contact);
+	static void CollideCapsuleAndSphereShapes(b3Contact* contact);
+	static void CollideCapsuleAndCapsuleShapes(b3Contact* contact);
+	static void CollideTriangleAndSphereShapes(b3Contact* contact);
+	static void CollideTriangleAndCapsuleShapes(b3Contact* contact);
+	static void CollideTriangleAndHullShapes(b3Contact* contact);
+	static void CollideHullAndSphereShapes(b3Contact* contact);
+	static void CollideHullAndCapsuleShapes(b3Contact* contact);
+	static void CollideHullAndHullShapes(b3Contact* contact);
+	static void CollideMeshAndSphereShapes(b3Contact* contact);
+	static void CollideMeshAndCapsuleShapes(b3Contact* contact);
+	static void CollideMeshAndHullShapes(b3Contact* contact);
+
 	// Update the contact state.
 	void Update(b3ContactListener* listener);
 
 	// Test if the shapes in this contact are overlapping.
 	virtual bool TestOverlap() = 0;
-
-	// Initialize contact constraints.
-	virtual void Collide() = 0;
 
 	// Some contacts store reference AABBs for internal queries and therefore 
 	// need to synchronize with body transforms.

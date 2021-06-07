@@ -44,8 +44,6 @@ public:
 
 	bool TestOverlap();
 
-	void Collide();
-
 	void SynchronizeShape();
 
 	bool MoveAABB(const b3AABB& aabb, const b3Vec3& displacement);

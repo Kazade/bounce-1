@@ -28,7 +28,7 @@
 bool b3Contact::s_initialized = false;
 b3ContactRegister b3Contact::s_registers[e_maxShapes][e_maxShapes];
 
-void b3Contact::AddPrimaryRegister(b3ContactCreateFcn* createFcn, b3ContactDestroyFcn* destoryFcn,
+void b3Contact::AddType(b3ContactCreateFcn* createFcn, b3ContactDestroyFcn* destoryFcn, b3ContactCollideFcn collideFcn,
 	b3ShapeType type1, b3ShapeType type2,
 	b3ContactType contactType)
 {
@@ -37,6 +37,7 @@ void b3Contact::AddPrimaryRegister(b3ContactCreateFcn* createFcn, b3ContactDestr
 
 	s_registers[type1][type2].createFcn = createFcn;
 	s_registers[type1][type2].destroyFcn = destoryFcn;
+	s_registers[type1][type2].collideFcn = collideFcn;
 	s_registers[type1][type2].primary = true;
 	s_registers[type1][type2].contactType = contactType;
 
@@ -44,36 +45,37 @@ void b3Contact::AddPrimaryRegister(b3ContactCreateFcn* createFcn, b3ContactDestr
 	{
 		s_registers[type2][type1].createFcn = createFcn;
 		s_registers[type2][type1].destroyFcn = destoryFcn;
+		s_registers[type2][type1].collideFcn = collideFcn;
 		s_registers[type2][type1].primary = false;
 		s_registers[type2][type1].contactType = contactType;
 	}
 }
 
-void b3Contact::InitializePrimaryRegisters()
+void b3Contact::InitializeRegisters()
 {
-	AddPrimaryRegister(b3ConvexContact::Create, b3ConvexContact::Destroy, e_sphereShape, e_sphereShape, e_convexContact);
+	AddType(b3ConvexContact::Create, b3ConvexContact::Destroy, b3Contact::CollideSphereAndSphereShapes, e_sphereShape, e_sphereShape, e_convexContact);
 
-	AddPrimaryRegister(b3ConvexContact::Create, b3ConvexContact::Destroy, e_capsuleShape, e_sphereShape, e_convexContact);
-	AddPrimaryRegister(b3ConvexContact::Create, b3ConvexContact::Destroy, e_capsuleShape, e_capsuleShape, e_convexContact);
+	AddType(b3ConvexContact::Create, b3ConvexContact::Destroy, b3Contact::CollideCapsuleAndSphereShapes, e_capsuleShape, e_sphereShape, e_convexContact);
+	AddType(b3ConvexContact::Create, b3ConvexContact::Destroy, b3Contact::CollideCapsuleAndCapsuleShapes, e_capsuleShape, e_capsuleShape, e_convexContact);
 
-	AddPrimaryRegister(b3ConvexContact::Create, b3ConvexContact::Destroy, e_triangleShape, e_sphereShape, e_convexContact);
-	AddPrimaryRegister(b3ConvexContact::Create, b3ConvexContact::Destroy, e_triangleShape, e_capsuleShape, e_convexContact);
-	AddPrimaryRegister(b3ConvexContact::Create, b3ConvexContact::Destroy, e_triangleShape, e_hullShape, e_convexContact);
+	AddType(b3ConvexContact::Create, b3ConvexContact::Destroy, b3Contact::CollideTriangleAndSphereShapes, e_triangleShape, e_sphereShape, e_convexContact);
+	AddType(b3ConvexContact::Create, b3ConvexContact::Destroy, b3Contact::CollideTriangleAndCapsuleShapes, e_triangleShape, e_capsuleShape, e_convexContact);
+	AddType(b3ConvexContact::Create, b3ConvexContact::Destroy, b3Contact::CollideTriangleAndHullShapes, e_triangleShape, e_hullShape, e_convexContact);
 
-	AddPrimaryRegister(b3ConvexContact::Create, b3ConvexContact::Destroy, e_hullShape, e_sphereShape, e_convexContact);
-	AddPrimaryRegister(b3ConvexContact::Create, b3ConvexContact::Destroy, e_hullShape, e_capsuleShape, e_convexContact);
-	AddPrimaryRegister(b3ConvexContact::Create, b3ConvexContact::Destroy, e_hullShape, e_hullShape, e_convexContact);
+	AddType(b3ConvexContact::Create, b3ConvexContact::Destroy, b3Contact::CollideHullAndSphereShapes, e_hullShape, e_sphereShape, e_convexContact);
+	AddType(b3ConvexContact::Create, b3ConvexContact::Destroy, b3Contact::CollideHullAndCapsuleShapes, e_hullShape, e_capsuleShape, e_convexContact);
+	AddType(b3ConvexContact::Create, b3ConvexContact::Destroy, b3Contact::CollideHullAndHullShapes, e_hullShape, e_hullShape, e_convexContact);
 
-	AddPrimaryRegister(b3MeshContact::Create, b3MeshContact::Destroy, e_meshShape, e_sphereShape, e_meshContact);
-	AddPrimaryRegister(b3MeshContact::Create, b3MeshContact::Destroy, e_meshShape, e_capsuleShape, e_meshContact);
-	AddPrimaryRegister(b3MeshContact::Create, b3MeshContact::Destroy, e_meshShape, e_hullShape, e_meshContact);
+	AddType(b3MeshContact::Create, b3MeshContact::Destroy, b3Contact::CollideMeshAndSphereShapes, e_meshShape, e_sphereShape, e_meshContact);
+	AddType(b3MeshContact::Create, b3MeshContact::Destroy, b3Contact::CollideMeshAndCapsuleShapes, e_meshShape, e_capsuleShape, e_meshContact);
+	AddType(b3MeshContact::Create, b3MeshContact::Destroy, b3Contact::CollideMeshAndHullShapes, e_meshShape, e_hullShape, e_meshContact);
 }
 
 b3Contact* b3Contact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockPool* allocators[e_maxContact])
 {
 	if (s_initialized == false)
 	{
-		InitializePrimaryRegisters();
+		InitializeRegisters();
 		s_initialized = true;
 	}
 
@@ -139,6 +141,25 @@ void b3Contact::Destroy(b3Contact* contact, b3BlockPool* allocators[e_maxContact
 	destroyFcn(contact, allocator);
 }
 
+void b3Contact::Collide(b3Contact* contact)
+{
+	B3_ASSERT(s_initialized == true);
+
+	b3Shape* shapeA = contact->m_pair.shapeA;
+	b3Shape* shapeB = contact->m_pair.shapeB;
+	
+	b3ShapeType type1 = shapeA->GetType();
+	b3ShapeType type2 = shapeB->GetType();
+
+	B3_ASSERT(0 <= type1 && type1 < e_maxShapes);
+	B3_ASSERT(0 <= type2 && type2 < e_maxShapes);
+
+	const b3ContactRegister& contactRegister = s_registers[type1][type2];
+	
+	b3ContactCollideFcn* collideFcn = contactRegister.collideFcn;
+	collideFcn(contact);
+}
+
 b3Contact::b3Contact(b3Shape* shapeA, b3Shape* shapeB)
 {
 	m_pair.shapeA = shapeA;
@@ -200,7 +221,7 @@ void b3Contact::Update(b3ContactListener* listener)
 		}
 
 		// Generate new contact points for the solver.
-		Collide();
+		Collide(this);
 
 		// Initialize the new built contact points for warm starting the solver.
 		if (world->m_warmStarting == true)

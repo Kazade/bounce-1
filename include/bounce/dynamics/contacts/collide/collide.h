@@ -59,12 +59,6 @@ bool b3TestOverlap(const b3Transform& xf1, u32 index1, const b3Shape* shape1,
 	const b3Transform& xf2, u32 index2, const b3Shape* shape2,
 	b3ConvexCache* cache);
 
-// Compute a manifold for two shapes.
-void b3CollideShapeAndShape(b3Manifold& manifold,
-	const b3Transform& xfA, const b3Shape* shapeA,
-	const b3Transform& xfB, const b3Shape* shapeB,
-	b3ConvexCache* cache);
-
 // Compute a manifold for two spheres.
 void b3CollideSphereAndSphere(b3Manifold& manifold, 
 	const b3Transform& xf1, const b3SphereShape* shape1, 
