@@ -288,6 +288,85 @@ struct b3AABB
 		return false;
 	}
 
+	// Translate this AABB.
+	void Translate(const b3Vec3& translation)
+	{
+		lowerBound += translation;
+		upperBound += translation;
+	}
+
+	// Rotate this AABB.
+	void Rotate(const b3Quat& rotation)
+	{
+		b3Vec3 localCenter = GetCenter();
+		b3Vec3 localRadius = GetExtents();
+
+		b3Vec3 center = b3Mul(rotation, localCenter);
+
+		b3Mat33 absRotation = b3Abs(rotation.GetRotationMatrix());
+
+		b3Vec3 radius;
+		radius.x = b3Dot(localRadius, absRotation.x);
+		radius.y = b3Dot(localRadius, absRotation.y);
+		radius.z = b3Dot(localRadius, absRotation.z);
+
+		Set(center, radius);
+	}
+
+	// Scale this AABB by a scale.
+	// The scale can be non-uniform and negative.
+	void Scale(const b3Vec3& scale)
+	{
+		b3Vec3 lower, upper;
+
+		lower.x = scale.x > scalar(0) ? scale.x * lowerBound.x : scale.x * upperBound.x;
+		lower.y = scale.y > scalar(0) ? scale.y * lowerBound.y : scale.y * upperBound.y;
+		lower.z = scale.z > scalar(0) ? scale.z * lowerBound.z : scale.z * upperBound.z;
+
+		upper.x = scale.x > scalar(0) ? scale.x * upperBound.x : scale.x * lowerBound.x;
+		upper.y = scale.y > scalar(0) ? scale.y * upperBound.y : scale.y * lowerBound.y;
+		upper.z = scale.z > scalar(0) ? scale.z * upperBound.z : scale.z * lowerBound.z;
+
+		lowerBound = lower;
+		upperBound = upper;
+	}
+
+	// Transform this AABB.
+	void Transform(const b3Transform& xf)
+	{
+		b3Vec3 localCenter = GetCenter();
+		b3Vec3 localRadius = GetExtents();
+
+		b3Vec3 center = b3Mul(xf, localCenter);
+
+		b3Mat33 absRotation = b3Abs(xf.rotation.GetRotationMatrix());
+
+		b3Vec3 radius;
+		radius.x = b3Dot(localRadius, absRotation.x);
+		radius.y = b3Dot(localRadius, absRotation.y);
+		radius.z = b3Dot(localRadius, absRotation.z);
+
+		Set(center, radius);
+	}
+
+	// Transform this AABB by a transform and a local scale.
+	void Transform(const b3Transform& xf, const b3Vec3& scale)
+	{
+		b3Vec3 localCenter = GetCenter();
+		b3Vec3 localRadius = b3Mul(b3Abs(scale), GetExtents());
+
+		b3Vec3 center = b3Mul(xf, localCenter);
+
+		b3Mat33 absRotation = b3Abs(xf.rotation.GetRotationMatrix());
+
+		b3Vec3 radius;
+		radius.x = b3Dot(localRadius, absRotation.x);
+		radius.y = b3Dot(localRadius, absRotation.y);
+		radius.z = b3Dot(localRadius, absRotation.z);
+
+		Set(center, radius);
+	}
+	
 	b3Vec3 lowerBound; // lower vertex
 	b3Vec3 upperBound; // upper vertex
 };
@@ -306,65 +385,6 @@ inline bool b3TestOverlap(const b3AABB& a, const b3AABB& b)
 {
 	return (a.lowerBound.x <= b.upperBound.x) && (a.lowerBound.y <= b.upperBound.y) &&	(a.lowerBound.z <= b.upperBound.z) &&
 		   (a.upperBound.x >= b.lowerBound.x) && (a.upperBound.y >= b.lowerBound.y) &&	(a.upperBound.z >= b.lowerBound.z);
-}
-
-// Transform a AABB by a given frame.
-inline b3AABB b3TransformAABB(const b3AABB& local_aabb, const b3Transform& xf)
-{
-	b3Vec3 local_center = local_aabb.GetCenter();
-	b3Vec3 local_radius = local_aabb.GetExtents();
-
-	b3Vec3 center = xf * local_center;
-
-	b3Mat33 rotation = b3Abs(b3QuatMat33(xf.rotation));
-	
-	b3Vec3 radius;
-	radius.x = b3Dot(local_radius, rotation.x);
-	radius.y = b3Dot(local_radius, rotation.y);
-	radius.z = b3Dot(local_radius, rotation.z);
-
-	b3AABB aabb;
-	aabb.Set(center, radius);
-
-	return aabb;
-}
-
-// Transform a AABB given a local scale by a given frame.
-inline b3AABB b3TransformAABB(const b3AABB& local_aabb, const b3Vec3& local_scale, const b3Transform& xf)
-{
-	b3Vec3 local_center = local_aabb.GetCenter();
-	b3Vec3 local_radius = b3Mul(b3Abs(local_scale), local_aabb.GetExtents());
-
-	b3Vec3 center = xf * local_center;
-
-	b3Mat33 rotation = b3Abs(b3QuatMat33(xf.rotation));
-
-	b3Vec3 radius;
-	radius.x = b3Dot(local_radius, rotation.x);
-	radius.y = b3Dot(local_radius, rotation.y);
-	radius.z = b3Dot(local_radius, rotation.z);
-
-	b3AABB aabb;
-	aabb.Set(center, radius);
-
-	return aabb;
-}
-
-// Scale an AABB by a scale.
-// The scale can be non-uniform and negative.
-inline b3AABB b3ScaleAABB(const b3AABB& aabb, const b3Vec3& scale)
-{
-	b3AABB scaled_aabb;
-
-	scaled_aabb.lowerBound.x = scale.x > scalar(0) ? scale.x * aabb.lowerBound.x : scale.x * aabb.upperBound.x;
-	scaled_aabb.lowerBound.y = scale.y > scalar(0) ? scale.y * aabb.lowerBound.y : scale.y * aabb.upperBound.y;
-	scaled_aabb.lowerBound.z = scale.z > scalar(0) ? scale.z * aabb.lowerBound.z : scale.z * aabb.upperBound.z;
-
-	scaled_aabb.upperBound.x = scale.x > scalar(0) ? scale.x * aabb.upperBound.x : scale.x * aabb.lowerBound.x;
-	scaled_aabb.upperBound.y = scale.y > scalar(0) ? scale.y * aabb.upperBound.y : scale.y * aabb.lowerBound.y;
-	scaled_aabb.upperBound.z = scale.z > scalar(0) ? scale.z * aabb.upperBound.z : scale.z * aabb.lowerBound.z;
-
-	return scaled_aabb;
 }
 
 #endif

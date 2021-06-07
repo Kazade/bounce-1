@@ -70,7 +70,7 @@ b3MeshContact::b3MeshContact(b3Shape* shapeA, b3Shape* shapeB) : b3Contact(shape
 	inv_scale.y = scalar(1) / meshShapeA->m_scale.y;
 	inv_scale.z = scalar(1) / meshShapeA->m_scale.z;
 
-	fatAABB = b3ScaleAABB(fatAABB, inv_scale);
+	fatAABB.Scale(inv_scale);
 
 	fatAABB.Extend(B3_AABB_EXTENSION);
 
@@ -124,7 +124,7 @@ void b3MeshContact::SynchronizeShape()
 	inv_scale.y = scalar(1) / meshShapeA->m_scale.y;
 	inv_scale.z = scalar(1) / meshShapeA->m_scale.z;
 
-	aabbB = b3ScaleAABB(aabbB, inv_scale);
+	aabbB.Scale(inv_scale);
 
 	// Update the AABB with the new (transformed) AABB and buffer move.
 	m_aabbBMoved = MoveAABB(aabbB, displacement);

@@ -580,7 +580,7 @@ struct b3ShapeCastQueryCallback
 			// Compute the aabb in the space of the unscaled tree
 			b3AABB aabb;
 			shapeA->ComputeAABB(&aabb, xf);
-			aabb = b3ScaleAABB(aabb, inv_scale);
+			aabb.Scale(inv_scale);
 
 			// Compute the displacement in the space of the unscaled tree
 			b3Vec3 displacement = b3MulC(xfB.rotation, dA);
