@@ -22,6 +22,7 @@
 #include <bounce/dynamics/shapes/shape.h>
 
 struct b3Mesh;
+class b3TriangleShape;
 
 // A triangle mesh shape.
 class b3MeshShape : public b3Shape 
@@ -44,6 +45,8 @@ public:
 
 	bool RayCast(b3RayCastOutput* output, const b3RayCastInput& input, const b3Transform& xf, u32 childIndex) const;
 
+	void GetChildTriangle(b3TriangleShape* triangle, u32 childIndex) const;
+	
 	const b3Mesh* m_mesh;
 
 	b3Vec3 m_scale;

@@ -280,41 +280,9 @@ void b3MeshContact::Collide()
 	{
 		b3TriangleCache* triangleCache = m_triangles + i;
 		u32 triangleIndex = triangleCache->index;
-		b3MeshTriangle* triangle = meshA->triangles + triangleIndex;
-		b3MeshTriangleWings* triangleWings = meshA->triangleWings + triangleIndex;
-
-		u32 u1 = triangleWings->u1;
-		u32 u2 = triangleWings->u2;
-		u32 u3 = triangleWings->u3;
-
-		b3Vec3 A = b3Mul(meshShapeA->m_scale, meshA->vertices[triangle->v1]);
-		b3Vec3 B = b3Mul(meshShapeA->m_scale, meshA->vertices[triangle->v2]);
-		b3Vec3 C = b3Mul(meshShapeA->m_scale, meshA->vertices[triangle->v3]);
 
 		b3TriangleShape triangleShapeA;
-		triangleShapeA.m_body = bodyA;
-		triangleShapeA.m_vertex1 = A;
-		triangleShapeA.m_vertex2 = B;
-		triangleShapeA.m_vertex3 = C;
-		triangleShapeA.m_radius = B3_HULL_RADIUS;
-
-		if (u1 != B3_NULL_VERTEX)
-		{
-			triangleShapeA.m_hasE1Vertex = true;
-			triangleShapeA.m_e1Vertex = b3Mul(meshShapeA->m_scale, meshA->vertices[u1]);
-		}
-
-		if (u2 != B3_NULL_VERTEX)
-		{
-			triangleShapeA.m_hasE2Vertex = true;
-			triangleShapeA.m_e2Vertex = b3Mul(meshShapeA->m_scale, meshA->vertices[u2]);
-		}
-		
-		if (u3 != B3_NULL_VERTEX)
-		{
-			triangleShapeA.m_hasE3Vertex = true;
-			triangleShapeA.m_e3Vertex = b3Mul(meshShapeA->m_scale, meshA->vertices[u3]);
-		}
+		meshShapeA->GetChildTriangle(&triangleShapeA, triangleIndex);
 
 		b3Manifold* manifold = tempManifolds + tempCount;
 		manifold->Initialize();

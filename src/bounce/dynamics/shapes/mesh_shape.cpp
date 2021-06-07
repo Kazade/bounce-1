@@ -152,3 +152,41 @@ bool b3MeshShape::RayCast(b3RayCastOutput* output, const b3RayCastInput& input, 
 
 	return callback.hit;
 }
+
+void b3MeshShape::GetChildTriangle(b3TriangleShape* triangleShape, u32 childIndex) const
+{
+	b3MeshTriangle* triangle = m_mesh->triangles + childIndex;
+	b3MeshTriangleWings* triangleWings = m_mesh->triangleWings + childIndex;
+
+	u32 u1 = triangleWings->u1;
+	u32 u2 = triangleWings->u2;
+	u32 u3 = triangleWings->u3;
+
+	b3Vec3 v1 = b3Mul(m_scale, m_mesh->vertices[triangle->v1]);
+	b3Vec3 v2 = b3Mul(m_scale, m_mesh->vertices[triangle->v2]);
+	b3Vec3 v3 = b3Mul(m_scale, m_mesh->vertices[triangle->v3]);
+
+	triangleShape->m_body = m_body;
+	triangleShape->m_vertex1 = v1;
+	triangleShape->m_vertex2 = v2;
+	triangleShape->m_vertex3 = v3;
+	triangleShape->m_radius = B3_HULL_RADIUS;
+
+	if (u1 != B3_NULL_VERTEX)
+	{
+		triangleShape->m_hasE1Vertex = true;
+		triangleShape->m_e1Vertex = b3Mul(m_scale, m_mesh->vertices[u1]);
+	}
+
+	if (u2 != B3_NULL_VERTEX)
+	{
+		triangleShape->m_hasE2Vertex = true;
+		triangleShape->m_e2Vertex = b3Mul(m_scale, m_mesh->vertices[u2]);
+	}
+
+	if (u3 != B3_NULL_VERTEX)
+	{
+		triangleShape->m_hasE3Vertex = true;
+		triangleShape->m_e3Vertex = b3Mul(m_scale, m_mesh->vertices[u3]);
+	}
+}
