@@ -36,8 +36,8 @@ struct b3TriangleCache
 class b3MeshContact : public b3Contact
 {
 public:
-	static b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockPool* allocator);
-	static void Destroy(b3Contact* contact, b3BlockPool* allocator);
+	static b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator);
+	static void Destroy(b3Contact* contact, b3BlockAllocator* allocator);
 
 	b3MeshContact(b3Shape* shapeA, b3Shape* shapeB);
 	~b3MeshContact();

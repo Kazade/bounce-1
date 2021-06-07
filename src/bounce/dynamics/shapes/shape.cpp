@@ -29,6 +29,7 @@
 #include <bounce/collision/shapes/capsule.h>
 #include <bounce/collision/shapes/hull.h>
 #include <bounce/collision/shapes/mesh.h>
+#include <bounce/common/memory/block_allocator.h>
 
 b3Shape::b3Shape() 
 {
@@ -398,7 +399,7 @@ void b3Shape::DrawSolid(const b3Transform& xf, const b3Color& color)
 
 }
 
-b3Shape* b3Shape::Create(const b3ShapeDef& def)
+b3Shape* b3Shape::Create(const b3ShapeDef& def, b3BlockAllocator* allocator)
 {
 	b3Shape* shape = nullptr;
 	switch (def.shape->GetType())
@@ -407,7 +408,7 @@ b3Shape* b3Shape::Create(const b3ShapeDef& def)
 	{
 		// Grab pointer to the specific memory.
 		b3SphereShape* sphere1 = (b3SphereShape*)def.shape;
-		void* mem = b3Alloc(sizeof(b3SphereShape));
+		void* mem = allocator->Allocate(sizeof(b3SphereShape));
 		b3SphereShape* sphere2 = new (mem)b3SphereShape();
 		// Clone the polyhedra.
 		sphere2->Clone(*sphere1);
@@ -418,7 +419,7 @@ b3Shape* b3Shape::Create(const b3ShapeDef& def)
 	{
 		// Grab pointer to the specific memory.
 		b3CapsuleShape* caps1 = (b3CapsuleShape*)def.shape;
-		void* block = b3Alloc(sizeof(b3CapsuleShape));
+		void* block = allocator->Allocate(sizeof(b3CapsuleShape));
 		b3CapsuleShape* caps2 = new (block)b3CapsuleShape();
 		caps2->Clone(*caps1);
 		shape = caps2;
@@ -428,7 +429,7 @@ b3Shape* b3Shape::Create(const b3ShapeDef& def)
 	{
 		// Grab pointer to the specific memory.
 		b3TriangleShape* triangle1 = (b3TriangleShape*)def.shape;
-		void* block = b3Alloc(sizeof(b3TriangleShape));
+		void* block = allocator->Allocate(sizeof(b3TriangleShape));
 		b3TriangleShape* triangle2 = new (block)b3TriangleShape();
 		triangle2->Clone(*triangle1);
 		shape = triangle2;
@@ -438,7 +439,7 @@ b3Shape* b3Shape::Create(const b3ShapeDef& def)
 	{
 		// Grab pointer to the specific memory.
 		b3HullShape* hull1 = (b3HullShape*)def.shape;
-		void* block = b3Alloc(sizeof(b3HullShape));
+		void* block = allocator->Allocate(sizeof(b3HullShape));
 		b3HullShape* hull2 = new (block)b3HullShape();
 		hull2->Clone(*hull1);
 		shape = hull2;
@@ -448,7 +449,7 @@ b3Shape* b3Shape::Create(const b3ShapeDef& def)
 	{
 		// Grab pointer to the specific memory.
 		b3MeshShape* mesh1 = (b3MeshShape*)def.shape;
-		void* block = b3Alloc(sizeof(b3MeshShape));
+		void* block = allocator->Allocate(sizeof(b3MeshShape));
 		b3MeshShape* mesh2 = new (block) b3MeshShape();
 		// Clone the mesh.
 		mesh2->Clone(*mesh1);
@@ -465,7 +466,7 @@ b3Shape* b3Shape::Create(const b3ShapeDef& def)
 	return shape;
 }
 
-void b3Shape::Destroy(b3Shape* shape)
+void b3Shape::Destroy(b3Shape* shape, b3BlockAllocator* allocator)
 {
 	// Free the shape from the memory.
 	switch (shape->GetType())
@@ -474,35 +475,35 @@ void b3Shape::Destroy(b3Shape* shape)
 	{
 		b3SphereShape* sphere = (b3SphereShape*)shape;
 		sphere->~b3SphereShape();
-		b3Free(shape);
+		allocator->Free(shape, sizeof(b3SphereShape));
 		break;
 	}
 	case e_capsuleShape:
 	{
 		b3CapsuleShape* caps = (b3CapsuleShape*)shape;
 		caps->~b3CapsuleShape();
-		b3Free(shape);
+		allocator->Free(shape, sizeof(b3CapsuleShape));
 		break;
 	}
 	case e_triangleShape:
 	{
 		b3TriangleShape* triangle = (b3TriangleShape*)shape;
 		triangle->~b3TriangleShape();
-		b3Free(shape);
+		allocator->Free(shape, sizeof(b3TriangleShape));
 		break;
 	}
 	case e_hullShape:
 	{
 		b3HullShape* hull = (b3HullShape*)shape;
 		hull->~b3HullShape();
-		b3Free(shape);
+		allocator->Free(shape, sizeof(b3HullShape));
 		break;
 	}
 	case e_meshShape:
 	{
 		b3MeshShape* mesh = (b3MeshShape*)shape;
 		mesh->~b3MeshShape();
-		b3Free(shape);
+		allocator->Free(shape, sizeof(b3MeshShape));
 		break;
 	}
 	default:

@@ -97,7 +97,7 @@ b3Body::b3Body(const b3BodyDef& def, b3World* world)
 b3Shape* b3Body::CreateShape(const b3ShapeDef& def) 
 {
 	// Create the shape with the definition.
-	b3Shape* shape = b3Shape::Create(def);
+	b3Shape* shape = b3Shape::Create(def, &m_world->m_blockAllocator);
 	shape->m_body = this;
 	shape->m_isSensor = def.isSensor;
 	shape->m_userData = def.userData;
@@ -160,7 +160,7 @@ void b3Body::DestroyShape(b3Shape* shape)
 	m_world->m_contactMan.m_broadPhase.DestroyProxy(shape->m_broadPhaseID);
 	
 	// Destroy the shape.
-	b3Shape::Destroy(shape);
+	b3Shape::Destroy(shape, &m_world->m_blockAllocator);
 
 	// Recalculate the new inertial properties of this body.
 	ResetMass();
@@ -177,7 +177,7 @@ void b3Body::DestroyShapes()
 		s0->DestroyContacts();
 		m_world->m_contactMan.m_broadPhase.DestroyProxy(s0->m_broadPhaseID);
 		m_shapeList.Remove(s0);
-		b3Shape::Destroy(s0);
+		b3Shape::Destroy(s0, &m_world->m_blockAllocator);
 	}
 }
 

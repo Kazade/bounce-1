@@ -23,6 +23,7 @@
 
 struct b3JointDef;
 class b3Joint;
+class b3BlockAllocator;
 
 // Joint delegator for b3World.
 class b3JointManager
@@ -34,6 +35,7 @@ public:
 	void Destroy(b3Joint* j);
 
 	b3List<b3Joint> m_jointList;
+	b3BlockAllocator* m_allocator;
 };
 
 #endif

@@ -27,68 +27,69 @@
 #include <bounce/dynamics/joints/motor_joint.h>
 #include <bounce/dynamics/joints/prismatic_joint.h>
 #include <bounce/dynamics/joints/wheel_joint.h>
+#include <bounce/common/memory/block_allocator.h>
 
-b3Joint* b3Joint::Create(const b3JointDef* def)
+b3Joint* b3Joint::Create(const b3JointDef* def, b3BlockAllocator* allocator)
 {
 	b3Joint* joint = nullptr;
 	switch (def->type)
 	{
 	case e_mouseJoint:
 	{
-		void* block = b3Alloc(sizeof(b3MouseJoint));
+		void* block = allocator->Allocate(sizeof(b3MouseJoint));
 		joint = new (block) b3MouseJoint((b3MouseJointDef*)def);
 		break;
 	}
 	case e_springJoint:
 	{
-		void* block = b3Alloc(sizeof(b3SpringJoint));
+		void* block = allocator->Allocate(sizeof(b3SpringJoint));
 		joint = new (block) b3SpringJoint((b3SpringJointDef*)def);
 		break;
 	}
 	case e_weldJoint:
 	{
-		void* block = b3Alloc(sizeof(b3WeldJoint));
+		void* block = allocator->Allocate(sizeof(b3WeldJoint));
 		joint = new (block) b3WeldJoint((b3WeldJointDef*)def);
 		break;
 	}case e_revoluteJoint:
 	{
-		void* block = b3Alloc(sizeof(b3RevoluteJoint));
+		void* block = allocator->Allocate(sizeof(b3RevoluteJoint));
 		joint = new (block) b3RevoluteJoint((b3RevoluteJointDef*)def);
 		break;
 	}
 	case e_sphereJoint:
 	{
-		void* block = b3Alloc(sizeof(b3SphereJoint));
+		void* block = allocator->Allocate(sizeof(b3SphereJoint));
 		joint = new (block) b3SphereJoint((b3SphereJointDef*)def);
 		break;
 	}
 	case e_coneJoint:
 	{
-		void* block = b3Alloc(sizeof(b3ConeJoint));
+		void* block = allocator->Allocate(sizeof(b3ConeJoint));
 		joint = new (block) b3ConeJoint((b3ConeJointDef*)def);
 		break;
 	}
 	case e_frictionJoint:
 	{
-		void* block = b3Alloc(sizeof(b3FrictionJoint));
+		void* block = allocator->Allocate(sizeof(b3FrictionJoint));
 		joint = new (block) b3FrictionJoint((b3FrictionJointDef*)def);
 		break;
 	}
 	case e_motorJoint:
 	{
-		void* block = b3Alloc(sizeof(b3MotorJoint));
+		void* block = allocator->Allocate(sizeof(b3MotorJoint));
 		joint = new (block) b3MotorJoint((b3MotorJointDef*)def);
 		break;
 	}
 	case e_prismaticJoint:
 	{
-		void* block = b3Alloc(sizeof(b3PrismaticJoint));
+		void* block = allocator->Allocate(sizeof(b3PrismaticJoint));
 		joint = new (block) b3PrismaticJoint((b3PrismaticJointDef*)def);
 		break;
 	}
 	case e_wheelJoint:
 	{
-		void* block = b3Alloc(sizeof(b3WheelJoint));
+		void* block = allocator->Allocate(sizeof(b3WheelJoint));
 		joint = new (block) b3WheelJoint((b3WheelJointDef*)def);
 		break;
 	}
@@ -101,7 +102,7 @@ b3Joint* b3Joint::Create(const b3JointDef* def)
 	return joint;
 }
 
-void b3Joint::Destroy(b3Joint* joint)
+void b3Joint::Destroy(b3Joint* joint, b3BlockAllocator* allocator)
 {
 	B3_ASSERT(joint);
 
@@ -112,70 +113,70 @@ void b3Joint::Destroy(b3Joint* joint)
 	{
 		b3MouseJoint* o = (b3MouseJoint*)joint;
 		o->~b3MouseJoint();
-		b3Free(joint);
+		allocator->Free(joint, sizeof(b3MouseJoint));
 		break;
 	}
 	case e_springJoint:
 	{
 		b3SpringJoint* o = (b3SpringJoint*)joint;
 		o->~b3SpringJoint();
-		b3Free(joint);
+		allocator->Free(joint, sizeof(b3SpringJoint));
 		break;
 	}
 	case e_weldJoint:
 	{
 		b3WeldJoint* o = (b3WeldJoint*)joint;
 		o->~b3WeldJoint();
-		b3Free(joint);
+		allocator->Free(joint, sizeof(b3WeldJoint));
 		break;
 	}
 	case e_revoluteJoint:
 	{
 		b3RevoluteJoint* o = (b3RevoluteJoint*)joint;
 		o->~b3RevoluteJoint();
-		b3Free(joint);
+		allocator->Free(joint, sizeof(b3RevoluteJoint));
 		break;
 	}
 	case e_sphereJoint:
 	{
 		b3SphereJoint* o = (b3SphereJoint*)joint;
 		o->~b3SphereJoint();
-		b3Free(joint);
+		allocator->Free(joint, sizeof(b3SphereJoint));
 		break;
 	}
 	case e_coneJoint:
 	{
 		b3ConeJoint* o = (b3ConeJoint*)joint;
 		o->~b3ConeJoint();
-		b3Free(joint);
+		allocator->Free(joint, sizeof(b3ConeJoint));
 		break;
 	}
 	case e_frictionJoint:
 	{
 		b3FrictionJoint* o = (b3FrictionJoint*)joint;
 		o->~b3FrictionJoint();
-		b3Free(joint);
+		allocator->Free(joint, sizeof(b3FrictionJoint));
 		break;
 	}
 	case e_motorJoint:
 	{
 		b3MotorJoint* o = (b3MotorJoint*)joint;
 		o->~b3MotorJoint();
-		b3Free(joint);
+		allocator->Free(joint, sizeof(b3MotorJoint));
 		break;
 	}
 	case e_prismaticJoint:
 	{
 		b3PrismaticJoint* o = (b3PrismaticJoint*)joint;
 		o->~b3PrismaticJoint();
-		b3Free(joint);
+		allocator->Free(joint, sizeof(b3PrismaticJoint));
 		break;
 	}
 	case e_wheelJoint:
 	{
 		b3WheelJoint* o = (b3WheelJoint*)joint;
 		o->~b3WheelJoint();
-		b3Free(joint);
+		allocator->Free(joint, sizeof(b3WheelJoint));
 		break;
 	}
 	default:

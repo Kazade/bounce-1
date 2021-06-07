@@ -31,6 +31,7 @@ class b3Shape;
 class b3Body;
 class b3Contact;
 class b3ContactListener;
+class b3BlockAllocator;
 struct b3ConvexCache;
 
 // A contact edge for the contact graph, 
@@ -64,13 +65,12 @@ enum b3ContactType
 	e_maxContact
 };
 
-typedef b3Contact* b3ContactCreateFcn(b3Shape* shapeA, b3Shape* shapeB, b3BlockPool* allocator);
-typedef void b3ContactDestroyFcn(b3Contact* contact, b3BlockPool* allocator);
+typedef b3Contact* b3ContactCreateFcn(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator);
+typedef void b3ContactDestroyFcn(b3Contact* contact, b3BlockAllocator* allocator);
 typedef void b3ContactCollideFcn(b3Contact* contact);
 
 struct b3ContactRegister
 {
-	b3ContactType contactType;
 	b3ContactCreateFcn* createFcn = nullptr;
 	b3ContactDestroyFcn* destroyFcn = nullptr;
 	b3ContactCollideFcn* collideFcn = nullptr;
@@ -137,16 +137,15 @@ protected:
 	static bool s_initialized;
 	
 	static void AddType(b3ContactCreateFcn* createFcn, b3ContactDestroyFcn* destoryFcn, b3ContactCollideFcn* collideFcn,
-		b3ShapeType type1, b3ShapeType type2, 
-		b3ContactType contactType);
+		b3ShapeType type1, b3ShapeType type2);
 	
 	static void InitializeRegisters();
 
 	// Factory create.
-	static b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockPool* allocators[e_maxContact]);
+	static b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator);
 	
 	// Factory destroy.
-	static void Destroy(b3Contact* contact, b3BlockPool* allocators[e_maxContact]);
+	static void Destroy(b3Contact* contact, b3BlockAllocator* allocator);
 
 	// Collide function.
 	static void Collide(b3Contact* contact);

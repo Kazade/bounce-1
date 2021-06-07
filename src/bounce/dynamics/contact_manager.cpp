@@ -23,15 +23,10 @@
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/world_listeners.h>
 
-b3ContactManager::b3ContactManager() :
-	m_convexBlocks(sizeof(b3ConvexContact)),
-	m_meshBlocks(sizeof(b3MeshContact))
+b3ContactManager::b3ContactManager()
 {
 	m_contactListener = nullptr;
 	m_contactFilter = nullptr;
-
-	m_allocators[e_convexContact] = &m_convexBlocks;
-	m_allocators[e_meshContact] = &m_meshBlocks;
 }
 
 void b3ContactManager::AddPair(void* dataA, void* dataB)
@@ -221,7 +216,7 @@ void b3ContactManager::UpdateContacts()
 
 b3Contact* b3ContactManager::Create(b3Shape* shapeA, b3Shape* shapeB)
 {
-	return b3Contact::Create(shapeA, shapeB, m_allocators);
+	return b3Contact::Create(shapeA, shapeB, m_allocator);
 }
 
 void b3ContactManager::Destroy(b3Contact* c)
@@ -247,5 +242,5 @@ void b3ContactManager::Destroy(b3Contact* c)
 	m_contactList.Remove(c);
 
 	// Free the contact.
-	b3Contact::Destroy(c, m_allocators);
+	b3Contact::Destroy(c, m_allocator);
 }

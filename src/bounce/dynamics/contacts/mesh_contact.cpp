@@ -25,19 +25,19 @@
 #include <bounce/dynamics/body.h>
 #include <bounce/collision/shapes/mesh.h>
 #include <bounce/common/memory/stack_allocator.h>
-#include <bounce/common/memory/block_pool.h>
+#include <bounce/common/memory/block_allocator.h>
 
-b3Contact* b3MeshContact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockPool* allocator)
+b3Contact* b3MeshContact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator)
 {
-	void* mem = allocator->Allocate();
+	void* mem = allocator->Allocate(sizeof(b3MeshContact));
 	return new (mem) b3MeshContact(shapeA, shapeB);
 }
 
-void b3MeshContact::Destroy(b3Contact* contact, b3BlockPool* allocator)
+void b3MeshContact::Destroy(b3Contact* contact, b3BlockAllocator* allocator)
 {
 	b3MeshContact* c = (b3MeshContact*)contact;
 	c->~b3MeshContact();
-	allocator->Free(c);
+	allocator->Free(c, sizeof(b3MeshContact));
 }
 
 b3MeshContact::b3MeshContact(b3Shape* shapeA, b3Shape* shapeB) : b3Contact(shapeA, shapeB)

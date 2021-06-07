@@ -54,6 +54,7 @@ ${BOUNCE_INCLUDE_DIR}/bounce/common/math/vec4.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/memory/block_pool.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/memory/frame_allocator.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/memory/stack_allocator.h
+${BOUNCE_INCLUDE_DIR}/bounce/common/memory/block_allocator.h
 
 ${BOUNCE_INCLUDE_DIR}/bounce/common/template/array.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/template/list.h
@@ -131,6 +132,7 @@ set(BOUNCE_SOURCE_FILES
 	bounce/common/memory/block_pool.cpp
 	bounce/common/memory/frame_allocator.cpp
 	bounce/common/memory/stack_allocator.cpp
+	bounce/common/memory/block_allocator.cpp
 
 	bounce/dynamics/body.cpp
 	bounce/dynamics/contact_manager.cpp

@@ -39,12 +39,11 @@ extern bool b3_convexCache;
 
 b3Draw* b3Draw_draw = nullptr;
 
-b3World::b3World() :
-	m_bodyBlocks(sizeof(b3Body))
+b3World::b3World()
 {
 	b3_allocCalls = 0;
 	b3_maxAllocCalls = 0;
-
+	
 	b3_gjkCalls = 0;
 	b3_gjkIters = 0;
 
@@ -59,6 +58,9 @@ b3World::b3World() :
 	m_gravity.Set(scalar(0), scalar(-9.8), scalar(0));
 	
 	m_drawFlags = 0;
+
+	m_contactMan.m_allocator = &m_blockAllocator;
+	m_jointMan.m_allocator = &m_blockAllocator;
 }
 
 b3World::~b3World()
@@ -96,7 +98,7 @@ void b3World::SetSleeping(bool flag)
 
 b3Body* b3World::CreateBody(const b3BodyDef& def)
 {
-	void* mem = m_bodyBlocks.Allocate();
+	void* mem = m_blockAllocator.Allocate(sizeof(b3Body));
 	b3Body* b = new(mem) b3Body(def, this);
 	m_bodyList.PushFront(b);
 	return b;
@@ -110,7 +112,7 @@ void b3World::DestroyBody(b3Body* b)
 
 	m_bodyList.Remove(b);
 	b->~b3Body();
-	m_bodyBlocks.Free(b);
+	m_blockAllocator.Free(b, sizeof(b3Body));
 }
 
 b3Joint* b3World::CreateJoint(const b3JointDef& def)

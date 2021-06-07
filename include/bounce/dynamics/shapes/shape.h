@@ -30,6 +30,7 @@ struct b3ContactEdge;
 
 class b3Body;
 class b3Shape;
+class b3BlockAllocator;
 
 // Shape types. 
 // Types currently supported are spheres, capsules, 
@@ -192,8 +193,8 @@ protected:
 	friend class b3ContactSolver;
 	friend class b3List<b3Shape>;
 
-	static b3Shape* Create(const b3ShapeDef& def);
-	static void Destroy(b3Shape* shape);
+	static b3Shape* Create(const b3ShapeDef& def, b3BlockAllocator* allocator);
+	static void Destroy(b3Shape* shape, b3BlockAllocator* allocator);
 
 	// Convenience function.
 	// Destroy the contacts associated with this shape.

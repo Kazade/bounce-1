@@ -20,7 +20,7 @@
 #define B3_WORLD_H
 
 #include <bounce/common/memory/stack_allocator.h>
-#include <bounce/common/memory/block_pool.h>
+#include <bounce/common/memory/block_allocator.h>
 #include <bounce/common/template/list.h>
 #include <bounce/dynamics/time_step.h>
 #include <bounce/dynamics/joint_manager.h>
@@ -213,10 +213,11 @@ private:
 	// Debug draw flags.
 	u32 m_drawFlags;
 	
+	// Stack allocator
 	b3StackAllocator m_stackAllocator;
-	
-	// Pool of bodies
-	b3BlockPool m_bodyBlocks;
+
+	// Block allocator
+	b3BlockAllocator m_blockAllocator;
 
 	// List of bodies
 	b3List<b3Body> m_bodyList;

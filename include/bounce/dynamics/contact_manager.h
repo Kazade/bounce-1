@@ -19,7 +19,6 @@
 #ifndef B3_CONTACT_MANAGER_H
 #define B3_CONTACT_MANAGER_H
 
-#include <bounce/common/memory/block_pool.h>
 #include <bounce/common/template/list.h>
 #include <bounce/collision/broad_phase.h>
 #include <bounce/dynamics/contacts/contact.h>
@@ -27,6 +26,7 @@
 class b3Shape;
 class b3ContactFilter;
 class b3ContactListener;
+class b3BlockAllocator;
 
 // Contact delegator for b3World.
 class b3ContactManager 
@@ -50,14 +50,11 @@ public:
 	b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB);
 	void Destroy(b3Contact* c);
 
-	b3BlockPool m_convexBlocks;
-	b3BlockPool m_meshBlocks;
-	b3BlockPool* m_allocators[e_maxContact];
-
 	b3BroadPhase m_broadPhase;	
 	b3List<b3Contact> m_contactList;
 	b3ContactFilter* m_contactFilter;
 	b3ContactListener* m_contactListener;
+	b3BlockAllocator* m_allocator;
 };
 
 #endif

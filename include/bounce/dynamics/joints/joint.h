@@ -26,6 +26,7 @@
 
 class b3Body;
 class b3Joint;
+class b3BlockAllocator;
 struct b3SolverData;
 
 enum b3JointType
@@ -136,8 +137,8 @@ protected:
 	friend class b3JointSolver;
 	friend class b3List<b3Joint>;
 	
-	static b3Joint* Create(const b3JointDef* def);
-	static void Destroy(b3Joint* j);
+	static b3Joint* Create(const b3JointDef* def, b3BlockAllocator* allocator);
+	static void Destroy(b3Joint* j, b3BlockAllocator* allocator);
 
 	b3Joint() {	}
 	virtual ~b3Joint() { }

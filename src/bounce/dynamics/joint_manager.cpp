@@ -24,7 +24,7 @@ b3JointManager::b3JointManager()
 {
 }
 
-b3Joint* b3JointManager::Create(const b3JointDef* def) 
+b3Joint* b3JointManager::Create(const b3JointDef* def)
 {
 	b3Body* bodyA = def->bodyA;
 	b3Body* bodyB = def->bodyB;
@@ -37,7 +37,7 @@ b3Joint* b3JointManager::Create(const b3JointDef* def)
 	}
 
 	// Allocate the new joint.
-	b3Joint* j = b3Joint::Create(def);
+	b3Joint* j = b3Joint::Create(def, m_allocator);
 	j->m_flags = 0;
 	j->m_collideLinked = def->collideLinked;
 	j->m_userData = def->userData;
@@ -62,7 +62,7 @@ b3Joint* b3JointManager::Create(const b3JointDef* def)
 	return j;
 }
 
-void b3JointManager::Destroy(b3Joint* j) 
+void b3JointManager::Destroy(b3Joint* j)
 {
 	b3Body* bodyA = j->GetBodyA();
 	b3Body* bodyB = j->GetBodyB();
@@ -77,5 +77,5 @@ void b3JointManager::Destroy(b3Joint* j)
 	m_jointList.Remove(j);
 	
 	// Destroy the joint.
-	b3Joint::Destroy(j);
+	b3Joint::Destroy(j, m_allocator);
 }
