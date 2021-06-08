@@ -58,31 +58,19 @@ struct b3OverlappingPair
 	b3ContactEdge edgeB;
 };
 
-enum b3ContactType
-{
-	e_convexContact,
-	e_meshContact,
-	e_maxContact
-};
-
 typedef b3Contact* b3ContactCreateFcn(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator);
 typedef void b3ContactDestroyFcn(b3Contact* contact, b3BlockAllocator* allocator);
-typedef void b3ContactCollideFcn(b3Contact* contact);
 
 struct b3ContactRegister
 {
 	b3ContactCreateFcn* createFcn = nullptr;
 	b3ContactDestroyFcn* destroyFcn = nullptr;
-	b3ContactCollideFcn* collideFcn = nullptr;
 	bool primary;
 };
 
 class b3Contact
 {
 public:
-	// Get the contact type.
-	b3ContactType GetType() const;
-
 	// Get the shape A in this contact.
 	const b3Shape* GetShapeA() const;
 	b3Shape* GetShapeA();
@@ -136,7 +124,7 @@ protected:
 	static b3ContactRegister s_registers[e_maxShapes][e_maxShapes];
 	static bool s_initialized;
 	
-	static void AddType(b3ContactCreateFcn* createFcn, b3ContactDestroyFcn* destoryFcn, b3ContactCollideFcn* collideFcn,
+	static void AddType(b3ContactCreateFcn* createFcn, b3ContactDestroyFcn* destoryFcn,
 		b3ShapeType type1, b3ShapeType type2);
 	
 	static void InitializeRegisters();
@@ -147,25 +135,11 @@ protected:
 	// Factory destroy.
 	static void Destroy(b3Contact* contact, b3BlockAllocator* allocator);
 
-	// Collide function.
-	static void Collide(b3Contact* contact);
-
-	// Primary collide functions.
-	static void CollideSphereAndSphereShapes(b3Contact* contact);
-	static void CollideCapsuleAndSphereShapes(b3Contact* contact);
-	static void CollideCapsuleAndCapsuleShapes(b3Contact* contact);
-	static void CollideTriangleAndSphereShapes(b3Contact* contact);
-	static void CollideTriangleAndCapsuleShapes(b3Contact* contact);
-	static void CollideTriangleAndHullShapes(b3Contact* contact);
-	static void CollideHullAndSphereShapes(b3Contact* contact);
-	static void CollideHullAndCapsuleShapes(b3Contact* contact);
-	static void CollideHullAndHullShapes(b3Contact* contact);
-	static void CollideMeshAndSphereShapes(b3Contact* contact);
-	static void CollideMeshAndCapsuleShapes(b3Contact* contact);
-	static void CollideMeshAndHullShapes(b3Contact* contact);
-
 	// Update the contact state.
 	void Update(b3ContactListener* listener);
+
+	// Collide function.
+	virtual void Collide() = 0;
 
 	// Test if the shapes in this contact are overlapping.
 	virtual bool TestOverlap() = 0;
@@ -178,7 +152,6 @@ protected:
 	// new internal overlapping pairs.
 	virtual void FindPairs() = 0;
 
-	b3ContactType m_type;
 	u32 m_flags;
 	b3OverlappingPair m_pair;
 
@@ -191,11 +164,6 @@ protected:
 	b3Contact* m_prev;
 	b3Contact* m_next;
 };
-
-inline b3ContactType b3Contact::GetType() const
-{
-	return m_type;
-}
 
 inline b3Shape* b3Contact::GetShapeA() 
 {

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2016-2019 Irlan Robson 
+* Copyright (c) 2016-2019 Irlan Robson
 *
 * This software is provided 'as-is', without any express or implied
 * warranty.  In no event will the authors be held liable for any damages
@@ -16,30 +16,21 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#ifndef B3_SPHERE_CONTACT_H
+#define B3_SPHERE_CONTACT_H
+
 #include <bounce/dynamics/contacts/convex_contact.h>
-#include <bounce/dynamics/shapes/shape.h>
-#include <bounce/dynamics/body.h>
 
-b3ConvexContact::b3ConvexContact(b3Shape* shapeA, b3Shape* shapeB) : b3Contact(shapeA, shapeB)
+class b3SphereContact : public b3ConvexContact
 {
-	B3_NOT_USED(shapeA);
-    B3_NOT_USED(shapeB);
+public:
+	static b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator);
+	static void Destroy(b3Contact* contact, b3BlockAllocator* allocator);
 
-	m_manifoldCapacity = 1;
-	m_manifolds = &m_stackManifold;
-	m_manifoldCount = 0;
+	b3SphereContact(b3Shape* shapeA, b3Shape* shapeB);
+	~b3SphereContact() { }
 
-	m_cache.simplexCache.count = 0;
-	m_cache.featureCache.m_featurePair.state = b3SATCacheType::e_empty;
-}
+	void Collide() override;
+};
 
-bool b3ConvexContact::TestOverlap()
-{
-	b3Shape* shapeA = GetShapeA();
-	b3Transform xfA = shapeA->GetBody()->GetTransform();
-
-	b3Shape* shapeB = GetShapeB();
-	b3Transform xfB = shapeB->GetBody()->GetTransform();
-
-	return b3TestOverlap(xfA, 0, shapeA, xfB, 0, shapeB, &m_cache);
-}
+#endif

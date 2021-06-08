@@ -73,8 +73,21 @@ ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/contact_cluster.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/contact.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/contact_solver.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/convex_contact.h
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/manifold.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/mesh_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/manifold.h
+
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/sphere_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/capsule_sphere_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/capsule_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/triangle_sphere_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/triangle_capsule_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/triangle_hull_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/hull_sphere_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/hull_capsule_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/hull_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/mesh_sphere_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/mesh_capsule_contact.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/mesh_hull_contact.h
 
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/collide/clip.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/collide/collide.h
@@ -150,6 +163,19 @@ set(BOUNCE_SOURCE_FILES
 	bounce/dynamics/contacts/convex_contact.cpp
 	bounce/dynamics/contacts/manifold.cpp
 	bounce/dynamics/contacts/mesh_contact.cpp
+
+	bounce/dynamics/contacts/sphere_contact.cpp
+	bounce/dynamics/contacts/capsule_sphere_contact.cpp
+	bounce/dynamics/contacts/capsule_contact.cpp
+	bounce/dynamics/contacts/triangle_sphere_contact.cpp
+	bounce/dynamics/contacts/triangle_capsule_contact.cpp
+	bounce/dynamics/contacts/triangle_hull_contact.cpp
+	bounce/dynamics/contacts/hull_sphere_contact.cpp
+	bounce/dynamics/contacts/hull_capsule_contact.cpp
+	bounce/dynamics/contacts/hull_contact.cpp
+	bounce/dynamics/contacts/mesh_sphere_contact.cpp
+	bounce/dynamics/contacts/mesh_capsule_contact.cpp
+	bounce/dynamics/contacts/mesh_hull_contact.cpp
 
 	bounce/dynamics/contacts/collide/clip.cpp
 	bounce/dynamics/contacts/collide/collide_capsules.cpp

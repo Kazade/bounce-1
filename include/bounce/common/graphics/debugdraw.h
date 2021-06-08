@@ -46,7 +46,6 @@ public:
 		m_drawPoints = true;
 		m_drawLines = true;
 		m_drawTriangles = true;
-		m_callback = callback;
 	}
 
 	~b3DebugDraw()
@@ -126,8 +125,6 @@ private:
 
 	bool m_drawTriangles;
 	b3DebugTriangles<b3DebugDrawCallback> m_triangles;
-
-	b3DebugDrawCallback* m_callback;
 };
 
 // The debug draw utility section.

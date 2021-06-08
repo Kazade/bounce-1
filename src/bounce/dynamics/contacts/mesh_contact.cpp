@@ -5,7 +5,7 @@
 * warranty.  In no event will the authors be held liable for any damages
 * arising from the use of this software.
 * Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
+* including commercial applicatios, and to alter it and redistribute it
 * freely, subject to the following restrictions:
 * 1. The origin of this software must not be misrepresented; you must not
 * claim that you wrote the original software. If you use this software
@@ -17,33 +17,14 @@
 */
 
 #include <bounce/dynamics/contacts/mesh_contact.h>
-#include <bounce/dynamics/contacts/contact_cluster.h>
 #include <bounce/dynamics/shapes/shape.h>
 #include <bounce/dynamics/shapes/mesh_shape.h>
-#include <bounce/dynamics/shapes/triangle_shape.h>
-#include <bounce/dynamics/world.h>
 #include <bounce/dynamics/body.h>
+#include <bounce/dynamics/world.h>
 #include <bounce/collision/shapes/mesh.h>
-#include <bounce/common/memory/stack_allocator.h>
-#include <bounce/common/memory/block_allocator.h>
-
-b3Contact* b3MeshContact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator)
-{
-	void* mem = allocator->Allocate(sizeof(b3MeshContact));
-	return new (mem) b3MeshContact(shapeA, shapeB);
-}
-
-void b3MeshContact::Destroy(b3Contact* contact, b3BlockAllocator* allocator)
-{
-	b3MeshContact* c = (b3MeshContact*)contact;
-	c->~b3MeshContact();
-	allocator->Free(c, sizeof(b3MeshContact));
-}
 
 b3MeshContact::b3MeshContact(b3Shape* shapeA, b3Shape* shapeB) : b3Contact(shapeA, shapeB)
 {
-	m_type = e_meshContact;
-
 	m_manifoldCapacity = B3_MAX_MANIFOLDS;
 	m_manifolds = m_stackManifolds;
 	m_manifoldCount = 0;

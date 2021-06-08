@@ -201,6 +201,9 @@ private:
 	friend class b3Contact;
 	friend class b3ConvexContact;
 	friend class b3MeshContact;
+	friend class b3MeshAndSphereContact;
+	friend class b3MeshAndCapsuleContact;
+	friend class b3MeshAndHullContact;
 	friend class b3Joint;
 
 	void Solve(scalar dt, u32 velocityIterations, u32 positionIterations);
