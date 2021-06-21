@@ -26,8 +26,7 @@ ${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/triangle_hull.h
 ${BOUNCE_INCLUDE_DIR}/bounce/collision/trees/dynamic_tree.h
 ${BOUNCE_INCLUDE_DIR}/bounce/collision/trees/static_tree.h
 
-${BOUNCE_INCLUDE_DIR}/bounce/draw.h
-
+${BOUNCE_INCLUDE_DIR}/bounce/common/draw.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/geometry.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/types.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/settings.h

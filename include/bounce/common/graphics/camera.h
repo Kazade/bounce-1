@@ -81,10 +81,10 @@ public:
 	scalar GetAzimuthalAngle() const { return m_phi; }
 	
 	// Set the sphere center.
-	void SetCenter(b3Vec3 center) { m_center = center; }
+	void SetCenter(const b3Vec3& center) { m_center = center; }
 	
 	// Get the sphere center.
-	b3Vec3 GetCenter() const { return m_center; }
+	const b3Vec3& GetCenter() const { return m_center; }
 	
 	// Translate the sphere center in the direction of the camera x axis.
 	void TranslateXAxis(scalar distance);
@@ -137,6 +137,7 @@ public:
 	// Convert a point in screen space to world space.
 	b3Vec3 ConvertScreenToWorld(const b3Vec2& ps) const;
 private:
+	// Projection parameters
 	scalar m_width, m_height;
 	scalar m_z_near;
 	scalar m_z_far;

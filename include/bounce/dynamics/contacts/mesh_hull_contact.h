@@ -30,7 +30,7 @@ public:
 	b3MeshAndHullContact(b3Shape* shapeA, b3Shape* shapeB);
 	~b3MeshAndHullContact() { }
 
-	void Collide() override;
+	void Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB, u32 cacheIndex) override;
 };
 
 #endif

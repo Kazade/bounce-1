@@ -18,7 +18,7 @@
 
 #include <bounce/rope/rope.h>
 #include <bounce/rope/spatial.h>
-#include <bounce/draw.h>
+#include <bounce/common/draw.h>
 
 struct b3RopeBody
 {

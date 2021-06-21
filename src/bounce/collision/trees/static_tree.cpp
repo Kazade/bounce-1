@@ -18,7 +18,7 @@
 
 #include <bounce/collision/trees/static_tree.h>
 #include <bounce/common/template/stack.h>
-#include <bounce/draw.h>
+#include <bounce/common/draw.h>
 #include <algorithm>
 
 b3StaticTree::b3StaticTree()

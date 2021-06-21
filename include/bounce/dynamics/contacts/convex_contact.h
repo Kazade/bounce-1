@@ -29,13 +29,17 @@ public:
 	b3ConvexContact(b3Shape* shapeA, b3Shape* shapeB);
 	~b3ConvexContact() { }
 
-	bool TestOverlap();
+	bool TestOverlap() override;
 
-	void SynchronizeShape() { }
+	void SynchronizeShape() override { }
 
-	void FindPairs() { }
+	void FindPairs() override { }
 
-	b3Manifold m_stackManifold;
+	void Collide() override;
+
+	virtual void Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB) = 0;
+
+	b3Manifold m_manifold;
 	b3ConvexCache m_cache;
 };
 

@@ -18,7 +18,7 @@
 
 #include <bounce/dynamics/joints/spring_joint.h>
 #include <bounce/dynamics/body.h>
-#include <bounce/draw.h>
+#include <bounce/common/draw.h>
 
 // C = ||x2 + r2 - x1 - r1|| - length
 // Cdot = dot(n, v2 + w2 x r2 - v1 - w1 x r1)

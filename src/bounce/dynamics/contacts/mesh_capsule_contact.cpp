@@ -43,49 +43,12 @@ b3MeshAndCapsuleContact::b3MeshAndCapsuleContact(b3Shape* shapeA, b3Shape* shape
 	B3_ASSERT(shapeB->GetType() == e_capsuleShape);
 }
 
-void b3MeshAndCapsuleContact::Collide()
+void b3MeshAndCapsuleContact::Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB, u32 cacheIndex)
 {
-	b3Shape* shapeA = GetShapeA();
-	b3Shape* shapeB = GetShapeB();
-
-	b3Transform xfA = shapeA->GetBody()->GetTransform();
-	b3Transform xfB = shapeB->GetBody()->GetTransform();
-
-	b3MeshShape* meshA = (b3MeshShape*)shapeA;
-	b3CapsuleShape* capsuleB = (b3CapsuleShape*)shapeB;
-
-	b3StackAllocator* allocator = &shapeA->GetBody()->GetWorld()->m_stackAllocator;
-
-	// Create one temporary manifold per overlapping triangle.
-	b3Manifold* tempManifolds = (b3Manifold*)allocator->Allocate(m_triangleCount * sizeof(b3Manifold));
-	u32 tempCount = 0;
-
-	for (u32 i = 0; i < m_triangleCount; ++i)
-	{
-		b3TriangleCache* triangleCache = m_triangles + i;
-		u32 triangleIndex = triangleCache->index;
-
-		b3TriangleShape triangleA;
-		meshA->GetChildTriangle(&triangleA, triangleIndex);
-
-		b3Manifold* manifold = tempManifolds + tempCount;
-		manifold->Initialize();
-
-		b3CollideTriangleAndCapsule(*manifold, xfA, &triangleA, xfB, capsuleB);
-
-		for (u32 j = 0; j < manifold->pointCount; ++j)
-		{
-			manifold->points[j].key.triangleKey = triangleIndex;
-		}
-
-		++tempCount;
-	}
-
-	// Perform clustering. 
-	B3_ASSERT(m_manifoldCount == 0);
-
-	b3ClusterSolver clusterSolver;
-	clusterSolver.Run(m_stackManifolds, m_manifoldCount, tempManifolds, tempCount, xfA, B3_HULL_RADIUS, xfB, shapeB->m_radius);
-
-	allocator->Free(tempManifolds);
-}
+	B3_ASSERT(cacheIndex < m_triangleCount);
+	
+	b3MeshShape* mesh = (b3MeshShape*)GetShapeA();
+	b3TriangleShape triangle;
+	mesh->GetChildTriangle(&triangle, m_triangles[cacheIndex].index);
+	b3CollideTriangleAndCapsule(manifold, xfA, &triangle, xfB, (b3CapsuleShape*)GetShapeB());
+} 

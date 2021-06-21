@@ -17,6 +17,7 @@
 */
 
 #include <bounce/dynamics/contacts/mesh_contact.h>
+#include <bounce/dynamics/contacts/contact_cluster.h>
 #include <bounce/dynamics/shapes/shape.h>
 #include <bounce/dynamics/shapes/mesh_shape.h>
 #include <bounce/dynamics/body.h>
@@ -26,7 +27,7 @@
 b3MeshContact::b3MeshContact(b3Shape* shapeA, b3Shape* shapeB) : b3Contact(shapeA, shapeB)
 {
 	m_manifoldCapacity = B3_MAX_MANIFOLDS;
-	m_manifolds = m_stackManifolds;
+	m_manifolds = m_clusterManifolds;
 	m_manifoldCount = 0;
 
 	b3Transform xfA = shapeA->GetBody()->GetTransform();
@@ -234,4 +235,42 @@ bool b3MeshContact::TestOverlap()
 	}
 
 	return false;
+}
+
+void b3MeshContact::Collide()
+{
+	b3Shape* shapeA = GetShapeA();
+	b3Shape* shapeB = GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+
+	b3StackAllocator* allocator = &shapeA->GetBody()->GetWorld()->m_stackAllocator;
+
+	// Create one temporary manifold per overlapping triangle.
+	b3Manifold* manifolds = (b3Manifold*)allocator->Allocate(m_triangleCount * sizeof(b3Manifold));
+	u32 manifoldCount = 0;
+
+	for (u32 i = 0; i < m_triangleCount; ++i)
+	{
+		b3Manifold* manifold = manifolds + manifoldCount;
+		manifold->Initialize();
+
+		Evaluate(*manifold, xfA, xfB, i);
+
+		for (u32 j = 0; j < manifold->pointCount; ++j)
+		{
+			manifold->points[j].key.triangleKey = m_triangles[i].index;
+		}
+
+		++manifoldCount;
+	}
+
+	B3_ASSERT(m_manifoldCount == 0);
+
+	// Perform clustering. 
+	b3ClusterSolver cluster;
+	cluster.Run(m_clusterManifolds, m_manifoldCount, manifolds, manifoldCount, xfA, shapeA->m_radius, xfB, shapeB->m_radius);
+
+	allocator->Free(manifolds);
 }

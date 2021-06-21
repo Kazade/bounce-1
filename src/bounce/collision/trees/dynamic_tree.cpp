@@ -17,7 +17,7 @@
 */
 
 #include <bounce/collision/trees/dynamic_tree.h>
-#include <bounce/draw.h>
+#include <bounce/common/draw.h>
 #include <string.h>
 
 b3DynamicTree::b3DynamicTree() 

@@ -39,13 +39,17 @@ public:
 	b3MeshContact(b3Shape* shapeA, b3Shape* shapeB);
 	~b3MeshContact();
 
-	bool TestOverlap();
+	bool TestOverlap() override;
 
-	void SynchronizeShape();
+	void SynchronizeShape() override;
+
+	void FindPairs() override;
+
+	void Collide() override;
+
+	virtual void Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB, u32 cacheIndex) = 0;
 
 	bool MoveAABB(const b3AABB& aabb, const b3Vec3& displacement);
-
-	void FindPairs();
 
 	// Static tree callback. There is no midphase. 
 	bool Report(u32 proxyId);
@@ -62,7 +66,7 @@ public:
 	u32 m_triangleCount;
 
 	// Contact manifolds.
-	b3Manifold m_stackManifolds[B3_MAX_MANIFOLDS];
+	b3Manifold m_clusterManifolds[B3_MAX_MANIFOLDS];
 };
 
 #endif

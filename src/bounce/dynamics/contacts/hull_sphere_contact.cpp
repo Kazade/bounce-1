@@ -40,18 +40,7 @@ b3HullAndSphereContact::b3HullAndSphereContact(b3Shape* shapeA, b3Shape* shapeB)
 	B3_ASSERT(shapeB->GetType() == e_sphereShape);
 }
 
-void b3HullAndSphereContact::Collide()
+void b3HullAndSphereContact::Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB) 
 {
-	b3Shape* shapeA = GetShapeA();
-	b3Shape* shapeB = GetShapeB();
-
-	b3Transform xfA = shapeA->GetBody()->GetTransform();
-	b3Transform xfB = shapeB->GetBody()->GetTransform();
-
-	b3HullShape* hullA = (b3HullShape*)shapeA;
-	b3SphereShape* sphereB = (b3SphereShape*)shapeB;
-
-	B3_ASSERT(m_manifoldCount == 0);
-	b3CollideHullAndSphere(m_stackManifold, xfA, hullA, xfB, sphereB);
-	m_manifoldCount = 1;
+	b3CollideHullAndSphere(manifold, xfA, (b3HullShape*)GetShapeA(), xfB, (b3SphereShape*)GetShapeB());
 }

@@ -29,8 +29,8 @@ public:
 
 	b3SphereContact(b3Shape* shapeA, b3Shape* shapeB);
 	~b3SphereContact() { }
-
-	void Collide() override;
+	
+	void Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB) override;
 };
 
 #endif

@@ -40,18 +40,7 @@ b3TriangleAndHullContact::b3TriangleAndHullContact(b3Shape* shapeA, b3Shape* sha
 	B3_ASSERT(shapeB->GetType() == e_hullShape);
 }
 
-void b3TriangleAndHullContact::Collide()
+void b3TriangleAndHullContact::Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB)
 {
-	b3Shape* shapeA = GetShapeA();
-	b3Shape* shapeB = GetShapeB();
-
-	b3Transform xfA = shapeA->GetBody()->GetTransform();
-	b3Transform xfB = shapeB->GetBody()->GetTransform();
-
-	b3TriangleShape* triangleA = (b3TriangleShape*)shapeA;
-	b3HullShape* hullB = (b3HullShape*)shapeB;
-
-	B3_ASSERT(m_manifoldCount == 0);
-	b3CollideTriangleAndHull(m_stackManifold, xfA, triangleA, xfB, hullB, &m_cache);
-	m_manifoldCount = 1;
+	b3CollideTriangleAndHull(manifold, xfA, (b3TriangleShape*)GetShapeA(), xfB, (b3HullShape*)GetShapeB(), &m_cache);
 }

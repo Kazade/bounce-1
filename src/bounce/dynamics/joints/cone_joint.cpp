@@ -18,7 +18,7 @@
 
 #include <bounce/dynamics/joints/cone_joint.h>
 #include <bounce/dynamics/body.h>
-#include <bounce/draw.h>
+#include <bounce/common/draw.h>
 
 // C = dot(u2, u1) - cos(angle / 2) > 0
 // Cdot = dot(u2, omega1 x u1) + dot(u1, omega2 x u2)

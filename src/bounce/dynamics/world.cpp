@@ -30,7 +30,7 @@
 #include <bounce/collision/gjk/gjk.h>
 #include <bounce/collision/gjk/gjk_proxy.h>
 #include <bounce/collision/shapes/mesh.h>
-#include <bounce/draw.h>
+#include <bounce/common/draw.h>
 
 extern u32 b3_allocCalls, b3_maxAllocCalls;
 extern u32 b3_convexCalls, b3_convexCacheHits;

@@ -18,7 +18,7 @@
 
 #include <bounce/dynamics/joints/sphere_joint.h>
 #include <bounce/dynamics/body.h>
-#include <bounce/draw.h>
+#include <bounce/common/draw.h>
 
 void b3SphereJointDef::Initialize(b3Body* bA, b3Body* bB, const b3Vec3& anchor)
 {

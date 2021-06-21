@@ -26,7 +26,7 @@ b3ConvexContact::b3ConvexContact(b3Shape* shapeA, b3Shape* shapeB) : b3Contact(s
     B3_NOT_USED(shapeB);
 
 	m_manifoldCapacity = 1;
-	m_manifolds = &m_stackManifold;
+	m_manifolds = &m_manifold;
 	m_manifoldCount = 0;
 
 	m_cache.simplexCache.count = 0;
@@ -42,4 +42,17 @@ bool b3ConvexContact::TestOverlap()
 	b3Transform xfB = shapeB->GetBody()->GetTransform();
 
 	return b3TestOverlap(xfA, 0, shapeA, xfB, 0, shapeB, &m_cache);
+}
+
+void b3ConvexContact::Collide() 
+{
+	b3Shape* shapeA = GetShapeA();
+	b3Shape* shapeB = GetShapeB();
+
+	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Transform xfB = shapeB->GetBody()->GetTransform();
+
+	B3_ASSERT(m_manifoldCount == 0);
+	Evaluate(m_manifold, xfA, xfB);
+	m_manifoldCount = 1;
 }

@@ -19,7 +19,7 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#include <bounce/draw.h>
+#include <bounce/common/draw.h>
 
 class b3DebugDraw;
 

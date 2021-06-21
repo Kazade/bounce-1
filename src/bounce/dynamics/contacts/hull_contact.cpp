@@ -39,18 +39,7 @@ b3HullContact::b3HullContact(b3Shape* shapeA, b3Shape* shapeB) : b3ConvexContact
 	B3_ASSERT(shapeB->GetType() == e_hullShape);
 }
 
-void b3HullContact::Collide()
+void b3HullContact::Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB) 
 {
-	b3Shape* shapeA = GetShapeA();
-	b3Shape* shapeB = GetShapeB();
-
-	b3Transform xfA = shapeA->GetBody()->GetTransform();
-	b3Transform xfB = shapeB->GetBody()->GetTransform();
-
-	b3HullShape* hullA = (b3HullShape*)shapeA;
-	b3HullShape* hullB = (b3HullShape*)shapeB;
-
-	B3_ASSERT(m_manifoldCount == 0);
-	b3CollideHullAndHull(m_stackManifold, xfA, hullA, xfB, hullB, &m_cache);
-	m_manifoldCount = 1;
+	b3CollideHullAndHull(m_manifold, xfA, (b3HullShape*)GetShapeA(), xfB, (b3HullShape*)GetShapeB(), &m_cache);
 }

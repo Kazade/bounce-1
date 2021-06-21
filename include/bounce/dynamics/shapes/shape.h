@@ -19,7 +19,7 @@
 #ifndef B3_SHAPE_H
 #define B3_SHAPE_H
 
-#include <bounce/draw.h>
+#include <bounce/common/draw.h>
 #include <bounce/common/math/transform.h>
 #include <bounce/common/template/list.h>
 #include <bounce/collision/collision.h>
