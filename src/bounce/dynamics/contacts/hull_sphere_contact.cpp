@@ -19,7 +19,6 @@
 #include <bounce/dynamics/contacts/hull_sphere_contact.h>
 #include <bounce/dynamics/shapes/hull_shape.h>
 #include <bounce/dynamics/shapes/sphere_shape.h>
-#include <bounce/dynamics/body.h>
 #include <bounce/common/memory/block_allocator.h>
 
 b3Contact* b3HullAndSphereContact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator)

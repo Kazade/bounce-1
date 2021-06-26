@@ -19,7 +19,6 @@
 #include <bounce/dynamics/contacts/triangle_hull_contact.h>
 #include <bounce/dynamics/shapes/triangle_shape.h>
 #include <bounce/dynamics/shapes/hull_shape.h>
-#include <bounce/dynamics/body.h>
 #include <bounce/common/memory/block_allocator.h>
 
 b3Contact* b3TriangleAndHullContact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator)
