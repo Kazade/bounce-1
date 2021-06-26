@@ -17,12 +17,9 @@
 */
 
 #include <bounce/dynamics/contacts/mesh_hull_contact.h>
-#include <bounce/dynamics/contacts/contact_cluster.h>
 #include <bounce/dynamics/shapes/triangle_shape.h>
 #include <bounce/dynamics/shapes/mesh_shape.h>
 #include <bounce/dynamics/shapes/hull_shape.h>
-#include <bounce/dynamics/body.h>
-#include <bounce/dynamics/world.h>
 #include <bounce/common/memory/block_allocator.h>
 
 b3Contact* b3MeshAndHullContact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator)
