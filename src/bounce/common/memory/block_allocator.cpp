@@ -93,6 +93,8 @@ void* b3BlockAllocator::Allocate(u32 size)
 		return nullptr;
 	}
 
+	B3_ASSERT(0 < size);
+	
 	if (size > b3_maxBlockSize)
 	{
 		return b3Alloc(size);

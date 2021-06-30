@@ -17,15 +17,15 @@
 */
 
 #include <bounce/dynamics/contacts/mesh_capsule_contact.h>
-#include <bounce/dynamics/shapes/triangle_shape.h>
-#include <bounce/dynamics/shapes/mesh_shape.h>
-#include <bounce/dynamics/shapes/capsule_shape.h>
+#include <bounce/collision/shapes/triangle_shape.h>
+#include <bounce/collision/shapes/mesh_shape.h>
+#include <bounce/collision/shapes/capsule_shape.h>
 #include <bounce/common/memory/block_allocator.h>
 
-b3Contact* b3MeshAndCapsuleContact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator)
+b3Contact* b3MeshAndCapsuleContact::Create(b3Fixture* fixtureA, b3Fixture* fixtureB, b3BlockAllocator* allocator)
 {
 	void* mem = allocator->Allocate(sizeof(b3MeshAndCapsuleContact));
-	return new (mem) b3MeshAndCapsuleContact(shapeA, shapeB);
+	return new (mem) b3MeshAndCapsuleContact(fixtureA, fixtureB);
 }
 
 void b3MeshAndCapsuleContact::Destroy(b3Contact* contact, b3BlockAllocator* allocator)
@@ -34,18 +34,18 @@ void b3MeshAndCapsuleContact::Destroy(b3Contact* contact, b3BlockAllocator* allo
 	allocator->Free(contact, sizeof(b3MeshAndCapsuleContact));
 }
 
-b3MeshAndCapsuleContact::b3MeshAndCapsuleContact(b3Shape* shapeA, b3Shape* shapeB) : b3MeshContact(shapeA, shapeB)
+b3MeshAndCapsuleContact::b3MeshAndCapsuleContact(b3Fixture* fixtureA, b3Fixture* fixtureB) : b3MeshContact(fixtureA, fixtureB)
 {
-	B3_ASSERT(shapeA->GetType() == e_meshShape);
-	B3_ASSERT(shapeB->GetType() == e_capsuleShape);
+	B3_ASSERT(fixtureA->GetType() == b3Shape::e_mesh);
+	B3_ASSERT(fixtureB->GetType() == b3Shape::e_capsule);
 }
 
 void b3MeshAndCapsuleContact::Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB, u32 cacheIndex)
 {
 	B3_ASSERT(cacheIndex < m_triangleCount);
 	
-	b3MeshShape* mesh = (b3MeshShape*)GetShapeA();
+	b3MeshShape* mesh = (b3MeshShape*)GetFixtureA()->GetShape();
 	b3TriangleShape triangle;
 	mesh->GetChildTriangle(&triangle, m_triangles[cacheIndex].index);
-	b3CollideTriangleAndCapsule(manifold, xfA, &triangle, xfB, (b3CapsuleShape*)GetShapeB());
+	b3CollideTriangleAndCapsule(manifold, xfA, &triangle, xfB, (b3CapsuleShape*)GetFixtureB()->GetShape());
 } 

@@ -25,81 +25,81 @@ public:
 	VaryingFriction()
 	{
 		{
-			b3BodyDef bdef;	
-			b3Body* ground = m_world.CreateBody(bdef);
+			b3BodyDef bd;	
+			b3Body* ground = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		static b3BoxHull rampHull(25.0f, 0.5f, 25.0f);
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(-20.0f, 20.0f, 0.0f);
-			bdef.orientation = b3QuatRotationZ(-0.1f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(-20.0f, 20.0f, 0.0f);
+			bd.orientation = b3QuatRotationZ(-0.1f * B3_PI);
 
-			b3Body* ramp = m_world.CreateBody(bdef);
+			b3Body* ramp = m_world.CreateBody(bd);
 			
 			b3HullShape hs;
 			hs.m_hull = &rampHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 			sd.friction = 0.4f;
-			ramp->CreateShape(sd);
+			ramp->CreateFixture(sd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(20.0f, 30.0f, 0.0f);
-			bdef.orientation = b3QuatRotationZ(0.1f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(20.0f, 30.0f, 0.0f);
+			bd.orientation = b3QuatRotationZ(0.1f * B3_PI);
 
-			b3Body* ramp = m_world.CreateBody(bdef);
+			b3Body* ramp = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &rampHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 			sd.friction = 0.3f;
-			ramp->CreateShape(sd);
+			ramp->CreateFixture(sd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(-20.0f, 40.0f, 0.0f);
-			bdef.orientation = b3QuatRotationZ(-0.1f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(-20.0f, 40.0f, 0.0f);
+			bd.orientation = b3QuatRotationZ(-0.1f * B3_PI);
 
-			b3Body* ramp = m_world.CreateBody(bdef);
+			b3Body* ramp = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &rampHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 			sd.friction = 0.2f;
-			ramp->CreateShape(sd);
+			ramp->CreateFixture(sd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(20.0f, 50.0f, 0.0f);
-			bdef.orientation = b3QuatRotationZ(0.1f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(20.0f, 50.0f, 0.0f);
+			bd.orientation = b3QuatRotationZ(0.1f * B3_PI);
 
-			b3Body* ramp = m_world.CreateBody(bdef);
+			b3Body* ramp = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &rampHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 			sd.friction = 0.1f;
-			ramp->CreateShape(sd);
+			ramp->CreateFixture(sd);
 		}
 
 		{
@@ -111,12 +111,12 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &b3BoxHull_identity;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.density = 1.0f;
 			sd.friction = 0.2f;
 			sd.shape = &hs;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 
 		{
@@ -128,12 +128,12 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &b3BoxHull_identity;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.density = 1.0f;
 			sd.friction = 0.5f;
 			sd.shape = &hs;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 
 		{
@@ -145,12 +145,12 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &b3BoxHull_identity;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.density = 1.0f;
 			sd.friction = 0.8f;
 			sd.shape = &hs;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 	}
 

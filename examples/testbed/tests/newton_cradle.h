@@ -31,10 +31,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 			
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		b3CapsuleShape edge;
@@ -51,10 +51,10 @@ public:
 
 			frame1 = m_world.CreateBody(bd);
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &edge;
 
-			frame1->CreateShape(sd);
+			frame1->CreateFixture(sd);
 		}
 
 		{
@@ -64,10 +64,10 @@ public:
 
 			frame2 = m_world.CreateBody(bd);
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &edge;
 
-			frame2->CreateShape(sd);
+			frame2->CreateFixture(sd);
 		}
 
 		b3Vec3 center;
@@ -90,12 +90,12 @@ public:
 
 			b3Body* ball = m_world.CreateBody(bd);
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &vertex;
 			sd.density = 1.0f;
 			sd.friction = 0.8f;
 			
-			ball->CreateShape(sd);
+			ball->CreateFixture(sd);
 			
 			b3Vec3 c1;
 			c1.x = center.x;

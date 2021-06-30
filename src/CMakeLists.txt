@@ -1,31 +1,6 @@
 set(BOUNCE_HEADER_FILES
 ${BOUNCE_INCLUDE_DIR}/bounce/bounce.h
 
-${BOUNCE_INCLUDE_DIR}/bounce/collision/broad_phase.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/collision.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/time_of_impact.h
-
-${BOUNCE_INCLUDE_DIR}/bounce/collision/gjk/gjk.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/gjk/gjk_proxy.h
-
-${BOUNCE_INCLUDE_DIR}/bounce/collision/sat/sat.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/sat/sat_hull_and_edge.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/sat/sat_hull_and_vertex.h
-
-${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/aabb.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/box_hull.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/capsule.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/cone_hull.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/cylinder_hull.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/grid_mesh.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/hull.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/mesh.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/sphere.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/triangle_hull.h
-
-${BOUNCE_INCLUDE_DIR}/bounce/collision/trees/dynamic_tree.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/trees/static_tree.h
-
 ${BOUNCE_INCLUDE_DIR}/bounce/common/draw.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/geometry.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/types.h
@@ -60,7 +35,45 @@ ${BOUNCE_INCLUDE_DIR}/bounce/common/template/list.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/template/queue.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/template/stack.h
 
+${BOUNCE_INCLUDE_DIR}/bounce/collision/broad_phase.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/collision.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/time_of_impact.h
+
+${BOUNCE_INCLUDE_DIR}/bounce/collision/gjk/gjk.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/gjk/gjk_proxy.h
+
+${BOUNCE_INCLUDE_DIR}/bounce/collision/sat/sat.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/sat/sat_hull_edge.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/sat/sat_hull_vertex.h
+
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/aabb.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/box_hull.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/capsule.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/cone_hull.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/cylinder_hull.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/grid_mesh.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/hull.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/mesh.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/sphere.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/triangle_hull.h
+
+${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/sphere_shape.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/capsule_shape.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/hull_shape.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/mesh_shape.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/shape.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/shapes/triangle_shape.h
+
+${BOUNCE_INCLUDE_DIR}/bounce/collision/trees/dynamic_tree.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/trees/static_tree.h
+
+${BOUNCE_INCLUDE_DIR}/bounce/collision/collide/manifold.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/collide/clip.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/collide/collide.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/collide/cluster_solver.h
+
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/body.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/fixture.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contact_manager.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/island.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/joint_manager.h
@@ -68,13 +81,9 @@ ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/time_step.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/world.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/world_listeners.h
 
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/contact_cluster.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/contact.h
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/contact_solver.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/convex_contact.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/mesh_contact.h
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/manifold.h
-
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/sphere_contact.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/capsule_sphere_contact.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/capsule_contact.h
@@ -87,9 +96,6 @@ ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/hull_contact.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/mesh_sphere_contact.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/mesh_capsule_contact.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/mesh_hull_contact.h
-
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/collide/clip.h
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/collide/collide.h
 
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/joints/cone_joint.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/joints/friction_joint.h
@@ -104,35 +110,11 @@ ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/joints/spring_joint.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/joints/weld_joint.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/joints/wheel_joint.h
 
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/shapes/sphere_shape.h
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/shapes/capsule_shape.h
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/shapes/hull_shape.h
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/shapes/mesh_shape.h
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/shapes/shape.h
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/shapes/triangle_shape.h
-
 ${BOUNCE_INCLUDE_DIR}/bounce/rope/rope.h
 ${BOUNCE_INCLUDE_DIR}/bounce/rope/spatial.h
 )
 
-set(BOUNCE_SOURCE_FILES 
-	bounce/collision/broad_phase.cpp
-	bounce/collision/collision.cpp
-	bounce/collision/time_of_impact.cpp
-
-	bounce/collision/gjk/gjk.cpp
-	bounce/collision/gjk/gjk_feature_pair.cpp
-
-	bounce/collision/sat/sat.cpp
-	bounce/collision/sat/sat_hull_and_edge.cpp
-	bounce/collision/sat/sat_hull_and_vertex.cpp
-
-	bounce/collision/shapes/hull.cpp
-	bounce/collision/shapes/mesh.cpp
-
-	bounce/collision/trees/dynamic_tree.cpp
-	bounce/collision/trees/static_tree.cpp
-
+set(BOUNCE_SOURCE_FILES 	
 	bounce/common/settings.cpp
 	bounce/common/profiler.cpp
 	
@@ -145,24 +127,57 @@ set(BOUNCE_SOURCE_FILES
 	bounce/common/memory/frame_allocator.cpp
 	bounce/common/memory/stack_allocator.cpp
 	bounce/common/memory/block_allocator.cpp
+	
+	bounce/collision/broad_phase.cpp
+	bounce/collision/collision.cpp
+	bounce/collision/time_of_impact.cpp
+
+	bounce/collision/gjk/gjk.cpp
+	bounce/collision/gjk/gjk_feature_pair.cpp
+
+	bounce/collision/sat/sat.cpp
+	bounce/collision/sat/sat_hull_edge.cpp
+	bounce/collision/sat/sat_hull_vertex.cpp
+
+	bounce/collision/geometry/hull.cpp
+	bounce/collision/geometry/mesh.cpp
+
+	bounce/collision/shapes/capsule_shape.cpp
+ 	bounce/collision/shapes/hull_shape.cpp
+	bounce/collision/shapes/mesh_shape.cpp
+	bounce/collision/shapes/shape.cpp
+	bounce/collision/shapes/sphere_shape.cpp
+	bounce/collision/shapes/triangle_shape.cpp
+
+	bounce/collision/trees/dynamic_tree.cpp
+	bounce/collision/trees/static_tree.cpp
+
+	bounce/collision/collide/manifold.cpp
+	bounce/collision/collide/clip.cpp
+	bounce/collision/collide/collide_capsules.cpp
+	bounce/collision/collide/collide_capsule_sphere.cpp
+	bounce/collision/collide/collide.cpp
+	bounce/collision/collide/collide_hull_capsule.cpp
+	bounce/collision/collide/collide_hulls.cpp
+	bounce/collision/collide/collide_hull_sphere.cpp
+	bounce/collision/collide/collide_spheres.cpp
+	bounce/collision/collide/collide_triangle_capsule.cpp
+	bounce/collision/collide/collide_triangle_hull.cpp
+	bounce/collision/collide/collide_triangle_sphere.cpp
+	bounce/collision/collide/cluster_solver.cpp
 
 	bounce/dynamics/body.cpp
+	bounce/dynamics/fixture.cpp
 	bounce/dynamics/contact_manager.cpp
 	bounce/dynamics/contacts
 	bounce/dynamics/island.cpp
 	bounce/dynamics/joint_manager.cpp
-	bounce/dynamics/joints
-	bounce/dynamics/shapes
 	bounce/dynamics/world.cpp
 
-	bounce/dynamics/contacts/collide
-	bounce/dynamics/contacts/contact_cluster.cpp
 	bounce/dynamics/contacts/contact.cpp
 	bounce/dynamics/contacts/contact_solver.cpp
 	bounce/dynamics/contacts/convex_contact.cpp
-	bounce/dynamics/contacts/manifold.cpp
 	bounce/dynamics/contacts/mesh_contact.cpp
-
 	bounce/dynamics/contacts/sphere_contact.cpp
 	bounce/dynamics/contacts/capsule_sphere_contact.cpp
 	bounce/dynamics/contacts/capsule_contact.cpp
@@ -176,18 +191,6 @@ set(BOUNCE_SOURCE_FILES
 	bounce/dynamics/contacts/mesh_capsule_contact.cpp
 	bounce/dynamics/contacts/mesh_hull_contact.cpp
 
-	bounce/dynamics/contacts/collide/clip.cpp
-	bounce/dynamics/contacts/collide/collide_capsules.cpp
-	bounce/dynamics/contacts/collide/collide_capsule_sphere.cpp
-	bounce/dynamics/contacts/collide/collide.cpp
-	bounce/dynamics/contacts/collide/collide_hull_capsule.cpp
-	bounce/dynamics/contacts/collide/collide_hulls.cpp
-	bounce/dynamics/contacts/collide/collide_hull_sphere.cpp
-	bounce/dynamics/contacts/collide/collide_spheres.cpp
-	bounce/dynamics/contacts/collide/collide_triangle_capsule.cpp
-	bounce/dynamics/contacts/collide/collide_triangle_hull.cpp
-	bounce/dynamics/contacts/collide/collide_triangle_sphere.cpp
-
 	bounce/dynamics/joints/cone_joint.cpp
 	bounce/dynamics/joints/friction_joint.cpp
 	bounce/dynamics/joints/joint.cpp
@@ -200,13 +203,6 @@ set(BOUNCE_SOURCE_FILES
 	bounce/dynamics/joints/spring_joint.cpp
 	bounce/dynamics/joints/weld_joint.cpp
 	bounce/dynamics/joints/wheel_joint.cpp
-
-	bounce/dynamics/shapes/capsule_shape.cpp
- 	bounce/dynamics/shapes/hull_shape.cpp
-	bounce/dynamics/shapes/mesh_shape.cpp
-	bounce/dynamics/shapes/shape.cpp
-	bounce/dynamics/shapes/sphere_shape.cpp
-	bounce/dynamics/shapes/triangle_shape.cpp
 
 	bounce/rope/rope.cpp
 )

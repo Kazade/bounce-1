@@ -36,11 +36,11 @@ public:
 		shape.m_vertex2.Set(0.0f, 0.0f, 1.0f);
 		shape.m_radius = 1.0f;
 
-		b3ShapeDef sdef;
-		sdef.shape = &shape;
-		sdef.density = 1.0f;
+		b3FixtureDef fd;
+		fd.shape = &shape;
+		fd.density = 1.0f;
 
-		body->CreateShape(sdef);
+		body->CreateFixture(fd);
 		
 		b3SphereJointDef jd;
 		jd.Initialize(ground, body, b3Vec3(0.0f, 0.0f, 0.0f));

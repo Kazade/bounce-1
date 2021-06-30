@@ -22,7 +22,7 @@
 #include <bounce/common/math/vec2.h>
 #include <bounce/common/math/mat22.h>
 #include <bounce/dynamics/time_step.h>
-#include <bounce/dynamics/contacts/manifold.h>
+#include <bounce/collision/collide/manifold.h>
 
 class b3StackAllocator;
 class b3Contact;

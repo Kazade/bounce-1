@@ -39,7 +39,7 @@ public:
 
 	// Reference AABBs in some contacts need to be synchronized with the 
 	// synchronized body transforms.
-	void SynchronizeShapes();
+	void SynchronizeFixtures();
 
 	// Perform broad-phase collision detection.
 	void FindNewContacts();
@@ -47,7 +47,7 @@ public:
 	// Perform narrow-phase collision detection.
 	void UpdateContacts();
 
-	b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB);
+	b3Contact* Create(b3Fixture* fixtureA, b3Fixture* fixtureB);
 	void Destroy(b3Contact* c);
 
 	b3BroadPhase m_broadPhase;	

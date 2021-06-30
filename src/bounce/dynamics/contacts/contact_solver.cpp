@@ -18,7 +18,7 @@
 
 #include <bounce/dynamics/contacts/contact_solver.h>
 #include <bounce/dynamics/contacts/contact.h>
-#include <bounce/dynamics/shapes/shape.h>
+#include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/body.h>
 #include <bounce/common/memory/stack_allocator.h>
 #include <bounce/common/math/mat.h>
@@ -73,11 +73,14 @@ void b3ContactSolver::InitializeConstraints()
 	{
 		b3Contact* c = m_contacts[i];
 
-		b3Shape* shapeA = c->GetShapeA();
-		b3Shape* shapeB = c->GetShapeB();
+		b3Fixture* fixtureA = c->GetFixtureA();
+		b3Fixture* fixtureB = c->GetFixtureB();
 
-		b3Body* bodyA = shapeA->GetBody();
-		b3Body* bodyB = shapeB->GetBody();
+		b3Shape* shapeA = fixtureA->GetShape();
+		b3Shape* shapeB = fixtureB->GetShape();
+
+		b3Body* bodyA = fixtureA->GetBody();
+		b3Body* bodyB = fixtureB->GetBody();
 
 		u32 manifoldCount = c->m_manifoldCount;
 		b3Manifold* manifolds = c->m_manifolds;
@@ -108,8 +111,8 @@ void b3ContactSolver::InitializeConstraints()
 		vc->invMassB = bodyB->m_invMass;
 		vc->invIB = m_inertias[vc->indexB];
 
-		vc->friction = b3MixFriction(shapeA->m_friction, shapeB->m_friction);
-		vc->restitution = b3MixRestitution(shapeA->m_restitution, shapeB->m_restitution);
+		vc->friction = b3MixFriction(fixtureA->m_friction, fixtureB->m_friction);
+		vc->restitution = b3MixRestitution(fixtureA->m_restitution, fixtureB->m_restitution);
 
 		vc->manifoldCount = manifoldCount;
 		vc->manifolds = (b3VelocityConstraintManifold*)m_allocator->Allocate(manifoldCount * sizeof(b3VelocityConstraintManifold));

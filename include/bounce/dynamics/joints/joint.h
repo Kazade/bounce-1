@@ -148,7 +148,7 @@ protected:
 	virtual void SolveVelocityConstraints(const b3SolverData* data) = 0;
 	virtual bool SolvePositionConstraints(const b3SolverData* data) = 0;
 
-	enum b3JointFlags 
+	enum 
 	{
 		e_islandFlag = 0x0001,
 		e_activeFlag = 0x0002

@@ -31,9 +31,9 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		b3Body* head;
@@ -56,10 +56,10 @@ public:
 			cs.m_vertex2.Set(0.0f, -0.5f, 0.0f);
 			cs.m_radius = 1.0f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &cs;
 			sd.density = 1.0f;
-			hip->CreateShape(sd);
+			hip->CreateFixture(sd);
 		}
 
 		{
@@ -74,10 +74,10 @@ public:
 			cs.m_vertex2.Set(0.0f, -0.15f, 0.0f);
 			cs.m_radius = 0.5f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &cs;
 			sd.density = 5.0f;
-			head->CreateShape(sd);
+			head->CreateFixture(sd);
 		}
 
 		// Link head to chest
@@ -103,11 +103,11 @@ public:
 			cs.m_vertex2.Set(0.0f, -1.0f, 0.0f);
 			cs.m_radius = 0.5f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &cs;
 			sd.density = 0.25f;
 
-			lArm->CreateShape(sd);
+			lArm->CreateFixture(sd);
 		}
 
 		// Link left arm to chest
@@ -133,11 +133,11 @@ public:
 			cs.m_vertex2.Set(0.0f, -1.0f, 0.0f);
 			cs.m_radius = 0.5f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &cs;
 			sd.density = 0.25f;
 
-			rArm->CreateShape(sd);
+			rArm->CreateFixture(sd);
 		}
 
 		// Link right arm to chest
@@ -162,11 +162,11 @@ public:
 			cs.m_vertex2.Set(0.0f, -2.0f, 0.0f);
 			cs.m_radius = 0.45f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &cs;
 			sd.density = 0.25f;
 
-			lLeg->CreateShape(sd);
+			lLeg->CreateFixture(sd);
 		}
 
 		// Link left leg to chest
@@ -191,11 +191,11 @@ public:
 			cs.m_vertex2.Set(0.0f, -2.0f, 0.0f);
 			cs.m_radius = 0.45f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &cs;
 			sd.density = 0.25f;
 
-			rLeg->CreateShape(sd);
+			rLeg->CreateFixture(sd);
 		}
 
 		// Link right leg to chest

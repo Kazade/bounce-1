@@ -31,10 +31,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		{
@@ -48,10 +48,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &boxHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 			sd.isSensor = true;
-			m_sensor = body->CreateShape(sd);
+			m_sensor = body->CreateFixture(sd);
 		}
 
 		{
@@ -67,12 +67,12 @@ public:
 			cap.m_vertex2.Set(0.0f, -2.0f, 0.0f);
 			cap.m_radius = 0.5f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &cap;
 			sd.density = 1.5f;
 			sd.friction = 0.7f;
 
-			m_character->CreateShape(sd);
+			m_character->CreateFixture(sd);
 		}
 
 		m_attack = false;
@@ -80,12 +80,12 @@ public:
 
 	void BeginContact(b3Contact* c)
 	{
-		b3Shape* sA = c->GetShapeA();
-		b3Body* bA = sA->GetBody();
-		b3Shape* sB = c->GetShapeB();
-		b3Body* bB = sB->GetBody();
+		b3Fixture* fA = c->GetFixtureA();
+		b3Body* bA = fA->GetBody();
+		b3Fixture* fB = c->GetFixtureB();
+		b3Body* bB = fB->GetBody();
 
-		if (sA == m_sensor)
+		if (fA == m_sensor)
 		{
 			if (bB == m_character)
 			{
@@ -93,7 +93,7 @@ public:
 			}
 		}
 
-		if (sB == m_sensor)
+		if (fB == m_sensor)
 		{
 			if (bA == m_character)
 			{
@@ -105,16 +105,16 @@ public:
 
 	void EndContact(b3Contact* c)
 	{
-		b3Shape* sA = c->GetShapeA();
-		b3Body* bA = sA->GetBody();
-		b3Shape* sB = c->GetShapeB();
-		b3Body* bB = sB->GetBody();
+		b3Fixture* fA = c->GetFixtureA();
+		b3Body* bA = fA->GetBody();
+		b3Fixture* fB = c->GetFixtureB();
+		b3Body* bB = fB->GetBody();
 
-		if (sA == m_sensor)
+		if (fA == m_sensor)
 		{
 		}
 
-		if (sB == m_sensor)
+		if (fB == m_sensor)
 		{
 		}
 	}
@@ -140,12 +140,12 @@ public:
 			shape.m_center.Set(0.0f, 0.0f, 0.0f);
 			shape.m_radius = 0.5f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &shape;
 			sd.density = 1.0f;
 			sd.friction = 1.0f;
 
-			enemy->CreateShape(sd);
+			enemy->CreateFixture(sd);
 			
 			m_attack = false;
 		}
@@ -159,7 +159,7 @@ public:
 	}
 	
 	b3Body* m_character;
-	b3Shape* m_sensor;
+	b3Fixture* m_sensor;
 	bool m_attack;
 };
 

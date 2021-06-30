@@ -44,12 +44,10 @@ public:
 			ms.m_mesh = &m_gridMesh;
 			ms.m_scale.Set(2.0f, 1.0f, 2.0f);
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &ms;
 
-			m_groundShape = (b3MeshShape*)groundBody->CreateShape(sd);
-			
-			m_selection = m_groundShape->m_mesh->triangleCount / 2;
+			m_groundFixture = groundBody->CreateFixture(sd);
 		}
 
 		{
@@ -64,40 +62,21 @@ public:
 				sphere.m_center.SetZero();
 				sphere.m_radius = 1.0f;
 
-				b3ShapeDef sd;
+				b3FixtureDef sd;
 				sd.shape = &sphere;
 				sd.density = 1.0f;
 				sd.friction = 0.5f;
 
-				m_bodyShape = body->CreateShape(sd);
+				m_bodyFixture = body->CreateFixture(sd);
 			}
 		}
-
-		m_drawEdgeTypes = true;
 	}
 
 	void KeyDown(int key)
 	{
-		u32 minSelection = 0;
-		if (key == GLFW_KEY_LEFT)
-		{
-			m_selection = m_selection == minSelection ? minSelection : m_selection - 1;
-		}
-
-		u32 maxSelection = m_groundShape->m_mesh->triangleCount - 1;
-		if (key == GLFW_KEY_RIGHT)
-		{
-			m_selection = m_selection == maxSelection ? maxSelection : m_selection + 1;
-		}
-
-		if (key == GLFW_KEY_E)
-		{
-			m_drawEdgeTypes = !m_drawEdgeTypes;
-		}
-
 		if (key == GLFW_KEY_S || key == GLFW_KEY_C || key == GLFW_KEY_H)
 		{
-			b3Body* body = m_bodyShape->GetBody();
+			b3Body* body = m_bodyFixture->GetBody();
 
 			m_world.DestroyBody(body);
 
@@ -113,12 +92,12 @@ public:
 				sphere.m_center.SetZero();
 				sphere.m_radius = 1.0f;
 
-				b3ShapeDef sd;
+				b3FixtureDef sd;
 				sd.shape = &sphere;
 				sd.density = 1.0f;
 				sd.friction = 0.5f;
 
-				m_bodyShape = body->CreateShape(sd);
+				m_bodyFixture = body->CreateFixture(sd);
 			}
 
 			if (key == GLFW_KEY_C)
@@ -128,12 +107,12 @@ public:
 				capsule.m_vertex2.Set(0.0f, 1.0f, 0.0f);
 				capsule.m_radius = 1.0f;
 
-				b3ShapeDef sd;
+				b3FixtureDef sd;
 				sd.shape = &capsule;
 				sd.density = 1.0f;
 				sd.friction = 0.5f;
 
-				m_bodyShape = body->CreateShape(sd);
+				m_bodyFixture = body->CreateFixture(sd);
 			}
 
 			if (key == GLFW_KEY_H)
@@ -141,18 +120,18 @@ public:
 				b3HullShape hull;
 				hull.m_hull = &b3BoxHull_identity;
 
-				b3ShapeDef sd;
+				b3FixtureDef sd;
 				sd.shape = &hull;
 				sd.density = 1.0f;
 				sd.friction = 0.5f;
 
-				m_bodyShape = body->CreateShape(sd);
+				m_bodyFixture = body->CreateFixture(sd);
 			}
 		}
 
 		if (key == GLFW_KEY_G || key == GLFW_KEY_T)
 		{
-			b3Body* groundBody = m_groundShape->GetBody();
+			b3Body* groundBody = m_groundFixture->GetBody();
 			m_world.DestroyBody(groundBody);
 
 			b3BodyDef bd;
@@ -164,10 +143,10 @@ public:
 				ms.m_mesh = &m_gridMesh;
 				ms.m_scale.Set(2.0f, 1.0f, 2.0f);
 
-				b3ShapeDef sd;
+				b3FixtureDef sd;
 				sd.shape = &ms;
 
-				m_groundShape = (b3MeshShape*)groundBody->CreateShape(sd);
+				m_groundFixture = groundBody->CreateFixture(sd);
 			}
 
 			if (key == GLFW_KEY_T)
@@ -176,13 +155,11 @@ public:
 				ms.m_mesh = &m_terrainMesh;
 				ms.m_scale.Set(2.0f, 1.5f, 2.0f);
 
-				b3ShapeDef sd;
+				b3FixtureDef sd;
 				sd.shape = &ms;
 
-				m_groundShape = (b3MeshShape*)groundBody->CreateShape(sd);
+				m_groundFixture = groundBody->CreateFixture(sd);
 			}
-			
-			m_selection = m_groundShape->m_mesh->triangleCount / 2;
 		}
 	}
 
@@ -190,108 +167,6 @@ public:
 	{
 		Test::Step();
 
-		const b3Mesh* mesh = m_groundShape->m_mesh;
-		b3Vec3 scale = m_groundShape->m_scale;
-		b3Body* body = m_groundShape->GetBody();
-		b3Transform xf = body->GetTransform();
-
-		{
-			const b3MeshTriangle* triangle = mesh->triangles + m_selection;
-			const b3MeshTriangleWings* triangleWings = mesh->triangleWings + m_selection;
-
-			for (u32 i = 0; i < 3; ++i)
-			{
-				u32 j = i + 1 < 3 ? i + 1 : 0;
-
-				u32 v1 = triangle->GetVertex(i);
-				u32 v2 = triangle->GetVertex(j);
-
-				b3Vec3 p1 = xf * b3Mul(scale, mesh->vertices[v1]);
-				b3Vec3 p2 = xf * b3Mul(scale, mesh->vertices[v2]);
-
-				b3Vec3 center = scalar(0.5) * (p1 + p2);
-				DrawString(b3Color_white, center, "e%d", i);
-
-				u32 wingVertex = triangleWings->GetVertex(i);
-
-				if (wingVertex != B3_NULL_VERTEX)
-				{
-					b3Vec3 vertex = xf * b3Mul(scale, mesh->vertices[wingVertex]);
-					DrawString(b3Color_white, vertex, "u%d", i);
-				}
-			}
-		}
-
-		if (m_drawEdgeTypes)
-		{
-			b3Vec3 eyePoint(0.0f, 10.0f, 0.0f);
-
-			for (u32 i = 0; i < mesh->triangleCount; ++i)
-			{
-				b3MeshTriangle* triangle = mesh->triangles + i;
-				b3MeshTriangleWings* triangleWings = mesh->triangleWings + i;
-
-				b3Vec3 A = xf * b3Mul(scale, mesh->vertices[triangle->v1]);
-				b3Vec3 B = xf * b3Mul(scale, mesh->vertices[triangle->v2]);
-				b3Vec3 C = xf * b3Mul(scale, mesh->vertices[triangle->v3]);
-
-				b3Vec3 N = b3Cross(B - A, C - A);
-				N.Normalize();
-
-				b3Plane plane(N, A);
-				if (b3Distance(eyePoint, plane) < 0.0f)
-				{
-					plane = b3Plane(-N, A);
-				}
-
-				for (u32 j = 0; j < 3; ++j)
-				{
-					u32 k = j + 1 < 3 ? j + 1 : 0;
-
-					u32 v1 = triangle->GetVertex(j);
-					u32 v2 = triangle->GetVertex(k);
-
-					u32 u = triangleWings->GetVertex(j);
-
-					b3Vec3 p1 = xf * b3Mul(scale, mesh->vertices[v1]);
-					b3Vec3 p2 = xf * b3Mul(scale, mesh->vertices[v2]);
-
-					b3Vec3 center = scalar(0.5) * (p1 + p2);
-
-					if (u == B3_NULL_VERTEX)
-					{
-						b3DrawPoint(g_debugDraw, center, scalar(4), b3Color_white);
-						continue;
-					}
-
-					b3Vec3 wingVertex = xf * b3Mul(scale, mesh->vertices[u]);
-
-					scalar d = b3Distance(wingVertex, plane);
-
-					const scalar kCoplanarTol = 0.005f;
-
-					if (d < -kCoplanarTol)
-					{
-						// Below <=> Convex
-						b3DrawPoint(g_debugDraw, center, scalar(4), b3Color_green);
-					}
-					else if (d > kCoplanarTol)
-					{
-						// Above <=> Concave
-						b3DrawPoint(g_debugDraw, center, scalar(4), b3Color_yellow);
-					}
-					else
-					{
-						// d > -e && d < e
-						// On <=> Coplanar
-						b3DrawPoint(g_debugDraw, center, scalar(4), b3Color_red);
-					}
-				}
-			}
-		}
-
-		DrawString(b3Color_white, "E - View Edge Types");
-		DrawString(b3Color_white, "Arrows - Select Face Wings");
 		DrawString(b3Color_white, "S - Sphere");
 		DrawString(b3Color_white, "C - Capsule");
 		DrawString(b3Color_white, "H - Hull");
@@ -304,14 +179,11 @@ public:
 		return new MeshContactTest();
 	}
 
-	bool m_drawEdgeTypes;
-	u32 m_selection;
-
 	b3GridMesh<25, 25> m_terrainMesh;
 	b3GridMesh<25, 25> m_gridMesh;
 
-	b3MeshShape* m_groundShape;
-	b3Shape* m_bodyShape;
+	b3Fixture* m_groundFixture;
+	b3Fixture* m_bodyFixture;
 };
 
 #endif

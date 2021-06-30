@@ -33,10 +33,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 
 		{
@@ -50,10 +50,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_platformHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 			sd.friction = 0.8f;
-			m_platform = body->CreateShape(sd);
+			m_platform = body->CreateFixture(sd);
 		}
 
 		// Boxes
@@ -68,11 +68,11 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_boxHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 			sd.density = 0.2f;
 			
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 	}
 
@@ -80,10 +80,10 @@ public:
 	{
 		Test::PreSolve(contact);
 
-		b3Shape* shapeA = contact->GetShapeA();
-		b3Shape* shapeB = contact->GetShapeB();
+		b3Fixture* fixtureA = contact->GetFixtureA();
+		b3Fixture* fixtureB = contact->GetFixtureB();
 
-		if (shapeA == m_platform)
+		if (fixtureA == m_platform)
 		{
 			for (u32 i = 0; i < contact->GetManifoldCount(); ++i)
 			{
@@ -94,7 +94,7 @@ public:
 			}
 		}
 
-		if (shapeB == m_platform)
+		if (fixtureB == m_platform)
 		{
 			for (u32 i = 0; i < contact->GetManifoldCount(); ++i)
 			{
@@ -112,7 +112,7 @@ public:
 	}
 
 	b3BoxHull m_platformHull;
-	b3Shape* m_platform;
+	b3Fixture* m_platform;
 	b3BoxHull m_boxHull;
 };
 

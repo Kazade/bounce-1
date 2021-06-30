@@ -31,10 +31,10 @@ public:
 			b3MeshShape ms;
 			ms.m_mesh = &m_groundMesh;
 			
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &ms;
 			
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 
@@ -50,12 +50,12 @@ public:
 			sphere.m_center.SetZero();
 			sphere.m_radius = 1.0f;
 
-			b3ShapeDef sdef;
-			sdef.shape = &sphere;
-			sdef.density = 1.0f;
-			sdef.friction = 0.3f;
+			b3FixtureDef fd;
+			fd.shape = &sphere;
+			fd.density = 1.0f;
+			fd.friction = 0.3f;
 			
-			body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		for (scalar y = 2.5f; y < 20.0f; y += 2.5f)
@@ -72,12 +72,12 @@ public:
 			capsule.m_vertex2.Set(0.0f, 1.0f, 0.0f);
 			capsule.m_radius = 1.0f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &capsule;
 			sd.density = 1.0f;
 			sd.friction = 0.3f;
 			
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 		
 		for (scalar y = 2.5f; y < 20.0f; y += 2.5f)
@@ -90,12 +90,12 @@ public:
 			b3HullShape hull;
 			hull.m_hull = &b3BoxHull_identity;
 			
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hull;
 			sd.density = 1.0f;
 			sd.friction = 0.3f;
 			
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 	}
 

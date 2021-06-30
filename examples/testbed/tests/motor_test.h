@@ -34,10 +34,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		{
@@ -52,11 +52,11 @@ public:
 			b3HullShape shape;
 			shape.m_hull = &m_boxHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &shape;
 			sd.friction = 0.3f;
 			sd.density = 2.0f;
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 
 			b3MotorJointDef mjd;
 			mjd.Initialize(ground, body);

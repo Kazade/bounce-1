@@ -31,20 +31,20 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
-			bdef.orientation.SetAxisAngle(b3Vec3(1.0f, 0.0f, 0.0f), 0.5f * B3_PI);
-			bdef.position.Set(0.0f, 10.0f, 0.0f);
-			bdef.angularVelocity.Set(0.0f, 0.0f, 4.0f * B3_PI);
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
+			bd.orientation.SetAxisAngle(b3Vec3(1.0f, 0.0f, 0.0f), 0.5f * B3_PI);
+			bd.position.Set(0.0f, 10.0f, 0.0f);
+			bd.angularVelocity.Set(0.0f, 0.0f, 4.0f * B3_PI);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			{
 				m_rotorBox.SetExtents(1.0f, 0.5f, 7.0f);
@@ -52,11 +52,11 @@ public:
 				b3HullShape hull;
 				hull.m_hull = &m_rotorBox;
 
-				b3ShapeDef sdef;
-				sdef.density = 0.1f;
-				sdef.shape = &hull;
+				b3FixtureDef fd;
+				fd.density = 0.1f;
+				fd.shape = &hull;
 
-				body->CreateShape(sdef);
+				body->CreateFixture(fd);
 			}
 
 			{
@@ -65,11 +65,11 @@ public:
 				b3HullShape hull;
 				hull.m_hull = &m_cylinderHull;
 
-				b3ShapeDef sdef;
-				sdef.density = 0.2f;
-				sdef.shape = &hull;
+				b3FixtureDef fd;
+				fd.density = 0.2f;
+				fd.shape = &hull;
 
-				body->CreateShape(sdef);
+				body->CreateFixture(fd);
 			}
 		}
 

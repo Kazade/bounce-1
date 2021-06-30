@@ -20,10 +20,10 @@
 #define B3_DYNAMIC_TREE_H
 
 #include <bounce/common/template/stack.h>
-#include <bounce/collision/shapes/aabb.h>
+#include <bounce/collision/geometry/aabb.h>
 #include <bounce/collision/collision.h>
 
-#define B3_NULL_NODE_D (0xFFFFFFFF)
+#define B3_NULL_NODE_D B3_MAX_U32
 
 // AABB tree for dynamic AABBs.
 // From Box2D.

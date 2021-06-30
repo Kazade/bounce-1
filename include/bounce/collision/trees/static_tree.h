@@ -20,10 +20,10 @@
 #define B3_STATIC_TREE_H
 
 #include <bounce/common/template/stack.h>
-#include <bounce/collision/shapes/aabb.h>
+#include <bounce/collision/geometry/aabb.h>
 #include <bounce/collision/collision.h>
 
-#define B3_NULL_NODE_S (0xFFFFFFFF)
+#define B3_NULL_NODE_S B3_MAX_U32
 
 // AABB tree for static AABBs.
 class b3StaticTree 
@@ -78,7 +78,7 @@ private :
 	};
 
 	// Build this tree recursively.
-	void RecurseBuild(const b3AABB* set, b3Node* node, u32* indices, u32 count, u32 minObjectsPerLeaf, u32 nodeCapacity, u32& leafCount, u32& internalCount);
+	void BuildRecursively(const b3AABB* set, b3Node* node, u32* indices, u32 count, u32 minObjectsPerLeaf, u32 nodeCapacity, u32& leafCount, u32& internalCount);
 	
 	// The root of this tree.
 	u32 m_root;

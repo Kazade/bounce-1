@@ -17,7 +17,7 @@
 */
 
 #include <bounce/collision/sat/sat.h>
-#include <bounce/collision/shapes/hull.h>
+#include <bounce/collision/geometry/hull.h>
 
 // Implementation of the SAT (Separating Axis Test) for 
 // convex hulls. Thanks to Dirk Gregorius for his presentation 

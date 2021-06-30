@@ -20,16 +20,16 @@
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/island.h>
 #include <bounce/dynamics/world_listeners.h>
-#include <bounce/dynamics/shapes/shape.h>
-#include <bounce/dynamics/shapes/mesh_shape.h>
+#include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/contacts/contact.h>
 #include <bounce/dynamics/joints/joint.h>
 #include <bounce/dynamics/time_step.h>
-#include <bounce/dynamics/contacts/collide/collide.h>
+#include <bounce/collision/collide/collide.h>
 #include <bounce/collision/time_of_impact.h>
 #include <bounce/collision/gjk/gjk.h>
 #include <bounce/collision/gjk/gjk_proxy.h>
-#include <bounce/collision/shapes/mesh.h>
+#include <bounce/collision/shapes/mesh_shape.h>
+#include <bounce/collision/geometry/mesh.h>
 #include <bounce/common/draw.h>
 
 extern u32 b3_allocCalls, b3_maxAllocCalls;
@@ -68,8 +68,7 @@ b3World::~b3World()
 	b3Body* b = m_bodyList.m_head;
 	while (b)
 	{
-		// Shapes and joints use b3Alloc.
-		b->DestroyShapes();
+		b->DestroyFixtures();
 		b->DestroyJoints();
 		b = b->m_next;
 	}
@@ -106,7 +105,7 @@ b3Body* b3World::CreateBody(const b3BodyDef& def)
 
 void b3World::DestroyBody(b3Body* b)
 {
-	b->DestroyShapes();
+	b->DestroyFixtures();
 	b->DestroyJoints();
 	b->DestroyContacts();
 
@@ -139,11 +138,11 @@ void b3World::Step(scalar dt, u32 velocityIterations, u32 positionIterations)
 	b3_gjkIters = 0;
 	b3_gjkMaxIters = 0;
 
-	if (m_flags & e_shapeAddedFlag)
+	if (m_flags & e_fixtureAddedFlag)
 	{
 		// If new shapes were added new contacts might be created.
 		m_contactMan.FindNewContacts();
-		m_flags &= ~e_shapeAddedFlag;
+		m_flags &= ~e_fixtureAddedFlag;
 	}
 
 	// Update contacts. This is where some contacts might be destroyed.
@@ -230,9 +229,9 @@ void b3World::Solve(scalar dt, u32 velocityIterations, u32 positionIterations)
 			}
 
 			// Search all contacts connected to this body.
-			for (b3Shape* s = b->m_shapeList.m_head; s; s = s->m_next)
+			for (b3Fixture* f = b->m_fixtureList.m_head; f; f = f->m_next)
 			{
-				for (b3ContactEdge* ce = s->m_contactEdges.m_head; ce; ce = ce->m_next)
+				for (b3ContactEdge* ce = f->m_contactEdges.m_head; ce; ce = ce->m_next)
 				{
 					b3Contact* contact = ce->contact;
 
@@ -255,8 +254,8 @@ void b3World::Solve(scalar dt, u32 velocityIterations, u32 positionIterations)
 					}
 
 					// A sensor can't respond to contacts. 
-					bool sensorA = contact->GetShapeA()->m_isSensor;
-					bool sensorB = contact->GetShapeB()->m_isSensor;
+					bool sensorA = contact->GetFixtureA()->m_isSensor;
+					bool sensorB = contact->GetFixtureB()->m_isSensor;
 					if (sensorA || sensorB)
 					{
 						continue;
@@ -265,7 +264,7 @@ void b3World::Solve(scalar dt, u32 velocityIterations, u32 positionIterations)
 					// Does a contact filter prevent the contact response?
 					if (m_contactMan.m_contactFilter)
 					{
-						if (m_contactMan.m_contactFilter->ShouldRespond(contact->GetShapeA(), contact->GetShapeB()) == false)
+						if (m_contactMan.m_contactFilter->ShouldRespond(contact->GetFixtureA(), contact->GetFixtureB()) == false)
 						{
 							continue;
 						}
@@ -352,12 +351,12 @@ void b3World::Solve(scalar dt, u32 velocityIterations, u32 positionIterations)
 				continue;
 			}
 
-			// Update shapes for broad-phase.
-			b->SynchronizeShapes();
+			// Update fixtures for broad-phase.
+			b->SynchronizeFixtures();
 		}
 
-		// Notify the contacts the AABBs may have been moved.
-		m_contactMan.SynchronizeShapes();
+		// Update fixtures for mid-phase.
+		m_contactMan.SynchronizeFixtures();
 
 		// Find new contacts.
 		m_contactMan.FindNewContacts();
@@ -370,20 +369,18 @@ struct b3ShapeRayCastCallback
 	{
 		// Get shape associated with the proxy.
 		void* userData = broadPhase->GetUserData(proxyId);
-		b3Shape* shape = (b3Shape*)userData;
+		b3Fixture* fixture = (b3Fixture*)userData;
 
 		// Does a ray-cast filter prevents the ray-cast?
-		if (filter->ShouldRayCast(shape) == false)
+		if (filter->ShouldRayCast(fixture) == false)
 		{
 			// Continue search from where we stopped.
 			return input.maxFraction;
 		}
 
 		// Calculate transformation from shape local space to world space.
-		b3Transform xf = shape->GetBody()->GetTransform();
-
 		b3RayCastOutput output;
-		bool hit = shape->RayCast(&output, input, xf);
+		bool hit = fixture->RayCast(&output, input);
 		if (hit)
 		{
 			// Ray hits shape.
@@ -395,7 +392,7 @@ struct b3ShapeRayCastCallback
 			b3Vec3 normal = output.normal;
 
 			// Report the intersection to the user and get the new ray cast fraction.
-			return listener->ReportShape(shape, point, normal, fraction);
+			return listener->ReportFixture(fixture, point, normal, fraction);
 		}
 
 		// Continue search from where we stopped.
@@ -427,26 +424,23 @@ struct b3RayCastSingleShapeCallback
 	{
 		// Get shape associated with the proxy.
 		void* userData = broadPhase->GetUserData(proxyId);
-		b3Shape* shape = (b3Shape*)userData;
+		b3Fixture* fixture = (b3Fixture*)userData;
 
 		// Does a ray-cast filter prevents the ray-cast?
-		if (filter->ShouldRayCast(shape) == false)
+		if (filter->ShouldRayCast(fixture) == false)
 		{
 			// Continue search from where we stopped.
 			return input.maxFraction;
 		}
 
-		// Get map from shape local space to world space.
-		b3Transform xf = shape->GetBody()->GetTransform();
-
 		b3RayCastOutput output;
-		bool hit = shape->RayCast(&output, input, xf);
+		bool hit = fixture->RayCast(&output, input);
 		if (hit)
 		{
 			// Track minimum time of impact to require less memory.
 			if (output.fraction < output0.fraction)
 			{
-				shape0 = shape;
+				fixture0 = fixture;
 				output0 = output;
 			}
 		}
@@ -455,7 +449,7 @@ struct b3RayCastSingleShapeCallback
 		return input.maxFraction;
 	}
 
-	b3Shape* shape0;
+	b3Fixture* fixture0;
 	b3RayCastOutput output0;
 	const b3BroadPhase* broadPhase;
 	b3RayCastFilter* filter;
@@ -469,7 +463,7 @@ bool b3World::RayCastSingle(b3RayCastSingleOutput* output, b3RayCastFilter* filt
 	input.maxFraction = scalar(1);
 
 	b3RayCastSingleShapeCallback callback;
-	callback.shape0 = nullptr;
+	callback.fixture0 = nullptr;
 	callback.output0.fraction = B3_MAX_SCALAR;
 	callback.broadPhase = &m_contactMan.m_broadPhase;
 	callback.filter = filter;
@@ -477,14 +471,14 @@ bool b3World::RayCastSingle(b3RayCastSingleOutput* output, b3RayCastFilter* filt
 	// Perform the ray cast.
 	m_contactMan.m_broadPhase.RayCast(&callback, input);
 
-	if (callback.shape0)
+	if (callback.fixture0)
 	{
 		// Ray hits closest shape.
 		scalar fraction = callback.output0.fraction;
 		b3Vec3 point = (scalar(1) - fraction) * input.p1 + fraction * input.p2;
 		b3Vec3 normal = callback.output0.normal;
 
-		output->shape = callback.shape0;
+		output->fixture = callback.fixture0;
 		output->point = point;
 		output->normal = normal;
 		output->fraction = fraction;
@@ -501,11 +495,11 @@ struct b3ShapeCastQueryCallback
 	{
 		bool Report(u32 proxyId)
 		{
-			u32 triangleIndex = callback->meshShapeB->m_mesh->tree.GetUserData(proxyId);
+			u32 triangleIndex = callback->meshB->m_mesh->tree.GetUserData(proxyId);
 
-			b3Body* bodyB = callback->meshShapeB->GetBody();
+			b3Body* bodyB = callback->fixtureB->GetBody();
 			b3Transform xfB = bodyB->GetTransform();
-			b3ShapeGJKProxy proxyB(callback->meshShapeB, triangleIndex);
+			b3ShapeGJKProxy proxyB(callback->meshB, triangleIndex);
 
 			b3TOIOutput toi = b3TimeOfImpact(callback->xfA, *callback->proxyA, callback->dA, xfB, proxyB, b3Vec3_zero);
 
@@ -522,7 +516,7 @@ struct b3ShapeCastQueryCallback
 				if (fraction < callback->fraction0)
 				{
 					callback->fraction0 = fraction;
-					callback->shape0 = callback->meshShapeB;
+					callback->fixture0 = callback->fixtureB;
 					callback->childIndex0 = triangleIndex;
 				}
 
@@ -535,7 +529,7 @@ struct b3ShapeCastQueryCallback
 					b3Vec3 point, normal;
 					callback->Evaluate(&point, &normal, xf, *callback->proxyA, xfB, proxyB);
 
-					callback->maxFraction = callback->listener->ReportShape(callback->meshShapeB, point, normal, fraction);
+					callback->maxFraction = callback->listener->ReportFixture(callback->fixtureB, point, normal, fraction);
 					if (callback->maxFraction == scalar(0))
 					{
 						return false;
@@ -554,28 +548,28 @@ struct b3ShapeCastQueryCallback
 	bool Report(u32 proxyId)
 	{
 		void* userData = broadPhase->GetUserData(proxyId);
-		b3Shape* shapeB = (b3Shape*)userData;
-
-		if (filter->ShouldShapeCast(shapeB) == false)
+		fixtureB = (b3Fixture*)userData;
+		if (filter->ShouldShapeCast(fixtureB) == false)
 		{
 			return true;
 		}
 
-		b3Body* bodyB = shapeB->GetBody();
+		b3Body* bodyB = fixtureB->GetBody();
 		b3Transform xfB = bodyB->GetTransform();
+		b3Shape* shapeB = fixtureB->GetShape();
 
-		if (shapeB->GetType() == e_meshShape)
+		if (shapeB->GetType() == b3Shape::e_mesh)
 		{
-			meshShapeB = (b3MeshShape*)shapeB;
+			meshB = (b3MeshShape*)fixtureB->GetShape();
 
-			B3_ASSERT(meshShapeB->m_scale.x != scalar(0));
-			B3_ASSERT(meshShapeB->m_scale.y != scalar(0));
-			B3_ASSERT(meshShapeB->m_scale.z != scalar(0));
+			B3_ASSERT(meshB->m_scale.x != scalar(0));
+			B3_ASSERT(meshB->m_scale.y != scalar(0));
+			B3_ASSERT(meshB->m_scale.z != scalar(0));
 
 			b3Vec3 inv_scale;
-			inv_scale.x = scalar(1) / meshShapeB->m_scale.x;
-			inv_scale.y = scalar(1) / meshShapeB->m_scale.y;
-			inv_scale.z = scalar(1) / meshShapeB->m_scale.z;
+			inv_scale.x = scalar(1) / meshB->m_scale.x;
+			inv_scale.y = scalar(1) / meshB->m_scale.y;
+			inv_scale.z = scalar(1) / meshB->m_scale.z;
 
 			b3Transform xf = b3MulT(xfB, xfA);
 
@@ -618,7 +612,7 @@ struct b3ShapeCastQueryCallback
 			MeshCallback callback;
 			callback.callback = this;
 
-			meshShapeB->m_mesh->tree.QueryAABB(&callback, aabb);
+			meshB->m_mesh->tree.QueryAABB(&callback, aabb);
 
 			if (maxFraction == scalar(0))
 			{
@@ -628,6 +622,7 @@ struct b3ShapeCastQueryCallback
 			return true;
 		}
 
+		// The shape B is convex.
 		b3ShapeGJKProxy proxyB(shapeB, 0);
 
 		b3TOIOutput toi = b3TimeOfImpact(xfA, *proxyA, dA, xfB, proxyB, b3Vec3_zero);
@@ -645,7 +640,7 @@ struct b3ShapeCastQueryCallback
 			if (fraction < fraction0)
 			{
 				fraction0 = fraction;
-				shape0 = shapeB;
+				fixture0 = fixtureB;
 				childIndex0 = 0;
 			}
 
@@ -658,7 +653,7 @@ struct b3ShapeCastQueryCallback
 				b3Vec3 point, normal;
 				Evaluate(&point, &normal, xf, *proxyA, xfB, proxyB);
 
-				maxFraction = listener->ReportShape(shapeB, point, normal, fraction);
+				maxFraction = listener->ReportFixture(fixtureB, point, normal, fraction);
 				if (maxFraction == scalar(0))
 				{
 					return false;
@@ -686,8 +681,8 @@ struct b3ShapeCastQueryCallback
 		*normalB = normal;
 	}
 
-	b3Transform xfA;
 	const b3Shape* shapeA;
+	b3Transform xfA;
 	const b3ShapeGJKProxy* proxyA;
 	b3Vec3 dA;
 	scalar maxFraction;
@@ -696,27 +691,28 @@ struct b3ShapeCastQueryCallback
 	b3ShapeCastFilter* filter;
 	const b3BroadPhase* broadPhase;
 
-	b3MeshShape* meshShapeB;
+	b3Fixture* fixtureB;
+	b3MeshShape* meshB;
 
-	b3Shape* shape0;
+	b3Fixture* fixture0;
 	u32 childIndex0;
 	scalar fraction0;
 };
 
 void b3World::ShapeCast(b3ShapeCastListener* listener, b3ShapeCastFilter* filter, 
-	const b3Shape* shape, const b3Vec3& displacement) const
+	const b3Shape* shape, const b3Transform& xf, const b3Vec3& displacement) const
 {
-	B3_ASSERT(shape->m_type != e_meshShape);
-	if (shape->m_type == e_meshShape)
+	// The shape must be convex.
+	B3_ASSERT(shape->m_type != b3Shape::e_mesh);
+	if (shape->m_type == b3Shape::e_mesh)
 	{
 		return;
 	}
 
-	const b3Body* body = shape->GetBody();
-	b3Transform xf = body->GetTransform();
 	b3ShapeGJKProxy proxyA(shape, 0);
 
-	b3AABB aabb = shape->GetAABB();
+	b3AABB aabb;
+	shape->ComputeAABB(&aabb, xf);
 
 	if (displacement.x < scalar(0))
 	{
@@ -748,12 +744,12 @@ void b3World::ShapeCast(b3ShapeCastListener* listener, b3ShapeCastFilter* filter
 	b3ShapeCastQueryCallback callback;
 	callback.listener = listener;
 	callback.filter = filter;
-	callback.proxyA = &proxyA;
-	callback.xfA = xf;
 	callback.shapeA = shape;
+	callback.xfA = xf;
+	callback.proxyA = &proxyA;
 	callback.dA = displacement;
 	callback.maxFraction = scalar(1);
-	callback.shape0 = nullptr;
+	callback.fixture0 = nullptr;
 	callback.fraction0 = B3_MAX_SCALAR;
 	callback.childIndex0 = B3_MAX_U32;
 	callback.broadPhase = &m_contactMan.m_broadPhase;
@@ -762,19 +758,18 @@ void b3World::ShapeCast(b3ShapeCastListener* listener, b3ShapeCastFilter* filter
 }
 
 bool b3World::ShapeCastSingle(b3ShapeCastSingleOutput* output, b3ShapeCastFilter* filter, 
-	const b3Shape* shape, const b3Vec3& displacement) const
+	const b3Shape* shape, const b3Transform& xf, const b3Vec3& displacement) const
 {
-	B3_ASSERT(shape->m_type != e_meshShape);
-	if (shape->m_type == e_meshShape)
+	B3_ASSERT(shape->m_type != b3Shape::e_mesh);
+	if (shape->m_type == b3Shape::e_mesh)
 	{
 		return false;
 	}
 
-	const b3Body* body = shape->GetBody();
-	b3Transform xf = body->GetTransform();
 	b3ShapeGJKProxy proxyA(shape, 0);
 	
-	b3AABB aabb = shape->GetAABB();
+	b3AABB aabb;
+	shape->ComputeAABB(&aabb, xf);
 
 	if (displacement.x < scalar(0))
 	{
@@ -811,21 +806,21 @@ bool b3World::ShapeCastSingle(b3ShapeCastSingleOutput* output, b3ShapeCastFilter
 	callback.shapeA = shape;
 	callback.dA = displacement;
 	callback.maxFraction = scalar(1);
-	callback.shape0 = nullptr;
+	callback.fixture0 = nullptr;
 	callback.childIndex0 = B3_MAX_U32;
 	callback.fraction0 = B3_MAX_SCALAR;
 	callback.broadPhase = &m_contactMan.m_broadPhase;
 
 	m_contactMan.m_broadPhase.QueryAABB(&callback, aabb);
 
-	if (callback.shape0 == nullptr)
+	if (callback.fixture0 == nullptr)
 	{
 		return false;
 	}
 
-	b3ShapeGJKProxy proxyB(callback.shape0, callback.childIndex0);
+	b3ShapeGJKProxy proxyB(callback.fixture0->GetShape(), callback.childIndex0);
 
-	b3Body* bodyB = callback.shape0->GetBody();
+	b3Body* bodyB = callback.fixture0->GetBody();
 	b3Transform xfB = bodyB->GetTransform();
 	
 	b3Transform xft;
@@ -835,7 +830,7 @@ bool b3World::ShapeCastSingle(b3ShapeCastSingleOutput* output, b3ShapeCastFilter
 	b3Vec3 point, normal;
 	callback.Evaluate(&point, &normal, xft, proxyA, xfB, proxyB);
 
-	output->shape = callback.shape0;
+	output->fixture = callback.fixture0;
 	output->fraction = callback.fraction0;
 	output->point = point;
 	output->normal = normal;
@@ -847,11 +842,11 @@ struct b3QueryAABBCallback
 {
 	bool Report(u32 proxyID)
 	{
-		b3Shape* shape = (b3Shape*)broadPhase->GetUserData(proxyID);
+		b3Fixture* fixture = (b3Fixture*)broadPhase->GetUserData(proxyID);
 
-		if (filter->ShouldReport(shape))
+		if (filter->ShouldReport(fixture))
 		{
-			return listener->ReportShape(shape);
+			return listener->ReportFixture(fixture);
 		}
 
 		return true;
@@ -895,10 +890,9 @@ void b3World::Draw() const
 	{
 		for (b3Body* b = m_bodyList.m_head; b; b = b->m_next)
 		{
-			const b3Transform& xf = b->GetTransform();
-			for (b3Shape* s = b->m_shapeList.m_head; s; s = s->m_next)
+			for (b3Fixture* f = b->m_fixtureList.m_head; f; f = f->m_next)
 			{
-				s->Draw(xf, b3Color_black);
+				f->Draw(b3Color_black);
 			}
 		}
 	}
@@ -907,9 +901,9 @@ void b3World::Draw() const
 	{
 		for (b3Body* b = m_bodyList.m_head; b; b = b->m_next)
 		{
-			for (b3Shape* s = b->m_shapeList.m_head; s; s = s->m_next)
+			for (b3Fixture* f = b->m_fixtureList.m_head; f; f = f->m_next)
 			{
-				const b3AABB& aabb = m_contactMan.m_broadPhase.GetAABB(s->m_broadPhaseID);
+				const b3AABB& aabb = m_contactMan.m_broadPhase.GetAABB(f->m_broadPhaseID);
 				b3Draw_draw->DrawAABB(aabb, b3Color_pink);
 			}
 		}
@@ -1011,10 +1005,9 @@ void b3World::DrawSolid() const
 			c = b3Color(scalar(0.5), scalar(0.5), scalar(1), scalar(1));
 		}
 
-		b3Transform xf = b->GetTransform();
-		for (b3Shape* s = b->GetShapeList().m_head; s; s = s->GetNext())
+		for (b3Fixture* f = b->GetFixtureList().m_head; f; f = f->GetNext())
 		{
-			s->DrawSolid(xf, c);
+			f->DrawSolid(c);
 		}
 	}
 }

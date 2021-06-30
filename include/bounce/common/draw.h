@@ -26,7 +26,7 @@
 #include <bounce/common/math/mat44.h>
 #include <bounce/common/math/transform.h>
 #include <bounce/common/graphics/color.h>
-#include <bounce/collision/shapes/aabb.h>
+#include <bounce/collision/geometry/aabb.h>
 
 // Debug draw interface.
 class b3Draw

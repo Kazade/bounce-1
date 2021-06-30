@@ -31,10 +31,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		// Car frame shape
@@ -51,35 +51,35 @@ public:
 		// Car frame
 		b3Body* frame;
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
-			bdef.position.Set(0.0f, 10.0f, 0.0f);
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
+			bd.position.Set(0.0f, 10.0f, 0.0f);
 
-			frame = m_world.CreateBody(bdef);
+			frame = m_world.CreateBody(bd);
 
-			b3ShapeDef sdef;
-			sdef.density = 0.1f;
-			sdef.friction = 0.3f;
-			sdef.shape = &box;
+			b3FixtureDef fd;
+			fd.density = 0.1f;
+			fd.friction = 0.3f;
+			fd.shape = &box;
 
-			frame->CreateShape(sdef);
+			frame->CreateFixture(fd);
 		}
 
 		b3Body* wheelLF;
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
-			bdef.position.Set(-1.0f, 7.0f, 4.5f);
-			bdef.fixedRotationY = true;
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
+			bd.position.Set(-1.0f, 7.0f, 4.5f);
+			bd.fixedRotationY = true;
 
-			wheelLF = m_world.CreateBody(bdef);
+			wheelLF = m_world.CreateBody(bd);
 
-			b3ShapeDef sdef;
-			sdef.shape = &sphere;
-			sdef.density = 0.1f;
-			sdef.friction = 1.0f;
+			b3FixtureDef fd;
+			fd.shape = &sphere;
+			fd.density = 0.1f;
+			fd.friction = 1.0f;
 
-			wheelLF->CreateShape(sdef);
+			wheelLF->CreateFixture(fd);
 		}
 
 		{
@@ -94,19 +94,19 @@ public:
 
 		b3Body* wheelRF;
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
-			bdef.position.Set(1.0f, 7.0, 4.5f);
-			bdef.fixedRotationY = true;
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
+			bd.position.Set(1.0f, 7.0, 4.5f);
+			bd.fixedRotationY = true;
 
-			wheelRF = m_world.CreateBody(bdef);
+			wheelRF = m_world.CreateBody(bd);
 
-			b3ShapeDef sdef;
-			sdef.density = 0.1f;
-			sdef.friction = 1.0f;
-			sdef.shape = &sphere;
+			b3FixtureDef fd;
+			fd.density = 0.1f;
+			fd.friction = 1.0f;
+			fd.shape = &sphere;
 
-			wheelRF->CreateShape(sdef);
+			wheelRF->CreateFixture(fd);
 		}
 
 		{
@@ -121,19 +121,19 @@ public:
 
 		b3Body* wheelLB;
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
-			bdef.position.Set(-1.0f, 7.0f, -4.5f);
-			bdef.fixedRotationY = true;
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
+			bd.position.Set(-1.0f, 7.0f, -4.5f);
+			bd.fixedRotationY = true;
 
-			wheelLB = m_world.CreateBody(bdef);
+			wheelLB = m_world.CreateBody(bd);
 
-			b3ShapeDef sdef;
-			sdef.shape = &sphere;
-			sdef.density = 0.1f;
-			sdef.friction = 1.0f;
+			b3FixtureDef fd;
+			fd.shape = &sphere;
+			fd.density = 0.1f;
+			fd.friction = 1.0f;
 
-			wheelLB->CreateShape(sdef);
+			wheelLB->CreateFixture(fd);
 		}
 
 		{
@@ -148,19 +148,19 @@ public:
 
 		b3Body* wheelRB;
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
-			bdef.position.Set(1.0f, 7.0f, -4.5f);
-			bdef.fixedRotationY = true;
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
+			bd.position.Set(1.0f, 7.0f, -4.5f);
+			bd.fixedRotationY = true;
 
-			wheelRB = m_world.CreateBody(bdef);
+			wheelRB = m_world.CreateBody(bd);
 
-			b3ShapeDef sdef;
-			sdef.density = 0.1f;
-			sdef.friction = 1.0f;
-			sdef.shape = &sphere;
+			b3FixtureDef fd;
+			fd.density = 0.1f;
+			fd.friction = 1.0f;
+			fd.shape = &sphere;
 
-			wheelRB->CreateShape(sdef);
+			wheelRB->CreateFixture(fd);
 		}
 
 		{

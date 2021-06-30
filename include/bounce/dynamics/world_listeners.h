@@ -29,9 +29,9 @@ class b3QueryListener
 public:
 	virtual ~b3QueryListener() {}
 
-	// Report to the contact listener that a shape is overlapping 
+	// Report to the contact listener that a fixture is overlapping 
 	// the queried AABB.
-	virtual bool ReportShape(b3Shape* shape) = 0;
+	virtual bool ReportFixture(b3Fixture* fixture) = 0;
 };
 
 // Implement this class to provide query filtering.
@@ -40,8 +40,8 @@ class b3QueryFilter
 public:
 	virtual ~b3QueryFilter() { }
 
-	// Return true if this shape should be reported to the listener.
-	virtual bool ShouldReport(b3Shape* shape) = 0;
+	// Return true if this fixture should be reported to the listener.
+	virtual bool ShouldReport(b3Fixture* fixture) = 0;
 };
 
 class b3RayCastListener 
@@ -51,11 +51,11 @@ public:
 	// If fraction equals zero then the ray cast query will be canceled immediately.
 	virtual ~b3RayCastListener() { }
 
-	// Report that a shape was hit by the ray to this contact listener.
-	// The reported information are the shape hit by the ray,
-	// the intersection point on the shape, the surface normal associated with the point, and the 
+	// Report that a fixture was hit by the ray to this contact listener.
+	// The reported information are the fixture hit by the ray,
+	// the intersection point on the fixture, the surface normal associated with the point, and the 
 	// intersection fraction for the ray.
-	virtual scalar ReportShape(b3Shape* shape, const b3Vec3& point, const b3Vec3& normal, scalar fraction) = 0;
+	virtual scalar ReportFixture(b3Fixture* fixture, const b3Vec3& point, const b3Vec3& normal, scalar fraction) = 0;
 };
 
 // Implement this class to provide ray-cast filtering.
@@ -64,8 +64,8 @@ class b3RayCastFilter
 public:
 	virtual ~b3RayCastFilter() { }
 
-	// Return true if ray-cast calculations should be performed on this shape.
-	virtual bool ShouldRayCast(b3Shape* shape) = 0;
+	// Return true if ray-cast calculations should be performed on this fixture.
+	virtual bool ShouldRayCast(b3Fixture* shape) = 0;
 };
 
 // Implement this class to provide shape-cast filtering.
@@ -74,8 +74,8 @@ class b3ShapeCastFilter
 public:
 	virtual ~b3ShapeCastFilter() { }
 
-	// Return true if shape-cast calculations should be performed on this shape.
-	virtual bool ShouldShapeCast(b3Shape* shape) = 0;
+	// Return true if shape-cast calculations should be performed on this fixture.
+	virtual bool ShouldShapeCast(b3Fixture* fixture) = 0;
 };
 
 class b3ShapeCastListener
@@ -85,11 +85,11 @@ public:
 	// If fraction equals zero then the convex cast query will be canceled immediately.
 	virtual ~b3ShapeCastListener() { }
 
-	// Report that a shape was hit by the ray to this contact listener.
-	// The reported information are the shape hit by the convex shape,
+	// Report that a fixture was hit by the ray to this contact listener.
+	// The reported information are the fixture hit by the convex shape,
 	// the intersection point on the shape, the surface normal associated with the point, and the 
 	// intersection fraction for the displacement vector.
-	virtual scalar ReportShape(b3Shape* shape, const b3Vec3& point, const b3Vec3& normal, scalar fraction) = 0;
+	virtual scalar ReportFixture(b3Fixture* fixture, const b3Vec3& point, const b3Vec3& normal, scalar fraction) = 0;
 };
 
 // Inherit from this class and set it in the world to listen for collision events.	
@@ -133,14 +133,14 @@ class b3ContactFilter
 public:
 	virtual ~b3ContactFilter() { }
 
-	// Should the two shapes collide with each other?
-	virtual bool ShouldCollide(b3Shape* shapeA, b3Shape* shapeB) = 0;
+	// Should the two fixtures collide with each other?
+	virtual bool ShouldCollide(b3Fixture* fixtureA, b3Fixture* fixtureB) = 0;
 
-	// Should one or both shapes respond to a contact with each other?
-	virtual bool ShouldRespond(b3Shape* shapeA, b3Shape* shapeB)
+	// Should one or both fixtures respond to a contact with each other?
+	virtual bool ShouldRespond(b3Fixture* fixtureA, b3Fixture* fixtureB)
 	{
-		B3_NOT_USED(shapeA);
-		B3_NOT_USED(shapeB);
+		B3_NOT_USED(fixtureA);
+		B3_NOT_USED(fixtureB);
 		return true;
 	}
 };

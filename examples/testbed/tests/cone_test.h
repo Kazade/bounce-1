@@ -46,10 +46,10 @@ public:
 			cs.m_vertex2.Set(0.0f, -0.15f, 0.0f);
 			cs.m_radius = 0.5f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &cs;
 			sd.density = 10.0f;
-			head->CreateShape(sd);
+			head->CreateFixture(sd);
 		}
 
 		{

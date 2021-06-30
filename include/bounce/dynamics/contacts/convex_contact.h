@@ -20,20 +20,16 @@
 #define B3_CONVEX_CONTACT_H
 
 #include <bounce/dynamics/contacts/contact.h>
-#include <bounce/dynamics/contacts/manifold.h>
-#include <bounce/dynamics/contacts/collide/collide.h>
+#include <bounce/collision/collide/manifold.h>
+#include <bounce/collision/collide/collide.h>
 
 class b3ConvexContact : public b3Contact 
 {
 public:
-	b3ConvexContact(b3Shape* shapeA, b3Shape* shapeB);
+	b3ConvexContact(b3Fixture* fixtureA, b3Fixture* fixtureB);
 	~b3ConvexContact() { }
 
 	bool TestOverlap() override;
-
-	void SynchronizeShape() override { }
-
-	void FindPairs() override { }
 
 	void Collide() override;
 

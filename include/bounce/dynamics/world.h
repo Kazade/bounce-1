@@ -45,7 +45,7 @@ class b3ContactFilter;
 // Output of b3World::RayCastSingle
 struct b3RayCastSingleOutput
 {
-	b3Shape* shape; // shape
+	b3Fixture* fixture; // fixture
 	b3Vec3 point; // intersection point on surface
 	b3Vec3 normal; // surface normal of intersection
 	scalar fraction; // time of intersection on segment
@@ -54,7 +54,7 @@ struct b3RayCastSingleOutput
 // Output of b3World::ShapeCastSingle
 struct b3ShapeCastSingleOutput
 {
-	b3Shape* shape; // shape
+	b3Fixture* fixture; // fixture
 	b3Vec3 point; // intersection point on surface
 	b3Vec3 normal; // surface normal of intersection
 	scalar fraction; // time of intersection on displacement
@@ -66,7 +66,7 @@ class b3World
 {
 public:
 	// Bit flags to tell the world what needs to be draw.
-	enum b3DrawFlags
+	enum DrawFlags
 	{
 		e_shapesFlag = 0x0001,
 		e_centerOfMassesFlag = 0x0002,
@@ -140,13 +140,13 @@ public:
 	bool RayCastSingle(b3RayCastSingleOutput* output, b3RayCastFilter* filter, const b3Vec3& p1, const b3Vec3& p2) const;
 
 	// Perform a shape cast with the world. This only works for given convex shapes.
-	// You must supply a listener, filter, the shape and the displacement of the shape.
+	// You must supply a listener, filter, the shape, its transform and the displacement of the shape.
 	// The shape must belong to this world.
 	// The given convex cast listener will be notified when a convex intersects a shape 
 	// in the world. 
 	// You can control on which shapes the convex-cast is performed using
 	// a filter.
-	void ShapeCast(b3ShapeCastListener* listener, b3ShapeCastFilter* filter, const b3Shape* shape, const b3Vec3& displacement) const;
+	void ShapeCast(b3ShapeCastListener* listener, b3ShapeCastFilter* filter, const b3Shape* shape, const b3Transform& xf, const b3Vec3& displacement) const;
 
 	// Perform a shape cast with the world. This only works for given convex shapes.
 	// You must supply a filter, the shape and the displacement of the shape.
@@ -154,7 +154,7 @@ public:
 	// If the convex doesn't intersect with any shape in the world then return false.
 	// You can control on which shapes the convex-cast is performed using
 	// the given filter.
-	bool ShapeCastSingle(b3ShapeCastSingleOutput* output, b3ShapeCastFilter* filter, const b3Shape* shape, const b3Vec3& displacement) const;
+	bool ShapeCastSingle(b3ShapeCastSingleOutput* output, b3ShapeCastFilter* filter, const b3Shape* shape, const b3Transform& xf, const b3Vec3& displacement) const;
 
 	// Perform a AABB query with the world.
 	// The query listener will be notified when two shape AABBs are overlapping.
@@ -190,20 +190,18 @@ public:
 	// Draw solid the entities in this world.
 	void DrawSolid() const;
 private:
-	enum b3Flags 
+	// Flags
+	enum 
 	{
-		e_shapeAddedFlag = 0x0001,
+		e_fixtureAddedFlag = 0x0001,
 		e_clearForcesFlag = 0x0002,
 	};
 	
 	friend class b3Body;
-	friend class b3Shape;
+	friend class b3Fixture;
 	friend class b3Contact;
 	friend class b3ConvexContact;
 	friend class b3MeshContact;
-	friend class b3MeshAndSphereContact;
-	friend class b3MeshAndCapsuleContact;
-	friend class b3MeshAndHullContact;
 	friend class b3Joint;
 
 	void Solve(scalar dt, u32 velocityIterations, u32 positionIterations);

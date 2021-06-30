@@ -24,25 +24,25 @@ class LinearMotion : public Test
 public:
 	LinearMotion()
 	{
-		b3BodyDef bdef;
-		bdef.type = e_dynamicBody;
-		bdef.position.Set(0.0f, 0.0f, 0.0f);
-		bdef.fixedRotationX = true;
-		bdef.fixedRotationY = true;
-		bdef.fixedRotationZ = true;
+		b3BodyDef bd;
+		bd.type = e_dynamicBody;
+		bd.position.Set(0.0f, 0.0f, 0.0f);
+		bd.fixedRotationX = true;
+		bd.fixedRotationY = true;
+		bd.fixedRotationZ = true;
 
-		m_body = m_world.CreateBody(bdef);
+		m_body = m_world.CreateBody(bd);
 
 		b3CapsuleShape shape;
 		shape.m_vertex1.Set(0.0f, 1.0f, 0.0f);
 		shape.m_vertex2.Set(0.0f, -1.0f, 0.0f);
 		shape.m_radius = 1.0f;
 
-		b3ShapeDef sdef;
-		sdef.shape = &shape;
-		sdef.density = 1.0f;
+		b3FixtureDef fd;
+		fd.shape = &shape;
+		fd.density = 1.0f;
 
-		m_body->CreateShape(sdef);
+		m_body->CreateFixture(fd);
 
 		b3Vec3 g(0.0f, 0.0f, 0.0f);
 		m_world.SetGravity(g);

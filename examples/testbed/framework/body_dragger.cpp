@@ -22,7 +22,7 @@ b3BodyDragger::b3BodyDragger(b3Ray3* ray, b3World* world)
 {
 	m_ray = ray;
 	m_world = world;
-	m_shape = nullptr;
+	m_fixture = nullptr;
 	m_mouseJoint = nullptr;
 }
 
@@ -38,7 +38,7 @@ bool b3BodyDragger::StartDragging()
 	class RayCastFilter : public b3RayCastFilter
 	{
 	public:
-		bool ShouldRayCast(b3Shape* shape)
+		bool ShouldRayCast(b3Fixture* fixture)
 		{
 			return true;
 		}
@@ -53,12 +53,12 @@ bool b3BodyDragger::StartDragging()
 	}
 	
 	m_x = out.fraction;
-	m_shape = out.shape;
+	m_fixture = out.fixture;
 
 	b3BodyDef bd;
 	b3Body* groundBody = m_world->CreateBody(bd);
 
-	b3Body* body = m_shape->GetBody();
+	b3Body* body = m_fixture->GetBody();
 	body->SetAwake(true);
 
 	b3MouseJointDef jd;
@@ -87,19 +87,19 @@ void b3BodyDragger::StopDragging()
 	m_world->DestroyJoint(m_mouseJoint);
 	m_mouseJoint = nullptr;
 	m_world->DestroyBody(groundBody);
-	m_shape = nullptr;
+	m_fixture = nullptr;
 }
 
-b3Shape* b3BodyDragger::GetShape() const
+b3Fixture* b3BodyDragger::GetFixture() const
 {
 	B3_ASSERT(IsDragging() == true);
-	return m_shape;
+	return m_fixture;
 }
 
 b3Vec3 b3BodyDragger::GetPointA() const
 {
 	B3_ASSERT(IsDragging() == true);
-	return m_shape->GetBody()->GetWorldPoint(m_p);
+	return m_fixture->GetBody()->GetWorldPoint(m_p);
 }
 
 b3Vec3 b3BodyDragger::GetPointB() const

@@ -32,17 +32,17 @@ public:
 	CapsuleStack()
 	{
 		{
-			b3BodyDef bdef;
-			b3Body* body = m_world.CreateBody(bdef);
+			b3BodyDef bd;
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
-			sdef.friction = 1.0f;
+			b3FixtureDef fd;
+			fd.shape = &hs;
+			fd.friction = 1.0f;
 
-			body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		scalar rx = 1.0f;
@@ -86,25 +86,25 @@ public:
 			{
 				for (u32 k = 0; k < e_d; ++k)
 				{
-					b3BodyDef bdef;
-					bdef.type = e_dynamicBody;
+					b3BodyDef bd;
+					bd.type = e_dynamicBody;
 
-					bdef.position.Set(scalar(j), scalar(i), scalar(k));
+					bd.position.Set(scalar(j), scalar(i), scalar(k));
 
-					bdef.position.x *= scale.x;
-					bdef.position.y *= scale.y;
-					bdef.position.z *= scale.z;
+					bd.position.x *= scale.x;
+					bd.position.y *= scale.y;
+					bd.position.z *= scale.z;
 
-					bdef.position += translation;
+					bd.position += translation;
 
-					b3Body* body = m_world.CreateBody(bdef);
+					b3Body* body = m_world.CreateBody(bd);
 
-					b3ShapeDef sdef;
-					sdef.density = 0.1f;
-					sdef.friction = 0.3f;
-					sdef.shape = &capsule;
+					b3FixtureDef fd;
+					fd.density = 0.1f;
+					fd.friction = 0.3f;
+					fd.shape = &capsule;
 
-					body->CreateShape(sdef);
+					body->CreateFixture(fd);
 
 					u32 bodyIndex = GetBodyIndex(i, j, k);
 

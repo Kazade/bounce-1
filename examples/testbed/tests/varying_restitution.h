@@ -31,10 +31,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 			
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		{
@@ -47,12 +47,12 @@ public:
 			ball.m_center.SetZero();
 			ball.m_radius = 1.0f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &ball;
 			sd.density = 1.0f;
 			sd.restitution = 0.2f;
 			
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 
 		{
@@ -65,12 +65,12 @@ public:
 			ball.m_center.SetZero();
 			ball.m_radius = 1.0f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &ball;
 			sd.density = 1.0f;
 			sd.restitution = 0.4f;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 
 		{
@@ -83,12 +83,12 @@ public:
 			ball.m_center.SetZero();
 			ball.m_radius = 1.0f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &ball;
 			sd.density = 1.0f;
 			sd.restitution = 0.6f;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 
 		{
@@ -101,12 +101,12 @@ public:
 			ball.m_center.SetZero();
 			ball.m_radius = 1.0f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &ball;
 			sd.density = 1.0f;
 			sd.restitution = 0.8f;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 
 		{
@@ -119,12 +119,12 @@ public:
 			ball.m_center.SetZero();
 			ball.m_radius = 1.0f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &ball;
 			sd.density = 1.0f;
 			sd.restitution = 1.0f;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 	}
 

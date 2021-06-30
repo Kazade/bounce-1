@@ -31,10 +31,10 @@ public:
 			b3HullShape shape;
 			shape.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &shape;
 
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		b3Body* bA, * bB;
@@ -51,11 +51,11 @@ public:
 			b3HullShape hull;
 			hull.m_hull = &m_hullA;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hull;
-			sdef.density = 1.0f;
+			b3FixtureDef fd;
+			fd.shape = &hull;
+			fd.density = 1.0f;
 
-			bA->CreateShape(sdef);
+			bA->CreateFixture(fd);
 		}
 
 		{
@@ -70,11 +70,11 @@ public:
 			b3HullShape hull;
 			hull.m_hull = &m_hullB;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hull;
-			sdef.density = 1.0f;
+			b3FixtureDef fd;
+			fd.shape = &hull;
+			fd.density = 1.0f;
 
-			bB->CreateShape(sdef);
+			bB->CreateFixture(fd);
 		}
 
 		// Create prismatic joint

@@ -22,8 +22,8 @@
 #include <bounce/common/math/math.h>
 #include <bounce/common/template/list.h>
 #include <bounce/common/template/array.h>
-#include <bounce/dynamics/shapes/shape.h>
-#include <bounce/dynamics/contacts/manifold.h>
+#include <bounce/dynamics/fixture.h>
+#include <bounce/collision/collide/manifold.h>
 
 class b3BlockPool;
 
@@ -35,11 +35,11 @@ class b3BlockAllocator;
 struct b3ConvexCache;
 
 // A contact edge for the contact graph, 
-// where a shape is a vertex and a contact 
+// where a fixture is a vertex and a contact 
 // an edge.
 struct b3ContactEdge
 {
-	b3Shape* other;
+	b3Fixture* other;
 	b3Contact* contact;
 	// Links to the contact edge list.
 	b3ContactEdge* m_prev;
@@ -50,15 +50,15 @@ struct b3ContactEdge
 // It holds two shapes that are overlapping.
 struct b3OverlappingPair
 {
-	// To the shape A edge list.
-	b3Shape* shapeA;
+	// To the fixture A edge list.
+	b3Fixture* fixtureA;
 	b3ContactEdge edgeA;
-	// To the shape B edge list.
-	b3Shape* shapeB;
+	// To the fixture B edge list.
+	b3Fixture* fixtureB;
 	b3ContactEdge edgeB;
 };
 
-typedef b3Contact* b3ContactCreateFcn(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator);
+typedef b3Contact* b3ContactCreateFcn(b3Fixture* shapeA, b3Fixture* shapeB, b3BlockAllocator* allocator);
 typedef void b3ContactDestroyFcn(b3Contact* contact, b3BlockAllocator* allocator);
 
 struct b3ContactRegister
@@ -72,12 +72,12 @@ class b3Contact
 {
 public:
 	// Get the shape A in this contact.
-	const b3Shape* GetShapeA() const;
-	b3Shape* GetShapeA();
+	const b3Fixture* GetFixtureA() const;
+	b3Fixture* GetFixtureA();
 
-	// Get the shape B in this contact.
-	const b3Shape* GetShapeB() const;
-	b3Shape* GetShapeB();
+	// Get the fixture B in this contact.
+	const b3Fixture* GetFixtureB() const;
+	b3Fixture* GetFixtureB();
 
 	// Get the manifold capacity from this contact.
 	u32 GetManifoldCapacity() const;
@@ -107,30 +107,31 @@ public:
 protected:
 	friend class b3World;
 	friend class b3Island;
-	friend class b3Shape;
+	friend class b3Fixture;
 	friend class b3ContactManager;
 	friend class b3ContactSolver;
 	friend class b3List<b3Contact>;
 
-	enum b3ContactFlags 
+	// Flags
+	enum 
 	{
 		e_overlapFlag = 0x0001,
 		e_islandFlag = 0x0002,
 	};
 
-	b3Contact(b3Shape* shapeA, b3Shape* shapeB);
+	b3Contact(b3Fixture* fixtureA, b3Fixture* fixtureB);
 	virtual ~b3Contact() { }
 
-	static b3ContactRegister s_registers[e_maxShapes][e_maxShapes];
+	static b3ContactRegister s_registers[b3Shape::e_typeCount][b3Shape::e_typeCount];
 	static bool s_initialized;
 	
 	static void AddType(b3ContactCreateFcn* createFcn, b3ContactDestroyFcn* destoryFcn,
-		b3ShapeType type1, b3ShapeType type2);
+		b3Shape::Type type1, b3Shape::Type type2);
 	
 	static void InitializeRegisters();
 
 	// Factory create.
-	static b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator);
+	static b3Contact* Create(b3Fixture* fixtureA, b3Fixture* fixtureB, b3BlockAllocator* allocator);
 	
 	// Factory destroy.
 	static void Destroy(b3Contact* contact, b3BlockAllocator* allocator);
@@ -146,11 +147,11 @@ protected:
 
 	// Some contacts store reference AABBs for internal queries and therefore 
 	// need to synchronize with body transforms.
-	virtual void SynchronizeShape() = 0;
+	virtual void SynchronizeFixture() { }
 
 	// Some contacts act like a midphase and therefore need to find 
 	// new internal overlapping pairs.
-	virtual void FindPairs() = 0;
+	virtual void FindPairs() { }
 
 	u32 m_flags;
 	b3OverlappingPair m_pair;
@@ -165,24 +166,24 @@ protected:
 	b3Contact* m_next;
 };
 
-inline b3Shape* b3Contact::GetShapeA() 
+inline b3Fixture* b3Contact::GetFixtureA() 
 {
-	return m_pair.shapeA;
+	return m_pair.fixtureA;
 }
 
-inline const b3Shape* b3Contact::GetShapeA() const 
+inline const b3Fixture* b3Contact::GetFixtureA() const 
 {
-	return m_pair.shapeA;
+	return m_pair.fixtureA;
 }
 
-inline b3Shape* b3Contact::GetShapeB() 
+inline b3Fixture* b3Contact::GetFixtureB()
 {
-	return m_pair.shapeB;
+	return m_pair.fixtureB;
 }
 
-inline const b3Shape* b3Contact::GetShapeB() const 
+inline const b3Fixture* b3Contact::GetFixtureB() const
 {
-	return m_pair.shapeB;
+	return m_pair.fixtureB;
 }
 
 inline u32 b3Contact::GetManifoldCapacity() const

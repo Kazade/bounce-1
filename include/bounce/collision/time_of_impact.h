@@ -20,7 +20,7 @@
 #define B3_TIME_OF_IMPACT_H
 
 #include <bounce/collision/gjk/gjk_proxy.h>
-#include <bounce/collision/shapes/aabb.h>
+#include <bounce/collision/geometry/aabb.h>
 #include <bounce/common/math/transform.h>
 
 // Input parameters for b3TimeOfImpact

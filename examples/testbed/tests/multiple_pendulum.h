@@ -43,10 +43,10 @@ public:
 			s.m_vertex2.Set(-0.5f, 0.0f, 0.0f);
 			s.m_radius = 0.05f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &s;
 			sd.density = 10.0f;
-			bs[1]->CreateShape(sd);
+			bs[1]->CreateFixture(sd);
 
 			b3RevoluteJointDef jd;
 			jd.Initialize(bs[0], bs[1], axis, b3Vec3(0.0f, 0.0f, 0.0f), 0.0f, 1.0f);
@@ -64,10 +64,10 @@ public:
 			s.m_vertex2.Set(-0.5f, 0.0f, 0.0f);
 			s.m_radius = 0.05f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &s;
 			sd.density = 10.0f;
-			bs[2]->CreateShape(sd);
+			bs[2]->CreateFixture(sd);
 
 			b3RevoluteJointDef jd;
 			jd.Initialize(bs[1], bs[2], axis, b3Vec3(-1.0f, 0.0f, 0.0f), 0.0f, 1.0f);
@@ -85,10 +85,10 @@ public:
 			s.m_vertex2.Set(-0.5f, 0.0f, 0.0f);
 			s.m_radius = 0.05f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &s;
 			sd.density = 100.0f;
-			bs[3]->CreateShape(sd);
+			bs[3]->CreateFixture(sd);
 
 			b3RevoluteJointDef jd;
 			jd.Initialize(bs[2], bs[3], axis, b3Vec3(-2.0f, 0.0f, 0.0f), 0.0f, 1.0f);
@@ -106,10 +106,10 @@ public:
 			s.m_vertex2.Set(-0.5f, 0.0f, 0.0f);
 			s.m_radius = 0.05f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &s;
 			sd.density = 1000.0f;
-			bs[4]->CreateShape(sd);
+			bs[4]->CreateFixture(sd);
 
 			b3RevoluteJointDef jd;
 			jd.Initialize(bs[3], bs[4], axis, b3Vec3(-3.0f, 0.0f, 0.0f), 0.0f, 1.0f);
@@ -127,10 +127,10 @@ public:
 			s.m_vertex2.Set(-0.5f, 0.0f, 0.0f);
 			s.m_radius = 0.05f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &s;
 			sd.density = 50.0f;
-			bs[5]->CreateShape(sd);
+			bs[5]->CreateFixture(sd);
 
 			b3RevoluteJointDef jd;
 			jd.Initialize(bs[4], bs[5], axis, b3Vec3(-4.0f, 0.0f, 0.0f), 0.0f, 1.0f);

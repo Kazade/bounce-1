@@ -19,7 +19,7 @@
 #ifndef CLUSTER_H
 #define CLUSTER_H
 
-#include <bounce/dynamics/contacts/contact_cluster.h>
+#include <bounce/collision/collide/cluster_solver.h>
 
 class Cluster : public Test
 {

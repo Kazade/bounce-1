@@ -17,31 +17,31 @@
 */
 
 #include <bounce/dynamics/contacts/mesh_contact.h>
-#include <bounce/dynamics/contacts/contact_cluster.h>
-#include <bounce/dynamics/shapes/shape.h>
-#include <bounce/dynamics/shapes/mesh_shape.h>
+#include <bounce/collision/collide/cluster_solver.h>
+#include <bounce/dynamics/fixture.h>
+#include <bounce/collision/shapes/mesh_shape.h>
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/world.h>
-#include <bounce/collision/shapes/mesh.h>
+#include <bounce/collision/geometry/mesh.h>
 
-b3MeshContact::b3MeshContact(b3Shape* shapeA, b3Shape* shapeB) : b3Contact(shapeA, shapeB)
+b3MeshContact::b3MeshContact(b3Fixture* fixtureA, b3Fixture* fixtureB) : b3Contact(fixtureA, fixtureB)
 {
 	m_manifoldCapacity = B3_MAX_MANIFOLDS;
 	m_manifolds = m_clusterManifolds;
 	m_manifoldCount = 0;
-
-	b3Transform xfA = shapeA->GetBody()->GetTransform();
-	b3Transform xfB = shapeB->GetBody()->GetTransform();
+	
+	b3Transform xfA = fixtureA->GetBody()->GetTransform();
+	b3Transform xfB = fixtureB->GetBody()->GetTransform();
 
 	b3Transform xf = b3MulT(xfA, xfB);
 
 	// The aabb B relative to the mesh frame.
 	b3AABB fatAABB;
-	shapeB->ComputeAABB(&fatAABB, xf);
+	fixtureB->GetShape()->ComputeAABB(&fatAABB, xf);
 
-	B3_ASSERT(shapeA->m_type == e_meshShape);
+	B3_ASSERT(fixtureA->GetType() == b3Shape::e_mesh);
 
-	b3MeshShape* meshShapeA = (b3MeshShape*)shapeA;
+	b3MeshShape* meshShapeA = (b3MeshShape*)fixtureA->m_shape;
 
 	B3_ASSERT(meshShapeA->m_scale.x != scalar(0));
 	B3_ASSERT(meshShapeA->m_scale.y != scalar(0));
@@ -70,14 +70,16 @@ b3MeshContact::~b3MeshContact()
 	b3Free(m_triangles);
 }
 
-void b3MeshContact::SynchronizeShape()
+void b3MeshContact::SynchronizeFixture()
 {
-	b3Shape* shapeA = GetShapeA();
-	b3Body* bodyA = shapeA->GetBody();
-	b3Transform xfA = bodyA->m_xf;
+	b3Fixture* fixtureA = GetFixtureA();
+	b3Shape* shapeA = fixtureA->GetShape();
+	b3Body* bodyA = fixtureA->GetBody();
+	b3Transform xfA = bodyA->GetTransform();
 
-	b3Shape* shapeB = GetShapeB();
-	b3Body* bodyB = shapeB->GetBody();
+	b3Fixture* fixtureB = GetFixtureB();
+	b3Shape* shapeB = fixtureB->GetShape();
+	b3Body* bodyB = fixtureB->GetBody();
 	b3Transform xfB = bodyB->GetTransform();
 
 	b3Sweep* sweepB = &bodyB->m_sweep;
@@ -173,7 +175,7 @@ void b3MeshContact::FindPairs()
 	// Clear the index cache.
 	m_triangleCount = 0;
 
-	const b3MeshShape* meshShapeA = (b3MeshShape*)GetShapeA();
+	const b3MeshShape* meshShapeA = (b3MeshShape*)GetFixtureA()->GetShape();
 	const b3Mesh* meshA = meshShapeA->m_mesh;
 	const b3StaticTree* treeA = &meshA->tree;
 
@@ -183,7 +185,7 @@ void b3MeshContact::FindPairs()
 
 bool b3MeshContact::Report(u32 proxyId)
 {
-	b3MeshShape* meshShapeA = (b3MeshShape*)GetShapeA();
+	b3MeshShape* meshShapeA = (b3MeshShape*)GetFixtureA()->GetShape();
 	const b3Mesh* meshA = meshShapeA->m_mesh;
 	const b3StaticTree* treeA = &meshA->tree;
 
@@ -214,12 +216,14 @@ bool b3MeshContact::Report(u32 proxyId)
 
 bool b3MeshContact::TestOverlap()
 {
-	b3Shape* shapeA = GetShapeA();
-	b3Body* bodyA = shapeA->GetBody();
+	b3Fixture* fixtureA = GetFixtureA();
+	b3Shape* shapeA = fixtureA->GetShape();
+	b3Body* bodyA = fixtureA->GetBody();
 	b3Transform xfA = bodyA->GetTransform();
 
-	b3Shape* shapeB = GetShapeB();
-	b3Body* bodyB = shapeB->GetBody();
+	b3Fixture* fixtureB = GetFixtureB();
+	b3Shape* shapeB = fixtureB->GetShape();
+	b3Body* bodyB = fixtureB->GetBody();
 	b3Transform xfB = bodyB->GetTransform();
 
 	// Test if at least one triangle of the shape B overlaps the shape A.
@@ -239,13 +243,17 @@ bool b3MeshContact::TestOverlap()
 
 void b3MeshContact::Collide()
 {
-	b3Shape* shapeA = GetShapeA();
-	b3Shape* shapeB = GetShapeB();
+	b3Fixture* fixtureA = GetFixtureA();
+	b3Shape* shapeA = fixtureA->GetShape();
+	b3Body* bodyA = fixtureA->GetBody();
+	b3Transform xfA = bodyA->GetTransform();
 
-	b3Transform xfA = shapeA->GetBody()->GetTransform();
-	b3Transform xfB = shapeB->GetBody()->GetTransform();
+	b3Fixture* fixtureB = GetFixtureB();
+	b3Shape* shapeB = fixtureB->GetShape();
+	b3Body* bodyB = fixtureB->GetBody();
+	b3Transform xfB = bodyB->GetTransform();
 
-	b3StackAllocator* allocator = &shapeA->GetBody()->GetWorld()->m_stackAllocator;
+	b3StackAllocator* allocator = &bodyA->m_world->m_stackAllocator;
 
 	// Create one temporary manifold per overlapping triangle.
 	b3Manifold* manifolds = (b3Manifold*)allocator->Allocate(m_triangleCount * sizeof(b3Manifold));

@@ -91,7 +91,7 @@ static u32 b3Partition(const b3AABB& setAABB, const b3AABB* set, u32* ids, u32 c
 	return middle;
 }
 
-void b3StaticTree::RecurseBuild(const b3AABB* set, b3Node* node, u32* ids, u32 count, u32 minObjectsPerLeaf, u32 nodeCapacity, u32& leafCount, u32& internalCount)
+void b3StaticTree::BuildRecursively(const b3AABB* set, b3Node* node, u32* ids, u32 count, u32 minObjectsPerLeaf, u32 nodeCapacity, u32& leafCount, u32& internalCount)
 {
 	B3_ASSERT(count > 0);
 	
@@ -128,13 +128,14 @@ void b3StaticTree::RecurseBuild(const b3AABB* set, b3Node* node, u32* ids, u32 c
 		++m_nodeCount;
 
 		// Build left and right subtrees
-		RecurseBuild(set, m_nodes + node->child1, ids, middle, minObjectsPerLeaf, nodeCapacity, leafCount, internalCount);
-		RecurseBuild(set, m_nodes + node->child2, ids + middle, count - middle, minObjectsPerLeaf, nodeCapacity, leafCount, internalCount);
+		BuildRecursively(set, m_nodes + node->child1, ids, middle, minObjectsPerLeaf, nodeCapacity, leafCount, internalCount);
+		BuildRecursively(set, m_nodes + node->child2, ids + middle, count - middle, minObjectsPerLeaf, nodeCapacity, leafCount, internalCount);
 	}
 }
 
 void b3StaticTree::Build(const b3AABB* set, u32 count)
 {
+	B3_ASSERT(m_nodes == nullptr && m_nodeCount == 0);
 	B3_ASSERT(count > 0);
 
 	u32* ids = (u32*)b3Alloc(count * sizeof(u32));
@@ -158,7 +159,7 @@ void b3StaticTree::Build(const b3AABB* set, u32 count)
 	m_nodes = (b3Node*)b3Alloc(nodeCapacity * sizeof(b3Node));
 	m_nodeCount = 1;
 
-	RecurseBuild(set, m_nodes, ids, count, kMinObjectsPerLeaf, nodeCapacity, leafCount, internalCount);
+	BuildRecursively(set, m_nodes, ids, count, kMinObjectsPerLeaf, nodeCapacity, leafCount, internalCount);
 
 	b3Free(ids);
 

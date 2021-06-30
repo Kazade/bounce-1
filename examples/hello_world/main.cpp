@@ -54,9 +54,9 @@ int main(int argc, char** argv)
 	groundShape.m_hull = &groundBox;
 
 	// Add the box to the ground body.
-	b3ShapeDef groundBoxDef;
+	b3FixtureDef groundBoxDef;
 	groundBoxDef.shape = &groundShape;
-	ground->CreateShape(groundBoxDef);
+	ground->CreateFixture(groundBoxDef);
 
 	// Create a dynamic body.
 	b3BodyDef bodyDef;
@@ -80,10 +80,10 @@ int main(int argc, char** argv)
 	bodyShape.m_hull = &bodyBox;
 
 	// Add the box to the body.
-	b3ShapeDef bodyBoxDef;
+	b3FixtureDef bodyBoxDef;
 	bodyBoxDef.shape = &bodyShape;
 	bodyBoxDef.density = 1.0f;
-	body->CreateShape(bodyBoxDef);
+	body->CreateFixture(bodyBoxDef);
 
 	// Run a small game loop of 60 frames length.
 	for (u32 i = 0; i < 60; ++i)

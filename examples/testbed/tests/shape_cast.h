@@ -25,183 +25,183 @@ public:
 	ShapeCast()
 	{
 		{
-			b3BodyDef bdef;
-			b3Body* body = m_world.CreateBody(bdef);
+			b3BodyDef bd;
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			b3Shape* shape = body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(0.0f, 2.0f, 0.0f);
+			b3BodyDef bd;
+			bd.position.Set(0.0f, 2.0f, 0.0f);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &b3BoxHull_identity;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			m_shape = body->CreateShape(sdef);
+			m_fixture = body->CreateFixture(fd);
 		}
 		
 		{
 			m_grid.BuildTree();
 			m_grid.BuildAdjacency();
 
-			b3BodyDef bdef;
-			bdef.position.Set(-10.0f, 5.0f, -2.0f);
-			bdef.orientation = b3QuatRotationZ(0.25f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(-10.0f, 5.0f, -2.0f);
+			bd.orientation = b3QuatRotationZ(0.25f * B3_PI);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3MeshShape hs;
 			hs.m_mesh = &m_grid;
 			hs.m_scale.Set(-1.0f, -1.0f, -2.0f);
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			b3Shape* shape = body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(0.0f, 2.0f, 10.0f);
-			bdef.orientation = b3QuatRotationY(0.25f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(0.0f, 2.0f, 10.0f);
+			bd.orientation = b3QuatRotationY(0.25f * B3_PI);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &b3BoxHull_identity;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			b3Shape* shape = body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(-10.0f, 6.0f, -10.0f);
-			bdef.orientation = b3QuatRotationY(0.25f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(-10.0f, 6.0f, -10.0f);
+			bd.orientation = b3QuatRotationY(0.25f * B3_PI);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			static b3BoxHull boxHull(2.0f, 4.0f, 0.5f);
 
 			b3HullShape hs;
 			hs.m_hull = &boxHull;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			b3Shape* shape = body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(10.0f, 2.0f, 0.0f);
-			bdef.orientation = b3QuatRotationY(0.20f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(10.0f, 2.0f, 0.0f);
+			bd.orientation = b3QuatRotationY(0.20f * B3_PI);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &b3BoxHull_identity;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			b3Shape* shape = body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(-10.0f, 2.0f, 14.0f);
-			bdef.orientation = b3QuatRotationY(0.05f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(-10.0f, 2.0f, 14.0f);
+			bd.orientation = b3QuatRotationY(0.05f * B3_PI);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &b3BoxHull_identity;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			b3Shape* shape = body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(-14.0f, 2.0f, 5.0f);
-			bdef.orientation = b3QuatRotationY(-0.05f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(-14.0f, 2.0f, 5.0f);
+			bd.orientation = b3QuatRotationY(-0.05f * B3_PI);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &b3BoxHull_identity;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			b3Shape* shape = body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(20.0f, 2.0f, 5.0f);
-			bdef.orientation = b3QuatRotationY(-0.05f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(20.0f, 2.0f, 5.0f);
+			bd.orientation = b3QuatRotationY(-0.05f * B3_PI);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &b3BoxHull_identity;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			b3Shape* shape = body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(12.0f, 2.0f, 5.0f);
-			bdef.orientation = b3QuatRotationY(-0.35f * B3_PI);
+			b3BodyDef bd;
+			bd.position.Set(12.0f, 2.0f, 5.0f);
+			bd.orientation = b3QuatRotationY(-0.35f * B3_PI);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3SphereShape hs;
 			hs.m_center.SetZero();
 			hs.m_radius = 2.5f;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			b3Shape* shape = body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.position.Set(0.0f, 1.0f, -12.0f);
+			b3BodyDef bd;
+			bd.position.Set(0.0f, 1.0f, -12.0f);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3CapsuleShape hs;
 			hs.m_vertex1.Set(0.0f, 1.0f, 0.0f);
 			hs.m_vertex2.Set(0.0f, -1.0f, 0.0f);
 			hs.m_radius = 3.0f;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.shape = &hs;
 
-			b3Shape* shape = body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		m_d.Set(-50.0f, 2.0f, 0.0f);
@@ -212,7 +212,7 @@ public:
 		class ShapeCastFilter : public b3ShapeCastFilter
 		{
 		public:
-			bool ShouldShapeCast(b3Shape* shape)
+			bool ShouldShapeCast(b3Fixture* fixture)
 			{
 				return true;
 			}
@@ -220,17 +220,18 @@ public:
 
 		ShapeCastFilter filter;
 		
-		b3Body* body = m_shape->GetBody();
+		b3Shape* shape = m_fixture->GetShape();
+		b3Body* body = m_fixture->GetBody();
 		b3Transform xf = body->GetTransform();
 
-		m_shape->DrawSolid(xf, b3Color_red);
+		shape->DrawSolid(xf, b3Color_red);
 
 		b3Vec3 p1 = xf.translation;
 
 		b3Vec3 p2 = p1 + m_d;
 		
 		b3ShapeCastSingleOutput out;
-		if (m_world.ShapeCastSingle(&out, &filter, m_shape, m_d))
+		if (m_world.ShapeCastSingle(&out, &filter, shape, xf, m_d))
 		{
 			b3DrawPoint(g_debugDraw, out.point, 4.0f, b3Color_red);
 			b3DrawSegment(g_debugDraw, out.point, out.point + out.normal, b3Color_white);
@@ -239,7 +240,7 @@ public:
 			xft.rotation = xf.rotation;
 			xft.translation = xf.translation + out.fraction * m_d;
 
-			m_shape->Draw(xft, b3Color_red);
+			shape->Draw(xft, b3Color_red);
 
 			b3DrawSegment(g_debugDraw, p1, xft.translation, b3Color_green);
 		}
@@ -251,7 +252,7 @@ public:
 			xf1.rotation = xf.rotation;
 			xf1.translation = xf.translation + m_d;
 			
-			m_shape->Draw(xf1, b3Color_red);
+			shape->Draw(xf1, b3Color_red);
 		}
 	}
 
@@ -275,7 +276,7 @@ public:
 
 	b3GridMesh<5, 5> m_grid;
 
-	b3Shape* m_shape;
+	b3Fixture* m_fixture;
 	b3Vec3 m_d;
 };
 

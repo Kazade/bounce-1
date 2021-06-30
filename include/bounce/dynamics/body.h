@@ -27,9 +27,9 @@
 #include <bounce/dynamics/time_step.h>
 
 class b3World;
-class b3Shape;
+class b3Fixture;
 
-struct b3ShapeDef;
+struct b3FixtureDef;
 struct b3MassData;
 struct b3JointEdge;
 
@@ -150,22 +150,22 @@ public:
 	const b3World* GetWorld() const;
 	b3World* GetWorld();
 
-	// Get the shapes associated with the body.
-	const b3List<b3Shape>& GetShapeList() const;
-	b3List<b3Shape>& GetShapeList();
+	// Get the fixtures associated with the body.
+	const b3List<b3Fixture>& GetFixtureList() const;
+	b3List<b3Fixture>& GetFixtureList();
 
-	// Create a new shape for the body given the shape definition and return a pointer to its clone.
+	// Create a new fixture for the body given the shape definition and return a pointer to it.
 	// The shape passed to the definition it will be cloned and is not recommended modifying 
 	// it inside simulation callbacks. 
 	// Therefore you can create shapes on the stack memory.
-	b3Shape* CreateShape(const b3ShapeDef& def);
+	b3Fixture* CreateFixture(const b3FixtureDef& def);
 	
 	// Get the list of all joints connected to this body.
 	const b3List<b3JointEdge>& GetJointList() const;
 	b3List<b3JointEdge>& GetJointList();
 
-	// Destroy a given shape from the body.
-	void DestroyShape(b3Shape* shape);
+	// Destroy a given fixture from the body.
+	void DestroyFixture(b3Fixture* fixture);
 
 	// Get the body sweep.
 	const b3Sweep& GetSweep() const;
@@ -377,15 +377,8 @@ private:
 
 	friend class b3List<b3Body>;
 
-	friend class b3SoftBody;
-	friend class b3SoftBodySolver;
-	friend class b3SoftBodyContactSolver;
-
-	friend class b3SoftBody;
-	friend class b3SoftBodySolver;
-	friend class b3SoftBodyContactSolver;
-
-	enum b3BodyFlags 
+	// Flags
+	enum 
 	{
 		e_awakeFlag = 0x0001,
 		e_islandFlag = 0x0002,
@@ -398,8 +391,8 @@ private:
 	b3Body(const b3BodyDef& def, b3World* world);
 	~b3Body() { }
 
-	// Destroy all shapes associated with the body.
-	void DestroyShapes();
+	// Destroy all fixtures associated with the body.
+	void DestroyFixtures();
 
 	// Destroy all contacts associated with the body.
 	void DestroyContacts();
@@ -408,7 +401,7 @@ private:
 	void DestroyJoints();
 
 	void SynchronizeTransform();
-	void SynchronizeShapes();
+	void SynchronizeFixtures();
 
 	// Check if this body should collide with another.
 	bool ShouldCollide(const b3Body* other) const;
@@ -422,8 +415,8 @@ private:
 	scalar m_angularSleepTolerance;
 	scalar m_sleepTime;
 
-	// The shapes attached to this body.
-	b3List<b3Shape> m_shapeList;
+	// The fixtures attached to this body.
+	b3List<b3Fixture> m_fixtureList;
 	
 	// Joint edges for this body joint graph.
 	b3List<b3JointEdge> m_jointEdges;
@@ -504,14 +497,14 @@ inline void b3Body::SetUserData(void* userData)
 	m_userData = userData; 
 }
 
-inline const b3List<b3Shape>& b3Body::GetShapeList() const
+inline const b3List<b3Fixture>& b3Body::GetFixtureList() const
 {
-	return m_shapeList;
+	return m_fixtureList;
 }
 
-inline b3List<b3Shape>& b3Body::GetShapeList()
+inline b3List<b3Fixture>& b3Body::GetFixtureList()
 {
-	return m_shapeList;
+	return m_fixtureList;
 }
 
 inline const b3List<b3JointEdge>& b3Body::GetJointList() const
@@ -542,7 +535,7 @@ inline void b3Body::SetTransform(const b3Vec3& position, const b3Quat& orientati
 
 	m_worldInvI = b3RotateToFrame(m_invI, orientation);
 
-	SynchronizeShapes();
+	SynchronizeFixtures();
 }
 
 inline void b3Body::SetTransform(const b3Vec3& position, const b3Mat33& orientation)
@@ -556,9 +549,9 @@ inline void b3Body::SetTransform(const b3Vec3& position, const b3Mat33& orientat
 	m_sweep.worldCenter0 = m_sweep.worldCenter;
 	m_sweep.orientation0 = m_sweep.orientation;
 
-	m_worldInvI = b3RotateToFrame(m_invI, orientation);
+	m_worldInvI = b3RotateToFrame(m_invI, m_xf.rotation);
 
-	SynchronizeShapes();
+	SynchronizeFixtures();
 }
 
 inline b3Vec3 b3Body::GetPosition() const

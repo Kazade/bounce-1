@@ -31,31 +31,31 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
 			
-			bdef.position.Set(0.0f, 10.0f, 0.0f);
-			bdef.angularVelocity.Set(0.5f * B3_PI, 10.0f * B3_PI, 0.0f);
+			bd.position.Set(0.0f, 10.0f, 0.0f);
+			bd.angularVelocity.Set(0.5f * B3_PI, 10.0f * B3_PI, 0.0f);
 			
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 	
 			b3CapsuleShape capsule;
 			capsule.m_vertex1.Set(0.0f, 4.0f, 0.0f);
 			capsule.m_vertex2.Set(0.0f, -4.0f, 0.0f);
 			capsule.m_radius = 0.5f;
 
-			b3ShapeDef sd;
-			sd.shape = &capsule;
-			sd.density = 0.1f;
+			b3FixtureDef fd;
+			fd.shape = &capsule;
+			fd.density = 0.1f;
 
-			body->CreateShape(sd);
+			body->CreateFixture(fd);
 		}
 	}
 

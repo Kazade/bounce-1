@@ -38,10 +38,10 @@ public:
 			b3HullShape hull;
 			hull.m_hull = &box;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hull;
+			b3FixtureDef fd;
+			fd.shape = &hull;
 			
-			lastHinge->CreateShape(sdef);
+			lastHinge->CreateFixture(fd);
 		}
 		
 		x += 4.25f;
@@ -56,11 +56,11 @@ public:
 			b3HullShape hull;
 			hull.m_hull = &box;
 			
-			b3ShapeDef sdef;
-			sdef.shape = &hull;
-			sdef.density = 1.0f;
+			b3FixtureDef fd;
+			fd.shape = &hull;
+			fd.density = 1.0f;
 
-			hinge->CreateShape(sdef);
+			hinge->CreateFixture(fd);
 			
 			{
 				b3Vec3 hingeAxis(0.0f, 1.0f, 0.0f);

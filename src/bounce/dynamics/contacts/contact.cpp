@@ -29,19 +29,19 @@
 #include <bounce/dynamics/contacts/mesh_sphere_contact.h>
 #include <bounce/dynamics/contacts/mesh_capsule_contact.h>
 #include <bounce/dynamics/contacts/mesh_hull_contact.h>
-#include <bounce/dynamics/shapes/shape.h>
+#include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/world.h>
 #include <bounce/dynamics/world_listeners.h>
 
 bool b3Contact::s_initialized = false;
-b3ContactRegister b3Contact::s_registers[e_maxShapes][e_maxShapes];
+b3ContactRegister b3Contact::s_registers[b3Shape::e_typeCount][b3Shape::e_typeCount];
 
 void b3Contact::AddType(b3ContactCreateFcn* createFcn, b3ContactDestroyFcn* destoryFcn,
-	b3ShapeType type1, b3ShapeType type2)
+	b3Shape::Type type1, b3Shape::Type type2)
 {
-	B3_ASSERT(0 <= type1 && type1 < e_maxShapes);
-	B3_ASSERT(0 <= type2 && type2 < e_maxShapes);
+	B3_ASSERT(0 <= type1 && type1 < b3Shape::e_typeCount);
+	B3_ASSERT(0 <= type2 && type2 < b3Shape::e_typeCount);
 
 	s_registers[type1][type2].createFcn = createFcn;
 	s_registers[type1][type2].destroyFcn = destoryFcn;
@@ -57,21 +57,21 @@ void b3Contact::AddType(b3ContactCreateFcn* createFcn, b3ContactDestroyFcn* dest
 
 void b3Contact::InitializeRegisters()
 {
-	AddType(b3SphereContact::Create, b3SphereContact::Destroy, e_sphereShape, e_sphereShape);
-	AddType(b3CapsuleAndSphereContact::Create, b3CapsuleAndSphereContact::Destroy, e_capsuleShape, e_sphereShape);
-	AddType(b3CapsuleContact::Create, b3CapsuleContact::Destroy, e_capsuleShape, e_capsuleShape);
-	AddType(b3TriangleAndSphereContact::Create, b3TriangleAndSphereContact::Destroy, e_triangleShape, e_sphereShape);
-	AddType(b3TriangleAndCapsuleContact::Create, b3TriangleAndCapsuleContact::Destroy, e_triangleShape, e_capsuleShape);
-	AddType(b3TriangleAndHullContact::Create, b3TriangleAndHullContact::Destroy, e_triangleShape, e_hullShape);
-	AddType(b3HullAndSphereContact::Create, b3HullAndSphereContact::Destroy, e_hullShape, e_sphereShape);
-	AddType(b3HullAndCapsuleContact::Create, b3HullAndCapsuleContact::Destroy, e_hullShape, e_capsuleShape);
-	AddType(b3HullContact::Create, b3HullContact::Destroy, e_hullShape, e_hullShape);
-	AddType(b3MeshAndSphereContact::Create, b3MeshAndSphereContact::Destroy, e_meshShape, e_sphereShape);
-	AddType(b3MeshAndCapsuleContact::Create, b3MeshAndCapsuleContact::Destroy, e_meshShape, e_capsuleShape);
-	AddType(b3MeshAndHullContact::Create, b3MeshAndHullContact::Destroy, e_meshShape, e_hullShape);
+	AddType(b3SphereContact::Create, b3SphereContact::Destroy, b3Shape::e_sphere, b3Shape::e_sphere);
+	AddType(b3CapsuleAndSphereContact::Create, b3CapsuleAndSphereContact::Destroy, b3Shape::e_capsule, b3Shape::e_sphere);
+	AddType(b3CapsuleContact::Create, b3CapsuleContact::Destroy, b3Shape::e_capsule, b3Shape::e_capsule);
+	AddType(b3TriangleAndSphereContact::Create, b3TriangleAndSphereContact::Destroy, b3Shape::e_triangle, b3Shape::e_sphere);
+	AddType(b3TriangleAndCapsuleContact::Create, b3TriangleAndCapsuleContact::Destroy, b3Shape::e_triangle, b3Shape::e_capsule);
+	AddType(b3TriangleAndHullContact::Create, b3TriangleAndHullContact::Destroy, b3Shape::e_triangle, b3Shape::e_hull);
+	AddType(b3HullAndSphereContact::Create, b3HullAndSphereContact::Destroy, b3Shape::e_hull, b3Shape::e_sphere);
+	AddType(b3HullAndCapsuleContact::Create, b3HullAndCapsuleContact::Destroy, b3Shape::e_hull, b3Shape::e_capsule);
+	AddType(b3HullContact::Create, b3HullContact::Destroy, b3Shape::e_hull, b3Shape::e_hull);
+	AddType(b3MeshAndSphereContact::Create, b3MeshAndSphereContact::Destroy, b3Shape::e_mesh, b3Shape::e_sphere);
+	AddType(b3MeshAndCapsuleContact::Create, b3MeshAndCapsuleContact::Destroy, b3Shape::e_mesh, b3Shape::e_capsule);
+	AddType(b3MeshAndHullContact::Create, b3MeshAndHullContact::Destroy, b3Shape::e_mesh, b3Shape::e_hull);
 }
 
-b3Contact* b3Contact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator)
+b3Contact* b3Contact::Create(b3Fixture* fixtureA, b3Fixture* fixtureB, b3BlockAllocator* allocator)
 {
 	if (s_initialized == false)
 	{
@@ -79,11 +79,11 @@ b3Contact* b3Contact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator*
 		s_initialized = true;
 	}
 
-	b3ShapeType type1 = shapeA->GetType();
-	b3ShapeType type2 = shapeB->GetType();
+	b3Shape::Type type1 = fixtureA->GetType();
+	b3Shape::Type type2 = fixtureB->GetType();
 
-	B3_ASSERT(0 <= type1 && type1 < e_maxShapes);
-	B3_ASSERT(0 <= type2 && type2 < e_maxShapes);
+	B3_ASSERT(0 <= type1 && type1 < b3Shape::e_typeCount);
+	B3_ASSERT(0 <= type2 && type2 < b3Shape::e_typeCount);
 
 	const b3ContactRegister& contactRegister = s_registers[type1][type2];
 
@@ -92,11 +92,11 @@ b3Contact* b3Contact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator*
 	{
 		if (s_registers[type1][type2].primary)
 		{
-			return createFcn(shapeA, shapeB, allocator);
+			return createFcn(fixtureA, fixtureB, allocator);
 		}
 		else
 		{
-			return createFcn(shapeB, shapeA, allocator);
+			return createFcn(fixtureB, fixtureA, allocator);
 		}
 	}
 	else
@@ -109,27 +109,27 @@ void b3Contact::Destroy(b3Contact* contact, b3BlockAllocator* allocator)
 {
 	B3_ASSERT(s_initialized == true);
 
-	b3Shape* shapeA = contact->m_pair.shapeA;
-	b3Shape* shapeB = contact->m_pair.shapeB;
+	b3Fixture* fixtureA = contact->m_pair.fixtureA;
+	b3Fixture* fixtureB = contact->m_pair.fixtureB;
 
 	for (u32 i = 0; i < contact->m_manifoldCount; ++i)
 	{
 		if (contact->m_manifolds[i].pointCount > 0)
 		{
-			if (shapeA->IsSensor() == false && shapeB->IsSensor() == false)
+			if (fixtureA->IsSensor() == false && fixtureB->IsSensor() == false)
 			{
-				shapeA->GetBody()->SetAwake(true);
-				shapeB->GetBody()->SetAwake(true);
+				fixtureA->GetBody()->SetAwake(true);
+				fixtureB->GetBody()->SetAwake(true);
 				break;
 			}
 		}
 	}
 
-	b3ShapeType type1 = shapeA->GetType();
-	b3ShapeType type2 = shapeB->GetType();
+	b3Shape::Type type1 = fixtureA->GetType();
+	b3Shape::Type type2 = fixtureB->GetType();
 
-	B3_ASSERT(0 <= type1 && type1 < e_maxShapes);
-	B3_ASSERT(0 <= type2 && type2 < e_maxShapes);
+	B3_ASSERT(0 <= type1 && type1 < b3Shape::e_typeCount);
+	B3_ASSERT(0 <= type2 && type2 < b3Shape::e_typeCount);
 
 	const b3ContactRegister& contactRegister = s_registers[type1][type2];
 	
@@ -137,10 +137,10 @@ void b3Contact::Destroy(b3Contact* contact, b3BlockAllocator* allocator)
 	destroyFcn(contact, allocator);
 }
 
-b3Contact::b3Contact(b3Shape* shapeA, b3Shape* shapeB)
+b3Contact::b3Contact(b3Fixture* fixtureA, b3Fixture* fixtureB)
 {
-	m_pair.shapeA = shapeA;
-	m_pair.shapeB = shapeB;
+	m_pair.fixtureA = fixtureA;
+	m_pair.fixtureB = fixtureB;
 }
 
 void b3Contact::GetWorldManifold(b3WorldManifold* out, u32 index) const
@@ -148,12 +148,14 @@ void b3Contact::GetWorldManifold(b3WorldManifold* out, u32 index) const
 	B3_ASSERT(index < m_manifoldCount);
 	b3Manifold* m = m_manifolds + index;
 
-	const b3Shape* shapeA = GetShapeA();
-	const b3Body* bodyA = shapeA->GetBody();
+	const b3Fixture* fixtureA = GetFixtureA();
+	const b3Shape* shapeA = fixtureA->GetShape();
+	const b3Body* bodyA = fixtureA->GetBody();
 	b3Transform xfA = bodyA->GetTransform();
 
-	const b3Shape* shapeB = GetShapeB();
-	const b3Body* bodyB = shapeB->GetBody();
+	const b3Fixture* fixtureB = GetFixtureB();
+	const b3Shape* shapeB = fixtureB->GetShape();
+	const b3Body* bodyB = fixtureB->GetBody();
 	b3Transform xfB = bodyB->GetTransform();
 
 	out->Initialize(m, shapeA->m_radius, xfA, shapeB->m_radius, xfB);
@@ -161,12 +163,14 @@ void b3Contact::GetWorldManifold(b3WorldManifold* out, u32 index) const
 
 void b3Contact::Update(b3ContactListener* listener)
 {
-	b3Shape* shapeA = GetShapeA();
-	b3Body* bodyA = shapeA->GetBody();
+	b3Fixture* fixtureA = GetFixtureA();
+	b3Shape* shapeA = fixtureA->GetShape();
+	b3Body* bodyA = fixtureA->GetBody();
 	b3Transform xfA = bodyA->GetTransform();
 
-	b3Shape* shapeB = GetShapeB();
-	b3Body* bodyB = shapeB->GetBody();
+	b3Fixture* fixtureB = GetFixtureB();
+	b3Shape* shapeB = fixtureB->GetShape();
+	b3Body* bodyB = fixtureB->GetBody();
 	b3Transform xfB = bodyB->GetTransform();
 
 	b3World* world = bodyA->GetWorld();
@@ -267,10 +271,10 @@ void b3Contact::Update(b3ContactListener* listener)
 
 bool b3Contact::IsSensorContact() const
 {
-	return m_pair.shapeA->IsSensor() || m_pair.shapeB->IsSensor();
+	return m_pair.fixtureA->IsSensor() || m_pair.fixtureB->IsSensor();
 }
 
 bool b3Contact::HasDynamicBody() const
 {
-	return m_pair.shapeA->GetBody()->GetType() == e_dynamicBody || m_pair.shapeB->GetBody()->GetType() == e_dynamicBody;
+	return m_pair.fixtureA->GetBody()->GetType() == e_dynamicBody || m_pair.fixtureB->GetBody()->GetType() == e_dynamicBody;
 }

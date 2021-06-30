@@ -37,10 +37,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 
 		b3Vec3 boxScale(1.0f, 0.5f, 3.0f);
@@ -65,12 +65,12 @@ public:
 				b3HullShape hs;
 				hs.m_hull = &boxHull;
 
-				b3ShapeDef sd;
+				b3FixtureDef sd;
 				sd.shape = &hs;
 				sd.density = 0.1f;
 				sd.friction = 0.3f;
 
-				body->CreateShape(sd);
+				body->CreateFixture(sd);
 			}
 
 			y += 2.05f * boxScale.y;
@@ -91,12 +91,12 @@ public:
 				b3HullShape hs;
 				hs.m_hull = &boxHull;
 
-				b3ShapeDef sd;
+				b3FixtureDef sd;
 				sd.shape = &hs;
 				sd.density = 0.1f;
 				sd.friction = 0.3f;
 
-				body->CreateShape(sd);
+				body->CreateFixture(sd);
 			}
 
 			y += 2.05f * boxScale.y;

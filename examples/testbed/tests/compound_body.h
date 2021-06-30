@@ -31,10 +31,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 		}
 
 		{
@@ -77,24 +77,24 @@ public:
 
 			b3HullShape hs;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 			sd.density = 0.1f;
 
 			hs.m_hull = &m_box1;
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 			
 			hs.m_hull = &m_box2;
-			body->CreateShape(sd);
+			body->CreateFixture(sd);
 
 			hs.m_hull = &m_box3;
-			body->CreateShape(sd); 
+			body->CreateFixture(sd); 
 
 			hs.m_hull = &m_box4;
-			body->CreateShape(sd); 
+			body->CreateFixture(sd); 
 
 			hs.m_hull = &m_box5;
-			body->CreateShape(sd); 
+			body->CreateFixture(sd); 
 		}
 	}
 

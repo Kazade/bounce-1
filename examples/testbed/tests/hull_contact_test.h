@@ -31,19 +31,19 @@ public:
 	HullContactTest()
 	{
 		{
-			b3BodyDef bdef;
-			bdef.type = b3BodyType::e_staticBody;
+			b3BodyDef bd;
+			bd.type = b3BodyType::e_staticBody;
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hs;
-			sdef.friction = 1.0f;
+			b3FixtureDef fd;
+			fd.shape = &hs;
+			fd.friction = 1.0f;
 
-			body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		m_count = 0;
@@ -99,11 +99,11 @@ public:
 			}
 			m_hulls[m_count] = hull;
 
-			b3BodyDef bdef;
-			bdef.type = b3BodyType::e_dynamicBody;
-			bdef.position.Set(0.0f, 5.0f, 0.0f);
+			b3BodyDef bd;
+			bd.type = b3BodyType::e_dynamicBody;
+			bd.position.Set(0.0f, 5.0f, 0.0f);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 			m_bodies[m_count] = body;
 
 			++m_count;
@@ -111,12 +111,12 @@ public:
 			b3HullShape hs;
 			hs.m_hull = hull;
 
-			b3ShapeDef sdef;
-			sdef.density = 0.1f;
-			sdef.friction = 0.1f;
-			sdef.shape = &hs;
+			b3FixtureDef fd;
+			fd.density = 0.1f;
+			fd.friction = 0.1f;
+			fd.shape = &hs;
 
-			body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 	}
 

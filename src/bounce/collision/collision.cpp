@@ -17,12 +17,11 @@
 */
 
 #include <bounce/collision/collision.h>
-
-#include <bounce/collision/shapes/sphere.h>
-#include <bounce/collision/shapes/capsule.h>
-#include <bounce/collision/shapes/box_hull.h>
-#include <bounce/collision/shapes/cylinder_hull.h>
-#include <bounce/collision/shapes/cone_hull.h>
+#include <bounce/collision/geometry/sphere.h>
+#include <bounce/collision/geometry/capsule.h>
+#include <bounce/collision/geometry/box_hull.h>
+#include <bounce/collision/geometry/cylinder_hull.h>
+#include <bounce/collision/geometry/cone_hull.h>
 
 const b3Sphere b3Sphere_identity(b3Vec3_zero, scalar(1)); 
 

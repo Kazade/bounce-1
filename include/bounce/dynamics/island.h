@@ -46,7 +46,7 @@ public :
 	
 	void Solve(const b3Vec3& gravity, scalar dt, u32 velocityIterations, u32 positionIterations, u32 flags);
 private :
-	enum b3IslandFlags
+	enum 
 	{
 		e_warmStartBit = 0x0001,
 		e_sleepBit = 0x0002

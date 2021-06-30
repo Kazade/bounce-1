@@ -20,12 +20,12 @@
 #define B3_MESH_CONTACT_H
 
 #include <bounce/dynamics/contacts/contact.h>
-#include <bounce/dynamics/contacts/manifold.h>
-#include <bounce/dynamics/contacts/collide/collide.h>
-#include <bounce/collision/shapes/aabb.h>
+#include <bounce/collision/collide/manifold.h>
+#include <bounce/collision/collide/collide.h>
+#include <bounce/collision/geometry/aabb.h>
 
-// This structure helps replicate the convex contact per convex-triangle pair scenario, 
-// but efficiently. There is no need to store a manifold here since they're reduced 
+// This structure holds an overlapping triangle. 
+// There is no need to store a manifold here because they're reduced 
 // by the cluster algorithm.
 struct b3TriangleCache
 {
@@ -36,12 +36,12 @@ struct b3TriangleCache
 class b3MeshContact : public b3Contact
 {
 public:
-	b3MeshContact(b3Shape* shapeA, b3Shape* shapeB);
+	b3MeshContact(b3Fixture* fixtureA, b3Fixture* fixtureB);
 	~b3MeshContact();
 
 	bool TestOverlap() override;
 
-	void SynchronizeShape() override;
+	void SynchronizeFixture() override;
 
 	void FindPairs() override;
 

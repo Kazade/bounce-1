@@ -31,10 +31,10 @@ public:
 			b3HullShape shape;
 			shape.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &shape;
 			
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		b3Body* hinge, *door;
@@ -50,11 +50,11 @@ public:
 			shape.m_vertex2.Set(0.0f, 0.0f, 4.0f);
 			shape.m_radius = 0.5f;
 			
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &shape;
 			sd.density = 1.0f;
 
-			hinge->CreateShape(sd);
+			hinge->CreateFixture(sd);
 			
 			m_body = hinge;
 		}
@@ -71,11 +71,11 @@ public:
 			b3HullShape hull;
 			hull.m_hull = &m_doorBox;
 
-			b3ShapeDef sdef;
-			sdef.shape = &hull;
-			sdef.density = 1.0f;
+			b3FixtureDef fd;
+			fd.shape = &hull;
+			fd.density = 1.0f;
 			
-			door->CreateShape(sdef);
+			door->CreateFixture(fd);
 		}
 		
 

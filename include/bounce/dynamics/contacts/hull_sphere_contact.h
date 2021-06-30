@@ -24,10 +24,10 @@
 class b3HullAndSphereContact : public b3ConvexContact
 {
 public:
-	static b3Contact* Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator);
+	static b3Contact* Create(b3Fixture* fixtureA, b3Fixture* fixtureB, b3BlockAllocator* allocator);
 	static void Destroy(b3Contact* contact, b3BlockAllocator* allocator);
 
-	b3HullAndSphereContact(b3Shape* shapeA, b3Shape* shapeB);
+	b3HullAndSphereContact(b3Fixture* fixtureA, b3Fixture* fixtureB);
 	~b3HullAndSphereContact() { }
 
 	void Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB) override;

@@ -31,10 +31,10 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		{
@@ -51,12 +51,12 @@ public:
 			cap.m_vertex2.Set(0.0f, -2.0f, 0.0f);
 			cap.m_radius = 0.5f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &cap;
 			sd.density = 1.5f;
 			sd.friction = 0.7f;
 
-			m_body->CreateShape(sd);
+			m_body->CreateFixture(sd);
 		}
 	}
 
@@ -105,12 +105,12 @@ public:
 			shape.m_center.Set(0.0f, 0.0f, 0.0f);
 			shape.m_radius = 0.5f;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &shape;
 			sd.density = 1.0f;
 			sd.friction = 1.0f;
 
-			enemy->CreateShape(sd);
+			enemy->CreateFixture(sd);
 		}
 
 		if (m_body->GetType() == e_staticBody)

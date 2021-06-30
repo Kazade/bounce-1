@@ -17,13 +17,13 @@
 */
 
 #include <bounce/dynamics/contacts/sphere_contact.h>
-#include <bounce/dynamics/shapes/sphere_shape.h>
+#include <bounce/collision/shapes/sphere_shape.h>
 #include <bounce/common/memory/block_allocator.h>
 
-b3Contact* b3SphereContact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator)
+b3Contact* b3SphereContact::Create(b3Fixture* fixtureA, b3Fixture* fixtureB, b3BlockAllocator* allocator)
 {
 	void* mem = allocator->Allocate(sizeof(b3SphereContact));
-	return new (mem) b3SphereContact(shapeA, shapeB);
+	return new (mem) b3SphereContact(fixtureA, fixtureB);
 }
 
 void b3SphereContact::Destroy(b3Contact* contact, b3BlockAllocator* allocator)
@@ -32,13 +32,13 @@ void b3SphereContact::Destroy(b3Contact* contact, b3BlockAllocator* allocator)
 	allocator->Free(contact, sizeof(b3SphereContact));
 }
 
-b3SphereContact::b3SphereContact(b3Shape* shapeA, b3Shape* shapeB) : b3ConvexContact(shapeA, shapeB)
+b3SphereContact::b3SphereContact(b3Fixture* fixtureA, b3Fixture* fixtureB) : b3ConvexContact(fixtureA, fixtureB)
 {
-	B3_ASSERT(shapeA->GetType() == e_sphereShape);
-	B3_ASSERT(shapeB->GetType() == e_sphereShape);
+	B3_ASSERT(fixtureA->GetType() == b3Shape::e_sphere);
+	B3_ASSERT(fixtureB->GetType() == b3Shape::e_sphere);
 }
 
 void b3SphereContact::Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB) 
 {
-	b3CollideSphereAndSphere(manifold, xfA, (b3SphereShape*)GetShapeA(), xfB, (b3SphereShape*)GetShapeB());
+	b3CollideSphereAndSphere(manifold, xfA, (b3SphereShape*)GetFixtureA()->GetShape(), xfB, (b3SphereShape*)GetFixtureB()->GetShape());
 }

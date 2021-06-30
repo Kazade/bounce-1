@@ -31,89 +31,89 @@ public:
 			b3HullShape hs;
 			hs.m_hull = &m_groundHull;
 
-			b3ShapeDef sd;
+			b3FixtureDef sd;
 			sd.shape = &hs;
 
-			ground->CreateShape(sd);
+			ground->CreateFixture(sd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
-			bdef.position.Set(-10.0f, 5.0f, 0.0f);
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
+			bd.position.Set(-10.0f, 5.0f, 0.0f);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3SphereShape sphere;
 			sphere.m_center.SetZero();
 			sphere.m_radius = 1.0f;
 
-			b3ShapeDef sdef;
-			sdef.density = 0.1f;
-			sdef.friction = 0.3f;
-			sdef.shape = &sphere;
+			b3FixtureDef fd;
+			fd.density = 0.1f;
+			fd.friction = 0.3f;
+			fd.shape = &sphere;
 
-			body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
-			bdef.position.Set(-5.0f, 5.0f, 0.0f);
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
+			bd.position.Set(-5.0f, 5.0f, 0.0f);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			b3CapsuleShape capsule;
 			capsule.m_vertex1.Set(0.0f, 0.0f, -1.0f);
 			capsule.m_vertex2.Set(0.0f, 0.0f, 1.0f);
 			capsule.m_radius = 1.0f;
 
-			b3ShapeDef sdef;
-			sdef.density = 0.1f;
-			sdef.friction = 0.2f;
-			sdef.shape = &capsule;
+			b3FixtureDef fd;
+			fd.density = 0.1f;
+			fd.friction = 0.2f;
+			fd.shape = &capsule;
 
-			body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
-			bdef.position.Set(0.0f, 5.0f, 0.0f);
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
+			bd.position.Set(0.0f, 5.0f, 0.0f);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			m_coneHull.SetExtents(1.0f, 1.0f);
 
 			b3HullShape hull;
 			hull.m_hull = &m_coneHull;
 
-			b3ShapeDef sdef;
-			sdef.density = 0.1f;
-			sdef.friction = 0.3f;
-			sdef.shape = &hull;
+			b3FixtureDef fd;
+			fd.density = 0.1f;
+			fd.friction = 0.3f;
+			fd.shape = &hull;
 
-			body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 
 		{
-			b3BodyDef bdef;
-			bdef.type = e_dynamicBody;
-			bdef.position.Set(4.0f, 5.0f, 0.0f);
+			b3BodyDef bd;
+			bd.type = e_dynamicBody;
+			bd.position.Set(4.0f, 5.0f, 0.0f);
 
-			b3Body* body = m_world.CreateBody(bdef);
+			b3Body* body = m_world.CreateBody(bd);
 
 			m_cylinderHull.SetExtents(1.0f, 1.0f);
 
 			b3HullShape hull;
 			hull.m_hull = &m_cylinderHull;
 
-			b3ShapeDef sdef;
-			sdef.density = 0.1f;
-			sdef.friction = 0.2f;
-			sdef.shape = &hull;
+			b3FixtureDef fd;
+			fd.density = 0.1f;
+			fd.friction = 0.2f;
+			fd.shape = &hull;
 
-			body->CreateShape(sdef);
+			body->CreateFixture(fd);
 		}
 	}
 

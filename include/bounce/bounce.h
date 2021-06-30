@@ -34,14 +34,22 @@
 #include <bounce/collision/broad_phase.h>
 #include <bounce/collision/time_of_impact.h>
 
-#include <bounce/collision/shapes/sphere.h>
-#include <bounce/collision/shapes/capsule.h>
-#include <bounce/collision/shapes/hull.h>
-#include <bounce/collision/shapes/box_hull.h>
-#include <bounce/collision/shapes/cylinder_hull.h>
-#include <bounce/collision/shapes/cone_hull.h>
-#include <bounce/collision/shapes/mesh.h>
-#include <bounce/collision/shapes/grid_mesh.h>
+#include <bounce/collision/geometry/sphere.h>
+#include <bounce/collision/geometry/capsule.h>
+#include <bounce/collision/geometry/hull.h>
+#include <bounce/collision/geometry/box_hull.h>
+#include <bounce/collision/geometry/cylinder_hull.h>
+#include <bounce/collision/geometry/cone_hull.h>
+#include <bounce/collision/geometry/mesh.h>
+#include <bounce/collision/geometry/grid_mesh.h>
+
+#include <bounce/collision/shapes/sphere_shape.h>
+#include <bounce/collision/shapes/capsule_shape.h>
+#include <bounce/collision/shapes/triangle_shape.h>
+#include <bounce/collision/shapes/hull_shape.h>
+#include <bounce/collision/shapes/mesh_shape.h>
+
+#include <bounce/collision/collide/collide.h>
 
 #include <bounce/dynamics/joints/mouse_joint.h>
 #include <bounce/dynamics/joints/spring_joint.h>
@@ -54,18 +62,9 @@
 #include <bounce/dynamics/joints/prismatic_joint.h>
 #include <bounce/dynamics/joints/wheel_joint.h>
 
-#include <bounce/dynamics/shapes/sphere_shape.h>
-#include <bounce/dynamics/shapes/capsule_shape.h>
-#include <bounce/dynamics/shapes/triangle_shape.h>
-#include <bounce/dynamics/shapes/hull_shape.h>
-#include <bounce/dynamics/shapes/mesh_shape.h>
-
 #include <bounce/dynamics/contacts/contact.h>
-#include <bounce/dynamics/contacts/convex_contact.h>
-#include <bounce/dynamics/contacts/mesh_contact.h>
-
 #include <bounce/dynamics/body.h>
-
+#include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/world.h>
 #include <bounce/dynamics/world_listeners.h>
 

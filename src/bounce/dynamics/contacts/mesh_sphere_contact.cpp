@@ -17,15 +17,15 @@
 */
 
 #include <bounce/dynamics/contacts/mesh_sphere_contact.h>
-#include <bounce/dynamics/shapes/triangle_shape.h>
-#include <bounce/dynamics/shapes/mesh_shape.h>
-#include <bounce/dynamics/shapes/sphere_shape.h>
+#include <bounce/collision/shapes/triangle_shape.h>
+#include <bounce/collision/shapes/mesh_shape.h>
+#include <bounce/collision/shapes/sphere_shape.h>
 #include <bounce/common/memory/block_allocator.h>
 
-b3Contact* b3MeshAndSphereContact::Create(b3Shape* shapeA, b3Shape* shapeB, b3BlockAllocator* allocator)
+b3Contact* b3MeshAndSphereContact::Create(b3Fixture* fixtureA, b3Fixture* fixtureB, b3BlockAllocator* allocator)
 {
 	void* mem = allocator->Allocate(sizeof(b3MeshAndSphereContact));
-	return new (mem) b3MeshAndSphereContact(shapeA, shapeB);
+	return new (mem) b3MeshAndSphereContact(fixtureA, fixtureB);
 }
 
 void b3MeshAndSphereContact::Destroy(b3Contact* contact, b3BlockAllocator* allocator)
@@ -34,18 +34,18 @@ void b3MeshAndSphereContact::Destroy(b3Contact* contact, b3BlockAllocator* alloc
 	allocator->Free(contact, sizeof(b3MeshAndSphereContact));
 }
 
-b3MeshAndSphereContact::b3MeshAndSphereContact(b3Shape* shapeA, b3Shape* shapeB) : b3MeshContact(shapeA, shapeB)
+b3MeshAndSphereContact::b3MeshAndSphereContact(b3Fixture* fixtureA, b3Fixture* fixtureB) : b3MeshContact(fixtureA, fixtureB)
 {
-	B3_ASSERT(shapeA->GetType() == e_meshShape);
-	B3_ASSERT(shapeB->GetType() == e_sphereShape);
+	B3_ASSERT(fixtureA->GetType() == b3Shape::e_mesh);
+	B3_ASSERT(fixtureB->GetType() == b3Shape::e_sphere);
 }
 
 void b3MeshAndSphereContact::Evaluate(b3Manifold& manifold, const b3Transform& xfA, const b3Transform& xfB, u32 cacheIndex)
 {
 	B3_ASSERT(cacheIndex < m_triangleCount);
 	
-	b3MeshShape* mesh = (b3MeshShape*)GetShapeA();
+	b3MeshShape* mesh = (b3MeshShape*)GetFixtureA()->GetShape();
 	b3TriangleShape triangle;
 	mesh->GetChildTriangle(&triangle, m_triangles[cacheIndex].index);
-	b3CollideTriangleAndSphere(manifold, xfA, &triangle, xfB, (b3SphereShape*)GetShapeB());
+	b3CollideTriangleAndSphere(manifold, xfA, &triangle, xfB, (b3SphereShape*)GetFixtureB()->GetShape());
 }

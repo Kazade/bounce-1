@@ -17,13 +17,13 @@
 */
 
 #include <bounce/dynamics/contacts/convex_contact.h>
-#include <bounce/dynamics/shapes/shape.h>
+#include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/body.h>
 
-b3ConvexContact::b3ConvexContact(b3Shape* shapeA, b3Shape* shapeB) : b3Contact(shapeA, shapeB)
+b3ConvexContact::b3ConvexContact(b3Fixture* fixtureA, b3Fixture* fixtureB) : b3Contact(fixtureA, fixtureB)
 {
-	B3_NOT_USED(shapeA);
-    B3_NOT_USED(shapeB);
+	B3_NOT_USED(fixtureA);
+    B3_NOT_USED(fixtureB);
 
 	m_manifoldCapacity = 1;
 	m_manifolds = &m_manifold;
@@ -35,22 +35,21 @@ b3ConvexContact::b3ConvexContact(b3Shape* shapeA, b3Shape* shapeB) : b3Contact(s
 
 bool b3ConvexContact::TestOverlap()
 {
-	b3Shape* shapeA = GetShapeA();
-	b3Transform xfA = shapeA->GetBody()->GetTransform();
+	b3Fixture* fixtureA = GetFixtureA();
+	b3Shape* shapeA = fixtureA->GetShape();
+	b3Transform xfA = fixtureA->GetBody()->GetTransform();
 
-	b3Shape* shapeB = GetShapeB();
-	b3Transform xfB = shapeB->GetBody()->GetTransform();
+	b3Fixture* fixtureB = GetFixtureB();
+	b3Shape* shapeB = fixtureB->GetShape();
+	b3Transform xfB = fixtureB->GetBody()->GetTransform();
 
 	return b3TestOverlap(xfA, 0, shapeA, xfB, 0, shapeB, &m_cache);
 }
 
 void b3ConvexContact::Collide() 
 {
-	b3Shape* shapeA = GetShapeA();
-	b3Shape* shapeB = GetShapeB();
-
-	b3Transform xfA = shapeA->GetBody()->GetTransform();
-	b3Transform xfB = shapeB->GetBody()->GetTransform();
+	b3Transform xfA = GetFixtureA()->GetBody()->GetTransform();
+	b3Transform xfB = GetFixtureB()->GetBody()->GetTransform();
 
 	B3_ASSERT(m_manifoldCount == 0);
 	Evaluate(m_manifold, xfA, xfB);

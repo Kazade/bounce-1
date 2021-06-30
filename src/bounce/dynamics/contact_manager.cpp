@@ -17,10 +17,8 @@
 */
 
 #include <bounce/dynamics/contact_manager.h>
-#include <bounce/dynamics/contacts/convex_contact.h>
-#include <bounce/dynamics/contacts/mesh_contact.h>
-#include <bounce/dynamics/shapes/shape.h>
 #include <bounce/dynamics/body.h>
+#include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/world_listeners.h>
 
 b3ContactManager::b3ContactManager()
@@ -31,36 +29,36 @@ b3ContactManager::b3ContactManager()
 
 void b3ContactManager::AddPair(void* dataA, void* dataB)
 {
-	b3Shape* shapeA = (b3Shape*)dataA;
-	b3Shape* shapeB = (b3Shape*)dataB;
+	b3Fixture* fixtureA = (b3Fixture*)dataA;
+	b3Fixture* fixtureB = (b3Fixture*)dataB;
 
-	b3Body* bodyA = shapeA->GetBody();
-	b3Body* bodyB = shapeB->GetBody();
+	b3Body* bodyA = fixtureA->GetBody();
+	b3Body* bodyB = fixtureB->GetBody();
 
 	if (bodyA == bodyB)
 	{
-		// Two shapes that belong to the same body cannot collide.
+		// Two fixtures that belong to the same body cannot collide.
 		return;
 	}
 
-	// Check if there is a contact between the two shapes.
+	// Check if there is a contact between the two fixtures.
 	// Search the list A or B. The shorter if possible.
-	for (b3ContactEdge* ce = shapeB->m_contactEdges.m_head; ce; ce = ce->m_next)
+	for (b3ContactEdge* ce = fixtureB->m_contactEdges.m_head; ce; ce = ce->m_next)
 	{
-		if (ce->other == shapeA)
+		if (ce->other == fixtureA)
 		{
 			b3Contact* c = ce->contact;
 
-			b3Shape* sA = c->GetShapeA();
-			b3Shape* sB = c->GetShapeB();
+			b3Fixture* fA = c->GetFixtureA();
+			b3Fixture* fB = c->GetFixtureB();
 
-			if (sA == shapeA && sB == shapeB)
+			if (fA == fixtureA && fB == fixtureB)
 			{
 				// A contact already exists.
 				return;
 			}
 
-			if (sB == shapeA && sA == shapeB)
+			if (fB == fixtureA && fA == fixtureB)
 			{
 				// A contact already exists.
 				return;
@@ -79,44 +77,44 @@ void b3ContactManager::AddPair(void* dataA, void* dataB)
 	// Check if the contact filter prevents the collision.
 	if (m_contactFilter)
 	{
-		if (m_contactFilter->ShouldCollide(shapeA, shapeB) == false)
+		if (m_contactFilter->ShouldCollide(fixtureA, fixtureB) == false)
 		{
 			return;
 		}
 	}
 
 	// Create contact.
-	b3Contact* c = Create(shapeA, shapeB);
+	b3Contact* c = Create(fixtureA, fixtureB);
 	if (c == nullptr)
 	{
 		return;
 	}
 
-	// Get the shapes from the contact again because contact creation can swap the shapes.
-	shapeA = c->GetShapeA();
-	shapeB = c->GetShapeB();
-	bodyA = shapeA->GetBody();
-	bodyB = shapeB->GetBody();
+	// Get the fixtures from the contact again because contact creation can swap the fixtures.
+	fixtureA = c->GetFixtureA();
+	fixtureB = c->GetFixtureB();
+	bodyA = fixtureA->GetBody();
+	bodyB = fixtureB->GetBody();
 
 	c->m_flags = 0;
 	b3OverlappingPair* pair = &c->m_pair;
 
 	// Initialize edge A
 	pair->edgeA.contact = c;
-	pair->edgeA.other = shapeB;
+	pair->edgeA.other = fixtureB;
 
-	// Add edge A to shape A's contact list.
-	shapeA->m_contactEdges.PushFront(&pair->edgeA);
+	// Add edge A to fixture A's contact list.
+	fixtureA->m_contactEdges.PushFront(&pair->edgeA);
 
 	// Initialize edge B
 	pair->edgeB.contact = c;
-	pair->edgeB.other = shapeA;
+	pair->edgeB.other = fixtureA;
 
-	// Add edge B to shape B's contact list.
-	shapeB->m_contactEdges.PushFront(&pair->edgeB);
+	// Add edge B to fixture B's contact list.
+	fixtureB->m_contactEdges.PushFront(&pair->edgeB);
 
 	// Awake the bodies if both are not sensors.
-	if (!shapeA->IsSensor() && !shapeB->IsSensor())
+	if (!fixtureA->IsSensor() && !fixtureB->IsSensor())
 	{
 		bodyA->SetAwake(true);
 		bodyB->SetAwake(true);
@@ -126,12 +124,12 @@ void b3ContactManager::AddPair(void* dataA, void* dataB)
 	m_contactList.PushFront(c);
 }
 
-void b3ContactManager::SynchronizeShapes()
+void b3ContactManager::SynchronizeFixtures()
 {
 	b3Contact* c = m_contactList.m_head;
 	while (c)
 	{
-		c->SynchronizeShape();
+		c->SynchronizeFixture();
 		c = c->m_next;
 	}
 }
@@ -158,13 +156,13 @@ void b3ContactManager::UpdateContacts()
 	{
 		b3OverlappingPair* pair = &c->m_pair;
 
-		b3Shape* shapeA = pair->shapeA;
-		u32 proxyA = shapeA->m_broadPhaseID;
-		b3Body* bodyA = shapeA->m_body;
+		b3Fixture* fixtureA = pair->fixtureA;
+		u32 proxyA = fixtureA->m_broadPhaseID;
+		b3Body* bodyA = fixtureA->m_body;
 
-		b3Shape* shapeB = pair->shapeB;
-		u32 proxyB = shapeB->m_broadPhaseID;
-		b3Body* bodyB = shapeB->m_body;
+		b3Fixture* fixtureB = pair->fixtureB;
+		u32 proxyB = fixtureB->m_broadPhaseID;
+		b3Body* bodyB = fixtureB->m_body;
 
 		// Check if the bodies must not collide with each other.
 		if (bodyA->ShouldCollide(bodyB) == false)
@@ -178,7 +176,7 @@ void b3ContactManager::UpdateContacts()
 		// Check for external filtering.
 		if (m_contactFilter)
 		{
-			if (m_contactFilter->ShouldCollide(shapeA, shapeB) == false)
+			if (m_contactFilter->ShouldCollide(fixtureA, fixtureB) == false)
 			{
 				// The user has stopped the contact.
 				b3Contact* quack = c;
@@ -214,9 +212,9 @@ void b3ContactManager::UpdateContacts()
 	}
 }
 
-b3Contact* b3ContactManager::Create(b3Shape* shapeA, b3Shape* shapeB)
+b3Contact* b3ContactManager::Create(b3Fixture* fixtureA, b3Fixture* fixtureB)
 {
-	return b3Contact::Create(shapeA, shapeB, m_allocator);
+	return b3Contact::Create(fixtureA, fixtureB, m_allocator);
 }
 
 void b3ContactManager::Destroy(b3Contact* c)
@@ -232,11 +230,11 @@ void b3ContactManager::Destroy(b3Contact* c)
 
 	b3OverlappingPair* pair = &c->m_pair;
 
-	b3Shape* shapeA = c->GetShapeA();
-	b3Shape* shapeB = c->GetShapeB();
+	b3Fixture* fixtureA = c->GetFixtureA();
+	b3Fixture* fixtureB = c->GetFixtureB();
 
-	shapeA->m_contactEdges.Remove(&pair->edgeA);
-	shapeB->m_contactEdges.Remove(&pair->edgeB);
+	fixtureA->m_contactEdges.Remove(&pair->edgeA);
+	fixtureB->m_contactEdges.Remove(&pair->edgeB);
 
 	// Remove the contact from the world contact list.
 	m_contactList.Remove(c);
