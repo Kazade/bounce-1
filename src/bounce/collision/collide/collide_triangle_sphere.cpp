@@ -196,15 +196,15 @@ void b3CollideTriangleAndSphere(b3Manifold& manifold,
 		// Is there a face connected to AC?
 		if (s1->m_hasE2Vertex)
 		{
-			b3Vec3 A1 = s1->m_e2Vertex;
-			b3Vec3 B1 = C;
-			b3Vec3 C1 = B;
+			b3Vec3 A2 = s1->m_e2Vertex;
+			b3Vec3 B2 = C;
+			b3Vec3 C2 = B;
 
-			scalar wABC1[4];
-			b3BarycentricCoordinates(wABC1, A1, B1, C1, Q);
+			scalar wABC2[4];
+			b3BarycentricCoordinates(wABC2, A2, B2, C2, Q);
 
 			// Is the sphere in the Region ABC of the adjacent face?
-			if (wABC1[0] > scalar(0) && wABC1[1] > scalar(0) && wABC1[2] > scalar(0))
+			if (wABC2[0] > scalar(0) && wABC2[1] > scalar(0) && wABC2[2] > scalar(0))
 			{
 				return;
 			}
@@ -245,15 +245,15 @@ void b3CollideTriangleAndSphere(b3Manifold& manifold,
 		// Is there a face connected to CA?
 		if (s1->m_hasE3Vertex)
 		{
-			b3Vec3 A1 = s1->m_e3Vertex;
-			b3Vec3 B1 = A;
-			b3Vec3 C1 = C;
+			b3Vec3 A3 = s1->m_e3Vertex;
+			b3Vec3 B3 = A;
+			b3Vec3 C3 = C;
 
-			scalar wABC1[4];
-			b3BarycentricCoordinates(wABC1, A1, B1, C1, Q);
+			scalar wABC3[4];
+			b3BarycentricCoordinates(wABC3, A3, B3, C3, Q);
 
 			// Is the sphere in the Region ABC of the adjacent face?
-			if (wABC1[0] > scalar(0) && wABC1[1] > scalar(0) && wABC1[2] > scalar(0))
+			if (wABC3[0] > scalar(0) && wABC3[1] > scalar(0) && wABC3[2] > scalar(0))
 			{
 				return;
 			}

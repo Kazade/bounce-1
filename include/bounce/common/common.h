@@ -41,26 +41,6 @@
 # endif
 #endif
 
-#define B3_JOIN(a, b) a##b
-#define B3_CONCATENATE(a, b) B3_JOIN(a, b)
-#define B3_UNIQUE_NAME(name) B3_CONCATENATE(name, __LINE__)
-
-// A profiler block. 
-struct b3ProfileScope
-{
-	b3ProfileScope(const char* name)
-	{
-		b3BeginProfileScope(name);
-	}
-
-	~b3ProfileScope()
-	{
-		b3EndProfileScope();
-	}
-};
-
-#define B3_PROFILE(name) b3ProfileScope B3_UNIQUE_NAME(scope)(name)
-
 #define B3_KiB(n) (1024 * n)
 #define B3_MiB(n) (1024 * B3_KiB(n))
 #define B3_GiB(n) (1024 * B3_MiB(n))
@@ -71,18 +51,15 @@ struct b3ProfileScope
 #define	B3_MAX_U8 (0xFF)
 #define	B3_MAX_U32 (0xFFFFFFFF)
 
-// This is a scalar type dependent variable.
-// If scalar is float, you must set this constant to FLT_MAX.
-// If scalar is double, you must set this constant to DBL_MAX.
-#define	B3_MAX_SCALAR (FLT_MAX)
+#ifdef B3_USE_DOUBLE
+	#define	B3_MAX_SCALAR (DBL_MAX)
+	#define	B3_EPSILON (DBL_EPSILON)
+#else 
+	#define	B3_MAX_SCALAR (FLT_MAX)
+	#define	B3_EPSILON (FLT_EPSILON)
+#endif
 
-// This is scalar type dependent variable.
-// If scalar is float, you must set this constant to FLT_EPSILON.
-// If scalar is double, you must set this constant to DBL_EPSILON.
-#define	B3_EPSILON (FLT_EPSILON)
-
-// This is scalar type dependent variable.
-// This is computed using double precision by default.
+// Pi is computed using double precision by default.
 #define B3_PI scalar(3.14159265358979323846)
 
 // Collision
@@ -106,19 +83,16 @@ struct b3ProfileScope
 // The radius of the hull shape skin.
 #define B3_HULL_RADIUS (scalar(0.0) * B3_LINEAR_SLOP)
 
+// Number of contact points per manifold. 
+// Don't change this value unless you know what you're doing.
+#define B3_MAX_MANIFOLD_POINTS (4)
+
 // Dynamics
 
 // The maximum number of manifolds that can be build 
 // for all contacts. 
+// Don't change this value unless you know what you're doing.
 #define B3_MAX_MANIFOLDS (3)
-
-// If this is equal to 4 then the contact generator
-// will keep the hull-hull manifold clipped points up to 4 such that 
-// still creates a stable manifold to the solver. More points 
-// usually means better torque balance but can decrease 
-// the performance of the solver significantly. 
-// Therefore, keep this to 4 for greater performance.
-#define B3_MAX_MANIFOLD_POINTS (4)
 
 // Maximum translation per step to prevent numerical instability 
 // due to large linear velocity.

@@ -12,15 +12,20 @@ set(BOUNCE_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(BOUNCE_SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(BOUNCE_EXAMPLES_DIR "${CMAKE_SOURCE_DIR}/examples")
 
-add_subdirectory(src)
-
 option(BOUNCE_BUILD_EXAMPLES "Build the Bounce examples" ON)
 option(BOUNCE_BUILD_DOCS "Build the Bounce documentation" OFF)
 option(BOUNCE_USER_SETTINGS "Override Bounce settings with user_settings.h" OFF)
+option(BOUNCE_USE_DOUBLE "Use double or float floating point format" OFF)
 
 if (BOUNCE_USER_SETTINGS)
 	add_compile_definitions(B3_USER_SETTINGS)
 endif()
+
+if (BOUNCE_USE_DOUBLE)
+	add_compile_definitions(B3_USE_DOUBLE)
+endif()
+
+add_subdirectory(src)
 
 if (BOUNCE_BUILD_DOCS)
  	set(DOXYGEN_SKIP_DOT TRUE)

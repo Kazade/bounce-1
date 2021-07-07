@@ -31,6 +31,7 @@
 #include <bounce/collision/shapes/mesh_shape.h>
 #include <bounce/collision/geometry/mesh.h>
 #include <bounce/common/draw.h>
+#include <bounce/common/profiler.h>
 
 extern u32 b3_allocCalls, b3_maxAllocCalls;
 extern u32 b3_convexCalls, b3_convexCacheHits;

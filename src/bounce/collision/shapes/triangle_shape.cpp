@@ -29,10 +29,6 @@ b3TriangleShape::b3TriangleShape()
 	m_hasE3Vertex = false;
 }
 
-b3TriangleShape::~b3TriangleShape()
-{
-}
-
 void b3TriangleShape::Set(const b3Vec3& v1, const b3Vec3& v2, const b3Vec3& v3)
 {
 	m_vertex1 = v1;

@@ -24,10 +24,6 @@ b3CapsuleShape::b3CapsuleShape()
 	m_radius = scalar(0);
 }
 
-b3CapsuleShape::~b3CapsuleShape() 
-{
-}
-
 void b3CapsuleShape::ComputeMass(b3MassData* massData, scalar density) const 
 {
 	b3Vec3 A = m_vertex1;

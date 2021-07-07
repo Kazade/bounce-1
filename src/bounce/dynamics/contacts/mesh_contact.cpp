@@ -17,12 +17,12 @@
 */
 
 #include <bounce/dynamics/contacts/mesh_contact.h>
-#include <bounce/collision/collide/cluster_solver.h>
 #include <bounce/dynamics/fixture.h>
-#include <bounce/collision/shapes/mesh_shape.h>
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/world.h>
+#include <bounce/collision/shapes/mesh_shape.h>
 #include <bounce/collision/geometry/mesh.h>
+#include <bounce/collision/collide/cluster.h>
 
 b3MeshContact::b3MeshContact(b3Fixture* fixtureA, b3Fixture* fixtureB) : b3Contact(fixtureA, fixtureB)
 {

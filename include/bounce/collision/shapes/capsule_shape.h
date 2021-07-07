@@ -26,7 +26,6 @@ class b3CapsuleShape : public b3Shape
 {
 public:
 	b3CapsuleShape();
-	~b3CapsuleShape();
 
 	void ComputeMass(b3MassData* data, scalar density) const;
 

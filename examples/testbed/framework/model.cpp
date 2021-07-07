@@ -103,7 +103,6 @@ void Model::Update()
 	m_debugDraw.EnableDrawLines(g_settings->drawLines);
 	m_debugDraw.EnableDrawTriangles(g_settings->drawTriangles);
 
-	m_debugDraw.Begin();
 	m_glDebugDraw.Begin();
 	
 	if (m_setTest)
@@ -143,5 +142,6 @@ void Model::Update()
 	m_test->Step();
 	
 	m_glDebugDraw.End();
-	m_debugDraw.End();
+	
+	m_debugDraw.Flush();
 }

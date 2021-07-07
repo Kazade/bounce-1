@@ -20,7 +20,7 @@
 #define TEST_H
 
 #include "GLFW/glfw3.h"
-#include "gl_debugdraw.h"
+#include "open_gl/gl_debugdraw.h"
 #include "draw.h"
 #include "view_model.h"
 #include "body_dragger.h"

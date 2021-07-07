@@ -17,20 +17,19 @@
 */
 
 #include <bounce/dynamics/fixture.h>
+#include <bounce/dynamics/body.h>
+#include <bounce/dynamics/world.h>
 #include <bounce/collision/shapes/sphere_shape.h>
 #include <bounce/collision/shapes/capsule_shape.h>
 #include <bounce/collision/shapes/triangle_shape.h>
 #include <bounce/collision/shapes/hull_shape.h>
 #include <bounce/collision/shapes/mesh_shape.h>
-#include <bounce/dynamics/body.h>
-#include <bounce/dynamics/world.h>
 #include <bounce/dynamics/contacts/contact.h>
 #include <bounce/collision/geometry/sphere.h>
 #include <bounce/collision/geometry/capsule.h>
 #include <bounce/collision/geometry/hull.h>
 #include <bounce/collision/geometry/mesh.h>
 #include <bounce/common/memory/block_allocator.h>
-#include <bounce/common/draw.h>
 
 b3Fixture::b3Fixture()
 {

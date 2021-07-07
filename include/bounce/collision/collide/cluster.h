@@ -16,8 +16,8 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef B3_CLUSTER_SOLVER_H
-#define B3_CLUSTER_SOLVER_H
+#ifndef B3_CLUSTER_H
+#define B3_CLUSTER_H
 
 #include <bounce/common/geometry.h>
 #include <bounce/common/template/array.h>
@@ -66,7 +66,6 @@ class b3ClusterSolver
 {
 public:
 	b3ClusterSolver();
-	~b3ClusterSolver();
 
 	// Pushes an observation. This is usually a contact point.
 	void AddObservation(const b3Observation& observation);

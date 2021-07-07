@@ -28,10 +28,7 @@ class b3HullShape : public b3Shape
 {
 public:
 	b3HullShape();
-	~b3HullShape();
 
-	void Clone(const b3HullShape& other);
-	
 	void ComputeMass(b3MassData* data, scalar density) const;
 
 	void ComputeAABB(b3AABB* aabb, const b3Transform& xf) const;	

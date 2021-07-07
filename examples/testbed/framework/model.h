@@ -19,7 +19,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "gl_debugdraw.h"
+#include "open_gl/gl_debugdraw.h"
 
 #include <bounce/common/profiler.h>
 #include <bounce/common/graphics/camera.h>

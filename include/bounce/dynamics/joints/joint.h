@@ -42,7 +42,7 @@ enum b3JointType
 	e_motorJoint,
 	e_prismaticJoint,
 	e_wheelJoint,
-	e_maxJoints,
+	e_typeCount,
 };
 
 struct b3JointDef

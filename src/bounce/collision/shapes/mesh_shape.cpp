@@ -28,10 +28,6 @@ b3MeshShape::b3MeshShape()
 	m_scale.Set(scalar(1), scalar(1), scalar(1));
 }
 
-b3MeshShape::~b3MeshShape() 
-{
-}
-
 void b3MeshShape::ComputeMass(b3MassData* massData, scalar density) const 
 {
 	B3_NOT_USED(density);	
@@ -75,15 +71,9 @@ bool b3MeshShape::TestSphere(const b3Sphere& sphere, const b3Transform& xf) cons
 
 bool b3MeshShape::RayCast(b3RayCastOutput* output, const b3RayCastInput& input, const b3Transform& xf, u32 index) const
 {
-	B3_ASSERT(index < m_mesh->triangleCount);
-	b3MeshTriangle* triangle = m_mesh->triangles + index;
-
-	b3TriangleShape triangleShape;
-	triangleShape.m_vertex1 = b3Mul(m_scale, m_mesh->vertices[triangle->v1]);
-	triangleShape.m_vertex2 = b3Mul(m_scale, m_mesh->vertices[triangle->v2]);
-	triangleShape.m_vertex3 = b3Mul(m_scale, m_mesh->vertices[triangle->v3]);
-
-	return triangleShape.RayCast(output, input, xf);
+	b3TriangleShape triangle;
+	GetChildTriangle(&triangle, index);
+	return triangle.RayCast(output, input, xf);
 }
 
 struct b3MeshShapeRayCastCallback

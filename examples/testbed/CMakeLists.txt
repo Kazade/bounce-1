@@ -1,21 +1,21 @@
 set(TESTBED_SOURCE_FILES
+	framework/open_gl/gl_debugdraw.h
+	framework/open_gl/gl_debugdraw.cpp
+	framework/open_gl/gl_shader.h
+	framework/open_gl/gl_shader.cpp
+	framework/open_gl/gl_render_points.h
+	framework/open_gl/gl_render_points.cpp
+	framework/open_gl/gl_render_lines.h
+	framework/open_gl/gl_render_lines.cpp
+	framework/open_gl/gl_render_triangles.h
+	framework/open_gl/gl_render_triangles.cpp
+	framework/imgui/imgui_impl_glfw.cpp
+	framework/imgui/imgui_impl_glfw.h
+	framework/imgui/imgui_impl_opengl2.cpp
+	framework/imgui/imgui_impl_opengl2.h
 	framework/body_dragger.cpp
 	framework/body_dragger.h
-	framework/gl_debugdraw.h
-	framework/gl_debugdraw.cpp
-	framework/gl_shader.h
-	framework/gl_shader.cpp
-	framework/gl_render_points.h
-	framework/gl_render_points.cpp
-	framework/gl_render_lines.h
-	framework/gl_render_lines.cpp
-	framework/gl_render_triangles.h
-	framework/gl_render_triangles.cpp
 	framework/draw.h
-	framework/imgui_impl_glfw.cpp
-	framework/imgui_impl_glfw.h
-	framework/imgui_impl_opengl2.cpp
-	framework/imgui_impl_opengl2.h
 	framework/main.cpp
 	framework/model.cpp
 	framework/model.h

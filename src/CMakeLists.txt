@@ -70,7 +70,7 @@ ${BOUNCE_INCLUDE_DIR}/bounce/collision/trees/static_tree.h
 ${BOUNCE_INCLUDE_DIR}/bounce/collision/collide/manifold.h
 ${BOUNCE_INCLUDE_DIR}/bounce/collision/collide/clip.h
 ${BOUNCE_INCLUDE_DIR}/bounce/collision/collide/collide.h
-${BOUNCE_INCLUDE_DIR}/bounce/collision/collide/cluster_solver.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/collide/cluster.h
 
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/body.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/fixture.h
@@ -164,7 +164,7 @@ set(BOUNCE_SOURCE_FILES
 	bounce/collision/collide/collide_triangle_capsule.cpp
 	bounce/collision/collide/collide_triangle_hull.cpp
 	bounce/collision/collide/collide_triangle_sphere.cpp
-	bounce/collision/collide/cluster_solver.cpp
+	bounce/collision/collide/cluster.cpp
 
 	bounce/dynamics/body.cpp
 	bounce/dynamics/fixture.cpp

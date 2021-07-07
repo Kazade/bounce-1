@@ -20,6 +20,7 @@
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/world_listeners.h>
+#include <bounce/common/profiler.h>
 
 b3ContactManager::b3ContactManager()
 {

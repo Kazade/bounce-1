@@ -23,8 +23,19 @@
 #include <bounce/collision/geometry/triangle_hull.h>
 
 // Half-edge to edge map
-struct b3TriangleHullEdges
+struct b3EdgeMap
 {
+	b3EdgeMap()
+	{
+		m_halfEdgeEdges[0] = 0;
+		m_halfEdgeEdges[2] = 1;
+		m_halfEdgeEdges[4] = 2;
+
+		m_halfEdgeEdges[1] = 0;
+		m_halfEdgeEdges[3] = 1;
+		m_halfEdgeEdges[5] = 2;
+	}
+
 	bool IsEdgeCoplanar(u32 index) const;
 	
 	const b3TriangleHull* m_triangleHull;
@@ -33,7 +44,7 @@ struct b3TriangleHullEdges
 	u32 m_halfEdgeEdges[6];
 };
 
-bool b3TriangleHullEdges::IsEdgeCoplanar(u32 halfEdgeIndex) const
+bool b3EdgeMap::IsEdgeCoplanar(u32 halfEdgeIndex) const
 {
 	u32 edgeIndex = m_halfEdgeEdges[halfEdgeIndex];
 
@@ -72,7 +83,7 @@ void b3CollideTriangleAndHull(b3Manifold& manifold,
 	b3ConvexCache* cache, 
 	const b3Transform& xf01, const b3Transform& xf02)
 {
-	const b3TriangleHull triangleHull1(s1->m_vertex1, s1->m_vertex2, s1->m_vertex3);
+	b3TriangleHull triangleHull1(s1->m_vertex1, s1->m_vertex2, s1->m_vertex3);
 	const b3Hull* hull2 = s2->m_hull;
 
 	b3HullShape hullShape1;
@@ -82,29 +93,21 @@ void b3CollideTriangleAndHull(b3Manifold& manifold,
 	b3CollideHullAndHull(manifold, xf1, &hullShape1, xf2, s2, cache, xf01, xf02);
 
 	// Adjust normals
-	b3TriangleHullEdges triangleHullEdges;
-	triangleHullEdges.m_triangleHull = &triangleHull1;
+	b3EdgeMap edgeMap;
+	edgeMap.m_triangleHull = &triangleHull1;
 	
-	triangleHullEdges.m_hasWing[0] = s1->m_hasE1Vertex;
-	triangleHullEdges.m_hasWing[1] = s1->m_hasE2Vertex;
-	triangleHullEdges.m_hasWing[2] = s1->m_hasE3Vertex;
+	edgeMap.m_hasWing[0] = s1->m_hasE1Vertex;
+	edgeMap.m_hasWing[1] = s1->m_hasE2Vertex;
+	edgeMap.m_hasWing[2] = s1->m_hasE3Vertex;
 
-	triangleHullEdges.m_edgeWings[0] = s1->m_e1Vertex;
-	triangleHullEdges.m_edgeWings[1] = s1->m_e2Vertex;
-	triangleHullEdges.m_edgeWings[2] = s1->m_e3Vertex;
+	edgeMap.m_edgeWings[0] = s1->m_e1Vertex;
+	edgeMap.m_edgeWings[1] = s1->m_e2Vertex;
+	edgeMap.m_edgeWings[2] = s1->m_e3Vertex;
 
-	triangleHullEdges.m_halfEdgeEdges[0] = 0;
-	triangleHullEdges.m_halfEdgeEdges[2] = 1;
-	triangleHullEdges.m_halfEdgeEdges[4] = 2;
-
-	triangleHullEdges.m_halfEdgeEdges[1] = 0;
-	triangleHullEdges.m_halfEdgeEdges[3] = 1;
-	triangleHullEdges.m_halfEdgeEdges[5] = 2;
-
-	b3Vec3 C1 = xf1 * triangleHull1.centroid;
+	b3Vec3 centroid1 = xf1 * triangleHull1.centroid;
 	b3Plane plane1 = xf1 * triangleHull1.planes[0];
 	
-	b3Vec3 C2 = xf2 * hull2->centroid;
+	b3Vec3 centroid2 = xf2 * hull2->centroid;
 
 	for (u32 i = 0; i < manifold.pointCount; ++i)
 	{
@@ -143,11 +146,11 @@ void b3CollideTriangleAndHull(b3Manifold& manifold,
 		b3Vec3 c2 = xf2 * localC2;
 		scalar s = b3Dot(c2 - c1, n1);
 
-		if (triangleHullEdges.IsEdgeCoplanar(e1))
+		if (edgeMap.IsEdgeCoplanar(e1))
 		{
 			b3Vec3 n = plane1.normal;
 			
-			if (b3Dot(n, C2 - C1) < scalar(0))
+			if (b3Dot(n, centroid1 - centroid2) < scalar(0))
 			{
 				n = -n;
 			}

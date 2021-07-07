@@ -29,7 +29,6 @@ class b3MeshShape : public b3Shape
 {
 public:
 	b3MeshShape();
-	~b3MeshShape();
 
 	void ComputeMass(b3MassData* data, scalar density) const;
 

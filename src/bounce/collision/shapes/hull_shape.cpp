@@ -23,13 +23,9 @@
 
 b3HullShape::b3HullShape()
 {
-	m_type = b3Shape::e_hull;
+	m_type = e_hull;
 	m_radius = B3_HULL_RADIUS;
 	m_hull = nullptr;
-}
-
-b3HullShape::~b3HullShape()
-{
 }
 
 void b3HullShape::ComputeMass(b3MassData* massData, scalar density) const

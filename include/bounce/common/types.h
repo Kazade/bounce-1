@@ -26,7 +26,13 @@ typedef unsigned int u32;
 typedef unsigned short u16;
 typedef unsigned char u8;
 typedef unsigned long long u64;
+
+#ifdef B3_USE_DOUBLE
+typedef double scalar;
+#else
 typedef float scalar;
+#endif
+
 typedef double scalar64;
 
 #endif

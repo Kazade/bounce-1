@@ -80,7 +80,7 @@ void* b3BlockPool::Allocate()
 	++m_chunkCount;
 	chunk->freeBlocks = (b3Block*)((u8*)chunk + sizeof(b3Chunk));
 
-#ifdef _DEBUG
+#ifdef B3_DEBUG
 	memset(chunk->freeBlocks, 0xcd, m_chunkSize);
 #endif
 
@@ -105,7 +105,7 @@ void* b3BlockPool::Allocate()
 
 void b3BlockPool::Free(void* p)
 {
-#ifdef _DEBUG
+#ifdef B3_DEBUG
 	// Verify the block was allocated from this allocator.
 	bool found = false;
 	b3Chunk* c = m_chunks;

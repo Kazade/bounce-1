@@ -25,10 +25,6 @@ b3SphereShape::b3SphereShape()
 	m_center.SetZero();
 }
 
-b3SphereShape::~b3SphereShape() 
-{
-}
-
 void b3SphereShape::ComputeMass(b3MassData* massData, scalar density) const 
 {
 	scalar volume = (scalar(4) / scalar(3)) * B3_PI * m_radius * m_radius * m_radius;

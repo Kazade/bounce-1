@@ -224,29 +224,29 @@ void b3CollideTriangleAndCapsule(b3Manifold& manifold,
 					b3Vec3 Q = b3MulT(xf1, c2);
 
 					// Adjacent face triangle
-					b3Vec3 A1 = edgeWings[edgeIndex];
-					b3Vec3 B1 = vertices[ev2];
-					b3Vec3 C1 = vertices[ev1];
+					b3Vec3 A = edgeWings[edgeIndex];
+					b3Vec3 B = vertices[ev2];
+					b3Vec3 C = vertices[ev1];
 
-					scalar wABC1[4];
-					b3BarycentricCoordinates(wABC1, A1, B1, C1, Q);
+					scalar wABC[4];
+					b3BarycentricCoordinates(wABC, A, B, C, Q);
 
 					// Is the closest point on the capsule in the Region ABC of the adjacent face?
-					if (wABC1[0] > scalar(0) && wABC1[1] > scalar(0) && wABC1[2] > scalar(0))
+					if (wABC[0] > scalar(0) && wABC[1] > scalar(0) && wABC[2] > scalar(0))
 					{
 						return;
 					}
 					
-					b3Vec3 center1 = (A1 + B1 + C1) / scalar(3);
+					b3Vec3 center = (A + B + C) / scalar(3);
 
 					b3Plane frontPlane = hull1.trianglePlanes[0];
 
-					scalar pd = b3Distance(center1, frontPlane);
+					scalar distance = b3Distance(center, frontPlane);
 
 					const scalar kCoplanarTol = 0.005f;
 					
 					// Is the edge coplanar?
-					if (pd > -kCoplanarTol && pd < kCoplanarTol)
+					if (distance > -kCoplanarTol && distance < kCoplanarTol)
 					{
 						b3Vec3 n = frontPlane.normal;
 

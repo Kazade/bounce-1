@@ -16,7 +16,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <bounce/collision/collide/cluster_solver.h>
+#include <bounce/collision/collide/cluster.h>
 #include <bounce/collision/collision.h>
 
 static B3_FORCE_INLINE bool b3IsCCW(const b3Vec3& A, const b3Vec3& B, const b3Vec3& C, const b3Vec3& N)
@@ -201,11 +201,6 @@ void b3ReducePolygon(b3ClusterPolygon& pOut,
 b3ClusterSolver::b3ClusterSolver()
 {
 	m_iterations = 0;
-}
-
-b3ClusterSolver::~b3ClusterSolver()
-{
-
 }
 
 void b3ClusterSolver::InitializeClusters()

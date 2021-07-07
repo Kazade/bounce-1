@@ -48,17 +48,8 @@ public:
 		m_drawTriangles = true;
 	}
 
-	~b3DebugDraw()
-	{
-	}
-
-	// Call this function before issuing any debug draw call.
-	void Begin()
-	{
-	}
-
 	// Call this function to render the primitives.
-	void End()
+	void Flush()
 	{
 		// Order: Points over lines and lines over triangles.
 		m_triangles.Flush();

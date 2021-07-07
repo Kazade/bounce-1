@@ -19,7 +19,7 @@
 #include <bounce/collision/collide/collide.h>
 #include <bounce/collision/collide/clip.h>
 #include <bounce/collision/collide/manifold.h>
-#include <bounce/collision/collide/cluster_solver.h>
+#include <bounce/collision/collide/cluster.h>
 #include <bounce/collision/shapes/hull_shape.h>
 #include <bounce/collision/geometry/hull.h>
 

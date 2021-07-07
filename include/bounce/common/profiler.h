@@ -88,4 +88,30 @@ private:
 // The profiler used by Bounce. 
 extern b3Profiler* b3Profiler_profiler;
 
+#define B3_JOIN(a, b) a##b
+#define B3_CONCATENATE(a, b) B3_JOIN(a, b)
+#define B3_UNIQUE_NAME(name) B3_CONCATENATE(name, __LINE__)
+
+// A profiler block. 
+struct b3ProfileScope
+{
+	b3ProfileScope(const char* name)
+	{
+		if (b3Profiler_profiler)
+		{
+			b3Profiler_profiler->BeginScope(name);
+		}
+	}
+
+	~b3ProfileScope()
+	{
+		if (b3Profiler_profiler)
+		{
+			b3Profiler_profiler->EndScope();
+		}
+	}
+};
+
+#define B3_PROFILE(name) b3ProfileScope B3_UNIQUE_NAME(scope)(name)
+
 #endif

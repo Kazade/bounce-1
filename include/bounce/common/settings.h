@@ -60,23 +60,6 @@ inline void b3Log(const char* string, ...)
 	va_end(args);
 }
 
-// Default profiler functions.
-void b3BeginProfileScope_Default(const char* name);
-void b3EndProfileScope_Default();
-
-// You should implement this function to listen when a profile scope is opened.
-inline void b3BeginProfileScope(const char* name)
-{
-	b3BeginProfileScope_Default(name);
-}
-
-// You must implement this function if you have implemented b3BeginProfileScope.
-// Implement this function to listen when a profile scope is closed.
-inline void b3EndProfileScope()
-{
-	b3EndProfileScope_Default();
-}
-
 #endif // B3_USER_SETTINGS
 
 #include <bounce/common/common.h>
