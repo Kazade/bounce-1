@@ -19,7 +19,6 @@
 #include <bounce/common/settings.h>
 #include <bounce/common/common.h>
 #include <bounce/common/math/math.h>
-#include <bounce/common/profiler.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -44,22 +43,4 @@ void b3Free_Default(void* block)
 void b3Log_Default(const char* text, va_list args)
 {
 	vprintf(text, args);
-}
-
-void b3BeginProfileScope_Default(const char* name)
-{
-	if (b3Profiler_profiler == nullptr)
-	{
-		return;
-	}
-	b3Profiler_profiler->BeginScope(name);
-}
-
-void b3EndProfileScope_Default()
-{
-	if (b3Profiler_profiler == nullptr)
-	{
-		return;
-	}
-	b3Profiler_profiler->EndScope();
 }
