@@ -1,6 +1,6 @@
 ## Bounce
 
-**Welcome! Bounce is a 3D physics engine for games.**
+Bounce is a 3D physics engine for games.
 
 ## Features
 
@@ -17,7 +17,7 @@
 * Static tree "midphase"
 * SAT
 * GJK
-* Spheres, capsules, convex hulls, triangle meshes 
+* Spheres, capsules, triangles, convex hulls, triangle meshes 
 * Optimized pair management
 
 ### Dynamics
@@ -80,6 +80,6 @@ These are the external dependencies for the Testbed example project. If you don'
 
 ## Contributing
 
-You can ask anything relative to this project using the issue tracker. 
+You can ask anything relative to this project using the Discussions section. Please do not use the issue tracking for asking questions. The issue tracker is not a place for this.
 
-Please do not open pull requests with bugfixes or new features that require large changes. Open an issue first for discussion. 
+Please do not open pull requests with bugfixes or new features that require core library changes. Open an issue first for discussion. 
