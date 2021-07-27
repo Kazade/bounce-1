@@ -24,6 +24,7 @@
 #include <stddef.h>
 #include <assert.h>
 #include <float.h>
+#include <new>
 
 #if !defined(NDEBUG)
 #define B3_DEBUG
