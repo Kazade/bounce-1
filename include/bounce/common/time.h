@@ -179,7 +179,7 @@ public:
     {
         struct timespec c;
         clock_gettime(CLOCK_MONOTONIC, &c);
-        double dt = 1000.0 * double(c.tv_sec - c0.tv_sec) + 1.0e-6 * double(c.tv_nsec - c0.tv_nsec);
+        double dt = 1000.0 * double(c.tv_sec - m_c0.tv_sec) + 1.0e-6 * double(c.tv_nsec - m_c0.tv_nsec);
         m_c0 = c;
         Add(dt);
     }
