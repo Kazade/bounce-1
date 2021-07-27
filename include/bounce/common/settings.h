@@ -31,11 +31,6 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-#ifdef __GNUC__
-// required for placement new operator (at least in GCC-7.5)
-#include <new>
-#endif
-
 // Default allocation functions.
 void* b3Alloc_Default(u32 size);
 void b3Free_Default(void* block);
