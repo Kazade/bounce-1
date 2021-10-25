@@ -124,43 +124,4 @@ inline b3Transform operator*(const b3Transform& A, const b3Transform& B)
 	return b3Mul(A, B);
 }
 
-// Motion proxy for TOI computation.
-struct b3Sweep
-{
-	// Get this sweep transform at a given time between [0, 1]
-	b3Transform GetTransform(scalar t) const;
-
-	b3Vec3 localCenter; // local center
-
-	b3Quat orientation0; // last orientation
-	b3Vec3 worldCenter0; // last world center
-	
-	scalar t0; // last fraction between [0, 1]
-
-	b3Quat orientation; // world orientation
-	b3Vec3 worldCenter; // world center
-};
-
-inline b3Transform b3Sweep::GetTransform(scalar t) const
-{
-	b3Vec3 c = (scalar(1) - t) * worldCenter0 + t * worldCenter;
-
-	b3Quat q1 = orientation0;
-	b3Quat q2 = orientation;
-
-	if (b3Dot(q1, q2) < scalar(0))
-	{
-		q1 = -q1;
-	}
-
-	b3Quat q = (scalar(1) - t) * q1 + t * q2;
-	q.Normalize();
-
-	b3Transform xf;
-	xf.translation = c - b3Mul(q, localCenter);
-	xf.rotation = q;
-	
-	return xf;
-}
-
 #endif

@@ -22,6 +22,7 @@
 #include <bounce/collision/gjk/gjk_proxy.h>
 #include <bounce/collision/geometry/aabb.h>
 #include <bounce/common/math/transform.h>
+#include <bounce/common/math/sweep.h>
 
 // Input parameters for b3TimeOfImpact
 struct b3TOIInput

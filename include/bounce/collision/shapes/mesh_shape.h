@@ -32,9 +32,9 @@ public:
 
 	void ComputeMass(b3MassData* data, scalar density) const;
 
-	void ComputeAABB(b3AABB* output, const b3Transform& xf) const;
+	void ComputeAABB(b3AABB* aabb, const b3Transform& xf) const;
 
-	void ComputeAABB(b3AABB* output, const b3Transform& xf, u32 childIndex) const;
+	void ComputeAABB(b3AABB* aabb, const b3Transform& xf, u32 childIndex) const;
 
 	bool TestSphere(const b3Sphere& sphere, const b3Transform& xf) const;
 

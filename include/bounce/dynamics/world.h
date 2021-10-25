@@ -128,7 +128,7 @@ public:
 	// The ray cast output is the intercepted shape, the intersection 
 	// point in world space, the face normal on the shape associated with the point, 
 	// and the intersection fraction.
-	void RayCast(b3RayCastListener* listener, b3RayCastFilter* filter, const b3Vec3& p1, const b3Vec3& p2) const;
+	void RayCast(b3RayCastListener* listener, b3RayCastFilter* filter, const b3Vec3& point1, const b3Vec3& point2) const;
 
 	// Perform a ray cast with the world.
 	// If the ray doesn't intersect with a shape in the world then return false.
@@ -137,11 +137,10 @@ public:
 	// The ray cast output is the intercepted shape, the intersection 
 	// point in world space, the face normal on the shape associated with the point, 
 	// and the intersection fraction.
-	bool RayCastSingle(b3RayCastSingleOutput* output, b3RayCastFilter* filter, const b3Vec3& p1, const b3Vec3& p2) const;
+	bool RayCastSingle(b3RayCastSingleOutput* output, b3RayCastFilter* filter, const b3Vec3& point1, const b3Vec3& point2) const;
 
 	// Perform a shape cast with the world. This only works for given convex shapes.
 	// You must supply a listener, filter, the shape, its transform and the displacement of the shape.
-	// The shape must belong to this world.
 	// The given convex cast listener will be notified when a convex intersects a shape 
 	// in the world. 
 	// You can control on which shapes the convex-cast is performed using
@@ -150,7 +149,6 @@ public:
 
 	// Perform a shape cast with the world. This only works for given convex shapes.
 	// You must supply a filter, the shape and the displacement of the shape.
-	// The shape must belong to this world.
 	// If the convex doesn't intersect with any shape in the world then return false.
 	// You can control on which shapes the convex-cast is performed using
 	// the given filter.

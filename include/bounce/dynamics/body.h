@@ -23,6 +23,7 @@
 #include <bounce/common/math/mat33.h>
 #include <bounce/common/math/quat.h>
 #include <bounce/common/math/transform.h>
+#include <bounce/common/math/sweep.h>
 #include <bounce/common/template/list.h>
 #include <bounce/dynamics/time_step.h>
 

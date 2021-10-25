@@ -19,12 +19,12 @@
 #include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/world.h>
+#include <bounce/dynamics/contacts/contact.h>
 #include <bounce/collision/shapes/sphere_shape.h>
 #include <bounce/collision/shapes/capsule_shape.h>
 #include <bounce/collision/shapes/triangle_shape.h>
 #include <bounce/collision/shapes/hull_shape.h>
 #include <bounce/collision/shapes/mesh_shape.h>
-#include <bounce/dynamics/contacts/contact.h>
 #include <bounce/collision/geometry/sphere.h>
 #include <bounce/collision/geometry/capsule.h>
 #include <bounce/collision/geometry/hull.h>
@@ -230,5 +230,5 @@ void b3Fixture::Dump(u32 bodyIndex) const
 	b3Log("		fd.friction = %f;\n", m_friction);
 	b3Log("		fd.sensor = %d;\n", m_isSensor);
 	b3Log("		\n");
-	b3Log("		bodies[%d]->CreateFixture(sd);\n", bodyIndex);
+	b3Log("		bodies[%d]->CreateFixture(fd);\n", bodyIndex);
 }

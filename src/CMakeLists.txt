@@ -14,16 +14,17 @@ ${BOUNCE_INCLUDE_DIR}/bounce/common/graphics/camera.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/graphics/debug_primitives.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/graphics/debugdraw.h
 
+${BOUNCE_INCLUDE_DIR}/bounce/common/math/math.h
+${BOUNCE_INCLUDE_DIR}/bounce/common/math/vec2.h
+${BOUNCE_INCLUDE_DIR}/bounce/common/math/vec3.h
+${BOUNCE_INCLUDE_DIR}/bounce/common/math/vec4.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/mat22.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/mat33.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/mat44.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/mat.h
-${BOUNCE_INCLUDE_DIR}/bounce/common/math/math.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/quat.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/transform.h
-${BOUNCE_INCLUDE_DIR}/bounce/common/math/vec2.h
-${BOUNCE_INCLUDE_DIR}/bounce/common/math/vec3.h
-${BOUNCE_INCLUDE_DIR}/bounce/common/math/vec4.h
+${BOUNCE_INCLUDE_DIR}/bounce/common/math/sweep.h
 
 ${BOUNCE_INCLUDE_DIR}/bounce/common/memory/block_pool.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/memory/frame_allocator.h
