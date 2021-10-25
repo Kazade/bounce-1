@@ -150,7 +150,7 @@ void b3CollideTriangleAndHull(b3Manifold& manifold,
 		{
 			b3Vec3 n = plane1.normal;
 			
-			if (b3Dot(n, centroid1 - centroid2) < scalar(0))
+			if (b3Dot(n, centroid2 - centroid1) < scalar(0))
 			{
 				n = -n;
 			}
