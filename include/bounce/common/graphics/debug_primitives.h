@@ -75,7 +75,7 @@ public:
 	void Flush()
 	{
 		// First pass: Depth test enabled.
-		for (int i = 0; i < m_debugPointCount; ++i)
+		for (u32 i = 0; i < m_debugPointCount; ++i)
 		{
 			b3DebugPoint point = m_debugPoints[i];	
 			if (point.depthEnabled == true)
@@ -87,7 +87,7 @@ public:
 		m_callback->FlushPoints(true);
 		
 		// Second pass: Depth test disabled.
-		for (int i = 0; i < m_debugPointCount; ++i)
+		for (u32 i = 0; i < m_debugPointCount; ++i)
 		{
 			b3DebugPoint point = m_debugPoints[i];	
 			if (point.depthEnabled == false)
@@ -155,7 +155,7 @@ public:
 	void Flush()
 	{
 		// First pass: Depth test enabled.
-		for (int i = 0; i < m_debugLineCount; ++i)
+		for (u32 i = 0; i < m_debugLineCount; ++i)
 		{
 			b3DebugLine line = m_debugLines[i];	
 			if (line.depthEnabled == true)
@@ -167,7 +167,7 @@ public:
 		m_callback->FlushLines(true);
 		
 		// Second pass: Depth test disabled.
-		for (int i = 0; i < m_debugLineCount; ++i)
+		for (u32 i = 0; i < m_debugLineCount; ++i)
 		{
 			b3DebugLine line = m_debugLines[i];	
 			if (line.depthEnabled == false)
@@ -238,7 +238,7 @@ public:
 	void Flush()
 	{
 		// First pass: Depth test enabled.
-		for (int i = 0; i < m_debugTriangleCount; ++i)
+		for (u32 i = 0; i < m_debugTriangleCount; ++i)
 		{
 			b3DebugTriangle triangle = m_debugTriangles[i];	
 			if (triangle.depthEnabled == true)
@@ -250,7 +250,7 @@ public:
 		m_callback->FlushTriangles(true);
 		
 		// Second pass: Depth test disabled.
-		for (int i = 0; i < m_debugTriangleCount; ++i)
+		for (u32 i = 0; i < m_debugTriangleCount; ++i)
 		{
 			b3DebugTriangle triangle = m_debugTriangles[i];	
 			if (triangle.depthEnabled == false)

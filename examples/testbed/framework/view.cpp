@@ -34,7 +34,7 @@ extern GLFWwindow* g_window;
 
 static inline bool GetTestName(void* userData, int idx, const char** name)
 {
-	assert(u32(idx) < g_settings->testCount);
+	assert(idx < g_settings->testCount);
 	*name = g_settings->tests[idx].name;
 	return true;
 }
@@ -158,15 +158,17 @@ static void TreeNode(const b3ProfilerNode* node, u32& index)
 	ImGui::PushID(index);
 	++index;
 
-	if (ImGui::TreeNode(node->name))
+	if (ImGui::TreeNode(node->GetName()))
 	{
-		ImGui::Text("%.4f (min = %.4f) (max = %.4f) (calls = %d) [ms]", node->elapsed, node->stats->minElapsed, node->stats->maxElapsed, node->callCount);
+		double elapsed = node->GetElapsedTime();
+		u32 callCount = node->GetCallCount();
+		const b3ProfilerNodeStats* stats = node->GetStats();
 
-		b3ProfilerNode* n = node->childHead;
-		while(n)
+		ImGui::Text("(elapsed = %.4f) (min = %.4f) (max = %.4f) (calls = %d) [ms]", elapsed, stats->minElapsed, stats->maxElapsed, callCount);
+
+		for (const b3ProfilerNode* n = node->GetChildList(); n != nullptr; n = n->GetNextChild())
 		{
 			TreeNode(n, index);
-			n = n->childNext;
 		}
 		ImGui::TreePop();
 	}
@@ -291,7 +293,7 @@ void View::Interface()
 	glfwGetWindowSize(m_window, &width, &height);
 	
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 20.0f));
-	ImGui::SetNextWindowSize(ImVec2(width, 20.0f));
+	ImGui::SetNextWindowSize(ImVec2(float(width), 20.0f));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0.0f, 0.0f));
 
 	ImGui::Begin("##ToolBar", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_MenuBar);

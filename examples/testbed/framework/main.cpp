@@ -99,7 +99,7 @@ static void Run()
 	{
 		g_profiler->Begin();
 
-		g_profiler->BeginScope("Frame");
+		g_profiler->OpenScope("Frame");
 
 		g_view->BeginInterface();
 
@@ -114,7 +114,7 @@ static void Run()
 
 		g_model->Update();
 
-		g_profiler->EndScope();
+		g_profiler->CloseScope();
 		
 		g_view->Interface();
 
