@@ -171,6 +171,7 @@ void b3Profiler::DestroyNodeRecursively(b3ProfilerNode* node)
 		c = c->m_childNext;
 		DestroyNodeRecursively(boom);
 	}
+	node->~b3ProfilerNode();
 	m_nodePool.Free(node);
 }
 
