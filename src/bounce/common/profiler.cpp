@@ -127,6 +127,7 @@ void b3Profiler::CloseScope()
 		return;
 	}
 
+	// Update top elapsed time
 	m_time.Update();
 	m_top->m_t1 = m_time.GetCurrentMilis();
 
@@ -134,10 +135,10 @@ void b3Profiler::CloseScope()
 
 	m_top->m_elapsed += elapsed;
 
-	// Update top stats
 	b3ProfilerNodeStats* topStats = FindStats(m_top->m_name);
 	if (topStats == nullptr)
 	{
+		// Create a new stats
 		topStats = (b3ProfilerNodeStats*)m_statsPool.Allocate();
 		topStats->name = m_top->m_name;
 		topStats->minElapsed = elapsed;
@@ -149,17 +150,15 @@ void b3Profiler::CloseScope()
 	}
 	else
 	{
+		// Update top stats
 		topStats->minElapsed = b3Min(topStats->minElapsed, elapsed);
 		topStats->maxElapsed = b3Max(topStats->maxElapsed, elapsed);
 	}
 
-	if (m_top->m_stats == nullptr)
-	{
-		m_top->m_stats = topStats;
-	}
-
-	B3_ASSERT(m_top->m_stats == topStats);
-
+	// Set top stats
+	m_top->m_stats = topStats;
+	
+	// Top parent becomes top node
 	m_top = m_top->m_parent;
 }
 
