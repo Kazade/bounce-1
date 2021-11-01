@@ -23,13 +23,13 @@
 #include <bounce/common/time.h>
 #include <bounce/common/settings.h>
 
-// Persistent node statistics. 
-struct b3ProfilerNodeStats
+// Persistent statistics. 
+struct b3ProfilerStats
 {
 	const char* name; // node unique id
 	double minElapsed; // min elapsed time in ms
 	double maxElapsed; // max elapsed time in ms
-	b3ProfilerNodeStats* next; // next stat into profiler list of stats
+	b3ProfilerStats* next; // next stat into profiler list of stats
 };
 
 // A profiler node.
@@ -55,7 +55,7 @@ public:
 	const b3ProfilerNode* GetNextChild() const { return m_childNext; }
 
 	// Get the statistics for this node.
-	const b3ProfilerNodeStats* GetStats() const { return m_stats; }
+	const b3ProfilerStats* GetStats() const { return m_stats; }
 private:
 	friend class b3Profiler;
 
@@ -64,15 +64,13 @@ private:
 	const char* m_name; // unique id
 	double m_elapsed; // total elapsed time
 	u32 m_callCount; // number of calls inside the parent node
-	u32 m_recursionCallCount; // internal, recursion helper counter
+	u32 m_recursionCount; // internal, recursion helper counter
 	double m_t0; // internal
 	double m_t1; // internal 
-
 	b3ProfilerNode* m_parent; // parent node
 	b3ProfilerNode* m_childHead; // list of children
 	b3ProfilerNode* m_childNext; // link to the next node in the parent node list of children
-
-	b3ProfilerNodeStats* m_stats; // persistent node statistics
+	b3ProfilerStats* m_stats; // persistent node statistics
 };
 
 // Immediate mode hierarchical profiler. 
@@ -97,7 +95,7 @@ public:
 	// End profiling.
 	void End();
 private:
-	b3ProfilerNodeStats* FindStats(const char* name);
+	b3ProfilerStats* FindStats(const char* name);
 	void DestroyNodeRecursively(b3ProfilerNode* node);
 
 	b3Time m_time; 
@@ -105,7 +103,7 @@ private:
 	b3BlockPool m_statsPool;
 	b3ProfilerNode* m_root; 
 	b3ProfilerNode* m_top; 
-	b3ProfilerNodeStats* m_statsHead; 
+	b3ProfilerStats* m_statsHead; 
 };
 
 // The profiler used by Bounce. 

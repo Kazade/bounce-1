@@ -35,7 +35,7 @@ b3ProfilerNode* b3ProfilerNode::FindChildNode(const char* name)
 
 b3Profiler::b3Profiler() : 
 	m_nodePool(sizeof(b3ProfilerNode)),
-	m_statsPool(sizeof(b3ProfilerNodeStats))
+	m_statsPool(sizeof(b3ProfilerStats))
 {
 	m_root = nullptr;
 	m_top = nullptr;
@@ -47,9 +47,9 @@ void b3Profiler::Begin()
 	B3_ASSERT(m_top == nullptr);
 }
 
-b3ProfilerNodeStats* b3Profiler::FindStats(const char* name)
+b3ProfilerStats* b3Profiler::FindStats(const char* name)
 {
-	for (b3ProfilerNodeStats* s = m_statsHead; s != nullptr; s = s->next)
+	for (b3ProfilerStats* s = m_statsHead; s != nullptr; s = s->next)
 	{
 		if (s->name == name)
 		{
@@ -71,13 +71,13 @@ void b3Profiler::OpenScope(const char* name)
 
 			++topChild->m_callCount;
 
-			if (topChild->m_recursionCallCount == 0)
+			if (topChild->m_recursionCount == 0)
 			{
 				m_time.Update();
 				topChild->m_t0 = m_time.GetCurrentMilis();
 			}
 
-			++topChild->m_recursionCallCount;
+			++topChild->m_recursionCount;
 
 			return;
 		}
@@ -91,7 +91,7 @@ void b3Profiler::OpenScope(const char* name)
 	newNode->m_t0 = m_time.GetCurrentMilis();
 	newNode->m_elapsed = 0.0f;
 	newNode->m_callCount = 1;
-	newNode->m_recursionCallCount = 1;
+	newNode->m_recursionCount = 1;
 	newNode->m_stats = nullptr;
 	newNode->m_parent = m_top;
 	newNode->m_childHead = nullptr;
@@ -121,8 +121,8 @@ void b3Profiler::CloseScope()
 {
 	B3_ASSERT(m_top != nullptr);
 
-	--m_top->m_recursionCallCount;
-	if (m_top->m_recursionCallCount > 0)
+	--m_top->m_recursionCount;
+	if (m_top->m_recursionCount > 0)
 	{
 		return;
 	}
@@ -135,11 +135,11 @@ void b3Profiler::CloseScope()
 
 	m_top->m_elapsed += elapsed;
 
-	b3ProfilerNodeStats* topStats = FindStats(m_top->m_name);
+	b3ProfilerStats* topStats = FindStats(m_top->m_name);
 	if (topStats == nullptr)
 	{
 		// Create a new stats
-		topStats = (b3ProfilerNodeStats*)m_statsPool.Allocate();
+		topStats = (b3ProfilerStats*)m_statsPool.Allocate();
 		topStats->name = m_top->m_name;
 		topStats->minElapsed = elapsed;
 		topStats->maxElapsed = elapsed;

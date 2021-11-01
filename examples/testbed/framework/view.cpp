@@ -162,7 +162,7 @@ static void TreeNode(const b3ProfilerNode* node, u32& index)
 	{
 		double elapsed = node->GetElapsedTime();
 		u32 callCount = node->GetCallCount();
-		const b3ProfilerNodeStats* stats = node->GetStats();
+		const b3ProfilerStats* stats = node->GetStats();
 
 		ImGui::Text("(elapsed = %.4f) (min = %.4f) (max = %.4f) (calls = %d) [ms]", elapsed, stats->minElapsed, stats->maxElapsed, callCount);
 
