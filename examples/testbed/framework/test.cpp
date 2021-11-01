@@ -178,7 +178,7 @@ void Test::Step()
 	}
 }
 
-void Test::MouseMove(const b3Ray3& pw)
+void Test::MouseMove(const b3Ray& pw)
 {
 	m_ray = pw;
 
@@ -188,7 +188,7 @@ void Test::MouseMove(const b3Ray3& pw)
 	}
 }
 
-void Test::MouseLeftDown(const b3Ray3& pw)
+void Test::MouseLeftDown(const b3Ray& pw)
 {
 	if (m_rigidBodyDragger.IsDragging() == false)
 	{
@@ -199,7 +199,7 @@ void Test::MouseLeftDown(const b3Ray3& pw)
 	}
 }
 
-void Test::MouseLeftUp(const b3Ray3& pw)
+void Test::MouseLeftUp(const b3Ray& pw)
 {
 	if (m_rigidBodyDragger.IsDragging() == true)
 	{

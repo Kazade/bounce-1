@@ -19,7 +19,6 @@
 #ifndef B3_MESH_H
 #define B3_MESH_H
 
-#include <bounce/common/geometry.h>
 #include <bounce/collision/trees/static_tree.h>
 
 #define B3_NULL_VERTEX B3_MAX_U32

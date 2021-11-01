@@ -2,7 +2,6 @@ set(BOUNCE_HEADER_FILES
 ${BOUNCE_INCLUDE_DIR}/bounce/bounce.h
 
 ${BOUNCE_INCLUDE_DIR}/bounce/common/draw.h
-${BOUNCE_INCLUDE_DIR}/bounce/common/geometry.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/types.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/settings.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/time.h
@@ -21,7 +20,6 @@ ${BOUNCE_INCLUDE_DIR}/bounce/common/math/vec4.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/mat22.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/mat33.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/mat44.h
-${BOUNCE_INCLUDE_DIR}/bounce/common/math/mat.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/quat.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/transform.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/sweep.h
@@ -47,6 +45,9 @@ ${BOUNCE_INCLUDE_DIR}/bounce/collision/sat/sat.h
 ${BOUNCE_INCLUDE_DIR}/bounce/collision/sat/sat_hull_edge.h
 ${BOUNCE_INCLUDE_DIR}/bounce/collision/sat/sat_hull_vertex.h
 
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/geometry.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/plane.h
+${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/ray.h
 ${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/aabb.h
 ${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/box_hull.h
 ${BOUNCE_INCLUDE_DIR}/bounce/collision/geometry/capsule.h

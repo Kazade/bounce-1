@@ -19,7 +19,7 @@
 #ifndef B3_HULL_H
 #define B3_HULL_H
 
-#include <bounce/common/geometry.h>
+#include <bounce/collision/geometry/plane.h>
 
 struct b3Face
 {

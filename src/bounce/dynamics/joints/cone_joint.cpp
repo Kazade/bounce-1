@@ -110,8 +110,8 @@ void b3ConeJoint::InitializeConstraints(const b3SolverData* data)
 	b3Quat fA = qA * m_localRotationA;
 	b3Quat fB = qB * m_localRotationB;
 
-	b3Mat33 RfA = b3QuatMat33(fA);
-	b3Mat33 RfB = b3QuatMat33(fB);
+	b3Mat33 RfA = fA.GetRotationMatrix();
+	b3Mat33 RfB = fB.GetRotationMatrix();
 
 	// Linear constraint.
 	{

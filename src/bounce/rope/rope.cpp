@@ -276,7 +276,7 @@ void b3Rope::Step(scalar h)
 		// Flip the translation because r should be the vector 
 		// from the center of mass of the parent link to the 
 		// center of mass of this link in this link's frame.
-		link->m_X_i_j.E = b3QuatMat33(X_i_j.rotation);
+		link->m_X_i_j.E = X_i_j.rotation.GetRotationMatrix();
 		link->m_X_i_j.r = -X_i_j.translation;
 
 		b3MotionVec joint_v = link->v_J();

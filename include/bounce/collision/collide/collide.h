@@ -24,6 +24,7 @@
 #include <bounce/collision/sat/sat.h>
 #include <bounce/collision/sat/sat_hull_edge.h>
 #include <bounce/collision/sat/sat_hull_vertex.h>
+#include <bounce/collision/geometry/geometry.h>
 
 class b3Shape;
 class b3SphereShape;

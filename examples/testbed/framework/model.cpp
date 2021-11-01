@@ -64,12 +64,12 @@ void Model::Command_Release_Key(int button)
 	m_test->KeyUp(button);
 }
 
-static inline b3Ray3 ConvertScreenToWorldRay(const b3Camera& camera, const b3Vec2& ps)
+static inline b3Ray ConvertScreenToWorldRay(const b3Camera& camera, const b3Vec2& ps)
 {
 	b3Vec3 pw = camera.ConvertScreenToWorld(b3Vec2(ps.x, ps.y));
 	b3Vec3 cp = camera.BuildPosition();
 	
-	b3Ray3 rw;
+	b3Ray rw;
 	rw.origin = b3Vec3(cp.x, cp.y, cp.z);
 	rw.direction = b3Vec3(pw.x, pw.y, pw.z);
 	rw.fraction = camera.GetZFar();
@@ -78,21 +78,21 @@ static inline b3Ray3 ConvertScreenToWorldRay(const b3Camera& camera, const b3Vec
 
 void Model::Command_Press_Mouse_Left(const b3Vec2& ps)
 {
-	b3Ray3 rw = ConvertScreenToWorldRay(m_camera, ps);
+	b3Ray rw = ConvertScreenToWorldRay(m_camera, ps);
 	
 	m_test->MouseLeftDown(rw);
 }
 
 void Model::Command_Release_Mouse_Left(const b3Vec2& ps)
 {
-	b3Ray3 rw = ConvertScreenToWorldRay(m_camera, ps);
+	b3Ray rw = ConvertScreenToWorldRay(m_camera, ps);
 	
 	m_test->MouseLeftUp(rw);
 }
 
 void Model::Command_Move_Cursor(const b3Vec2& ps)
 {
-	b3Ray3 rw = ConvertScreenToWorldRay(m_camera, ps);
+	b3Ray rw = ConvertScreenToWorldRay(m_camera, ps);
 	
 	m_test->MouseMove(rw);
 }

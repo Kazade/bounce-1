@@ -19,8 +19,8 @@
 #ifndef B3_CLUSTER_H
 #define B3_CLUSTER_H
 
-#include <bounce/common/geometry.h>
 #include <bounce/common/template/array.h>
+#include <bounce/collision/geometry/plane.h>
 #include <bounce/collision/collide/manifold.h>
 
 // Used for contact cluster reduction.

@@ -295,40 +295,15 @@ struct b3AABB
 		upperBound += translation;
 	}
 
-	// Rotate this AABB.
-	void Rotate(const b3Quat& rotation)
-	{
-		b3Vec3 localCenter = GetCenter();
-		b3Vec3 localRadius = GetExtents();
-
-		b3Vec3 center = b3Mul(rotation, localCenter);
-
-		b3Mat33 absRotation = b3Abs(rotation.GetRotationMatrix());
-
-		b3Vec3 radius;
-		radius.x = b3Dot(localRadius, absRotation.x);
-		radius.y = b3Dot(localRadius, absRotation.y);
-		radius.z = b3Dot(localRadius, absRotation.z);
-
-		Set(center, radius);
-	}
-
 	// Scale this AABB by a scale.
 	// The scale can be non-uniform and negative.
 	void Scale(const b3Vec3& scale)
 	{
-		b3Vec3 lower, upper;
-
-		lower.x = scale.x > scalar(0) ? scale.x * lowerBound.x : scale.x * upperBound.x;
-		lower.y = scale.y > scalar(0) ? scale.y * lowerBound.y : scale.y * upperBound.y;
-		lower.z = scale.z > scalar(0) ? scale.z * lowerBound.z : scale.z * upperBound.z;
-
-		upper.x = scale.x > scalar(0) ? scale.x * upperBound.x : scale.x * lowerBound.x;
-		upper.y = scale.y > scalar(0) ? scale.y * upperBound.y : scale.y * lowerBound.y;
-		upper.z = scale.z > scalar(0) ? scale.z * upperBound.z : scale.z * lowerBound.z;
-
-		lowerBound = lower;
-		upperBound = upper;
+		b3Vec3 scaledLower = b3Mul(scale, lowerBound);
+		b3Vec3 scaledUpper = b3Mul(scale, upperBound);
+		
+		lowerBound = b3Min(scaledLower, scaledUpper);
+		upperBound = b3Max(scaledLower, scaledUpper);
 	}
 
 	// Transform this AABB.

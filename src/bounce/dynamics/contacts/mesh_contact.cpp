@@ -206,7 +206,7 @@ bool b3MeshContact::Report(u32 proxyId)
 	b3TriangleCache* cache = m_triangles + m_triangleCount;
 	cache->index = triangleIndex;
 	cache->cache.simplexCache.count = 0;
-	cache->cache.featureCache.m_featurePair.state = b3SATCacheType::e_empty;
+	cache->cache.featureCache.featurePair.state = b3SATCacheType::e_empty;
 
 	++m_triangleCount;
 

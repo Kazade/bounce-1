@@ -412,7 +412,7 @@ static void b3CollideCache(b3Manifold& manifold,
 	const b3Transform& xf2, const b3HullShape* s2,
 	b3FeatureCache* cache)
 {
-	B3_ASSERT(cache->m_featurePair.state == b3SATCacheType::e_empty);
+	B3_ASSERT(cache->featurePair.state == b3SATCacheType::e_empty);
 
 	const b3Hull* hull1 = s1->m_hull;
 	scalar r1 = s1->m_radius;
@@ -426,7 +426,7 @@ static void b3CollideCache(b3Manifold& manifold,
 	if (faceQuery1.separation > totalRadius)
 	{
 		// Write a separation cache.
-		cache->m_featurePair = b3MakeFeaturePair(b3SATCacheType::e_separation, b3SATFeatureType::e_face1, faceQuery1.index, faceQuery1.index);
+		cache->featurePair = b3MakeFeaturePair(b3SATCacheType::e_separation, b3SATFeatureType::e_face1, faceQuery1.index, faceQuery1.index);
 		return;
 	}
 
@@ -434,7 +434,7 @@ static void b3CollideCache(b3Manifold& manifold,
 	if (faceQuery2.separation > totalRadius)
 	{
 		// Write a separation cache.
-		cache->m_featurePair = b3MakeFeaturePair(b3SATCacheType::e_separation, b3SATFeatureType::e_face2, faceQuery2.index, faceQuery2.index);
+		cache->featurePair = b3MakeFeaturePair(b3SATCacheType::e_separation, b3SATFeatureType::e_face2, faceQuery2.index, faceQuery2.index);
 		return;
 	}
 
@@ -442,7 +442,7 @@ static void b3CollideCache(b3Manifold& manifold,
 	if (edgeQuery.separation > totalRadius)
 	{
 		// Write a separation cache.
-		cache->m_featurePair = b3MakeFeaturePair(b3SATCacheType::e_separation, b3SATFeatureType::e_edge1, edgeQuery.index1, edgeQuery.index2);
+		cache->featurePair = b3MakeFeaturePair(b3SATCacheType::e_separation, b3SATFeatureType::e_edge1, edgeQuery.index1, edgeQuery.index2);
 		return;
 	}
 
@@ -452,7 +452,7 @@ static void b3CollideCache(b3Manifold& manifold,
 		b3BuildEdgeContact(manifold, xf1, edgeQuery.index1, s1, xf2, edgeQuery.index2, s2);
 
 		// Write an overlap cache.		
-		cache->m_featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_edge1, edgeQuery.index1, edgeQuery.index2);
+		cache->featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_edge1, edgeQuery.index1, edgeQuery.index2);
 		return;
 	}
 	else
@@ -463,7 +463,7 @@ static void b3CollideCache(b3Manifold& manifold,
 			if (manifold.pointCount > 0)
 			{
 				// Write an overlap cache.
-				cache->m_featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_face1, faceQuery1.index, faceQuery1.index);
+				cache->featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_face1, faceQuery1.index, faceQuery1.index);
 				return;
 			}
 		}
@@ -473,7 +473,7 @@ static void b3CollideCache(b3Manifold& manifold,
 			if (manifold.pointCount > 0)
 			{
 				// Write an overlap cache.
-				cache->m_featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_face2, faceQuery2.index, faceQuery2.index);
+				cache->featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_face2, faceQuery2.index, faceQuery2.index);
 				return;
 			}
 		}
@@ -484,7 +484,7 @@ static void b3CollideCache(b3Manifold& manifold,
 	{
 		b3BuildEdgeContact(manifold, xf1, edgeQuery.index1, s1, xf2, edgeQuery.index2, s2);
 		// Write an overlap cache.		
-		cache->m_featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_edge1, edgeQuery.index1, edgeQuery.index2);
+		cache->featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_edge1, edgeQuery.index1, edgeQuery.index2);
 		return;
 	}
 	else
@@ -495,7 +495,7 @@ static void b3CollideCache(b3Manifold& manifold,
 			if (manifold.pointCount > 0)
 			{
 				// Write an overlap cache.
-				cache->m_featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_face1, faceQuery1.index, faceQuery1.index);
+				cache->featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_face1, faceQuery1.index, faceQuery1.index);
 				return;
 			}
 		}
@@ -505,7 +505,7 @@ static void b3CollideCache(b3Manifold& manifold,
 			if (manifold.pointCount > 0)
 			{
 				// Write an overlap cache.
-				cache->m_featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_face2, faceQuery2.index, faceQuery2.index);
+				cache->featurePair = b3MakeFeaturePair(b3SATCacheType::e_overlap, b3SATFeatureType::e_face2, faceQuery2.index, faceQuery2.index);
 				return;
 			}
 		}
@@ -531,7 +531,7 @@ static void b3CollideHulls(b3Manifold& manifold,
 	scalar totalRadius = r1 + r2;
 
 	// Read cache
-	b3SATCacheType state0 = cache->m_featurePair.state;
+	b3SATCacheType state0 = cache->featurePair.state;
 	b3SATCacheType state1 = cache->ReadState(xf1, hull1, xf2, hull2, totalRadius);
 
 	if (state0 == b3SATCacheType::e_separation &&
@@ -546,21 +546,21 @@ static void b3CollideHulls(b3Manifold& manifold,
 		state1 == b3SATCacheType::e_overlap)
 	{
 		// Try to rebuild or reclip the features.
-		switch (cache->m_featurePair.type)
+		switch (cache->featurePair.type)
 		{
 		case b3SATFeatureType::e_edge1:
 		{
-			b3RebuildEdgeContact(manifold, xf1, cache->m_featurePair.index1, s1, xf2, cache->m_featurePair.index2, s2);
+			b3RebuildEdgeContact(manifold, xf1, cache->featurePair.index1, s1, xf2, cache->featurePair.index2, s2);
 			break;
 		}
 		case b3SATFeatureType::e_face1:
 		{
-			b3RebuildFaceContact(manifold, xf1, cache->m_featurePair.index1, s1, xf2, s2, false, xf01, xf02);
+			b3RebuildFaceContact(manifold, xf1, cache->featurePair.index1, s1, xf2, s2, false, xf01, xf02);
 			break;
 		}
 		case b3SATFeatureType::e_face2:
 		{
-			b3RebuildFaceContact(manifold, xf2, cache->m_featurePair.index1, s2, xf1, s1, true, xf02, xf01);
+			b3RebuildFaceContact(manifold, xf2, cache->featurePair.index1, s2, xf1, s1, true, xf02, xf01);
 			break;
 		}
 		default:
@@ -580,7 +580,7 @@ static void b3CollideHulls(b3Manifold& manifold,
 	// Separation cache miss.
 	// Overlap cache miss.
 	// Flush the cache.
-	cache->m_featurePair.state = b3SATCacheType::e_empty;
+	cache->featurePair.state = b3SATCacheType::e_empty;
 	b3CollideCache(manifold, xf1, s1, xf2, s2, cache);
 }
 

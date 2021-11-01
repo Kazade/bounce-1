@@ -30,7 +30,7 @@ b3ConvexContact::b3ConvexContact(b3Fixture* fixtureA, b3Fixture* fixtureB) : b3C
 	m_manifoldCount = 0;
 
 	m_cache.simplexCache.count = 0;
-	m_cache.featureCache.m_featurePair.state = b3SATCacheType::e_empty;
+	m_cache.featureCache.featurePair.state = b3SATCacheType::e_empty;
 }
 
 bool b3ConvexContact::TestOverlap()

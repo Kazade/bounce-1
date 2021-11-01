@@ -19,7 +19,7 @@
 #ifndef B3_BODY_DRAGGER_H
 #define B3_BODY_DRAGGER_H
 
-#include <bounce/common/geometry.h>
+#include <bounce/collision/geometry/ray.h>
 #include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/world.h>
@@ -30,7 +30,7 @@
 class b3BodyDragger
 {
 public:
-	b3BodyDragger(b3Ray3* ray, b3World* world);
+	b3BodyDragger(b3Ray* ray, b3World* world);
 	~b3BodyDragger();
 
 	bool StartDragging();
@@ -41,7 +41,7 @@ public:
 
 	bool IsDragging() const;
 
-	b3Ray3* GetRay() const;
+	b3Ray* GetRay() const;
 
 	b3Fixture* GetFixture() const;
 
@@ -49,7 +49,7 @@ public:
 
 	b3Vec3 GetPointB() const;
 private:
-	b3Ray3 * m_ray;
+	b3Ray * m_ray;
 	scalar m_x;
 
 	b3World* m_world;
@@ -64,7 +64,7 @@ inline bool b3BodyDragger::IsDragging() const
 	return m_fixture != nullptr;
 }
 
-inline b3Ray3* b3BodyDragger::GetRay() const
+inline b3Ray* b3BodyDragger::GetRay() const
 {
 	return m_ray;
 }

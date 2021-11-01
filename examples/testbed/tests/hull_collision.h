@@ -169,7 +169,7 @@ public:
 
 		b3ConvexCache cache;
 		cache.simplexCache.count = 0;
-		cache.featureCache.m_featurePair.state = b3SATCacheType::e_empty;
+		cache.featureCache.featurePair.state = b3SATCacheType::e_empty;
 
 		b3Manifold manifold;
 		manifold.Initialize();

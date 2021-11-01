@@ -49,9 +49,9 @@ public:
 	
 	virtual void Step();
 
-	virtual void MouseMove(const b3Ray3& pw);
-	virtual void MouseLeftDown(const b3Ray3& pw);
-	virtual void MouseLeftUp(const b3Ray3& pw);
+	virtual void MouseMove(const b3Ray& pw);
+	virtual void MouseLeftDown(const b3Ray& pw);
+	virtual void MouseLeftUp(const b3Ray& pw);
 	virtual void KeyDown(int button) { }
 	virtual void KeyUp(int button) { }
 
@@ -64,7 +64,7 @@ public:
 
 	Draw m_draw;
 	
-	b3Ray3 m_ray;
+	b3Ray m_ray;
 	
 	b3World m_world;
 	b3BodyDragger m_rigidBodyDragger;

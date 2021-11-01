@@ -20,7 +20,7 @@
 #define B3_CLIP_H
 
 #include <bounce/common/template/array.h>
-#include <bounce/common/geometry.h>
+#include <bounce/collision/geometry/plane.h>
 
 #define B3_NULL_EDGE B3_MAX_U32
 

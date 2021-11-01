@@ -19,7 +19,7 @@
 #ifndef B3_SAT_H
 #define B3_SAT_H
 
-#include <bounce/common/geometry.h>
+#include <bounce/collision/geometry/plane.h>
 
 struct b3Hull;
 
@@ -102,7 +102,7 @@ struct b3FeatureCache
 	b3SATCacheType ReadFace(const b3Transform& xf1, const b3Hull* hull1,
 		const b3Transform& xf2, const b3Hull* hull2, scalar totalRadius);
 	
-	b3SATFeaturePair m_featurePair;
+	b3SATFeaturePair featurePair;
 };
 
 #endif

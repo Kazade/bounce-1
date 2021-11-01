@@ -17,6 +17,7 @@
 */
 
 #include <bounce/collision/collide/cluster.h>
+#include <bounce/collision/geometry/geometry.h>
 #include <bounce/collision/collision.h>
 
 static B3_FORCE_INLINE bool b3IsCCW(const b3Vec3& A, const b3Vec3& B, const b3Vec3& C, const b3Vec3& N)

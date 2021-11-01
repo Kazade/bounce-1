@@ -42,25 +42,25 @@ struct b3Transform
 		rotation.SetIdentity();
 	}
 
+	// Convert this transform to a 4-by-4 transformation matrix.
+	b3Mat44 GetTransformMatrix() const
+	{
+		b3Vec3 t = translation;
+		b3Mat33 R = rotation.GetRotationMatrix();
+
+		return b3Mat44(
+			b3Vec4(R.x.x, R.x.y, R.x.z, scalar(0)),
+			b3Vec4(R.y.x, R.y.y, R.y.z, scalar(0)),
+			b3Vec4(R.z.x, R.z.y, R.z.z, scalar(0)),
+			b3Vec4(t.x, t.y, t.z, scalar(1)));
+	}
+
 	b3Vec3 translation;
 	b3Quat rotation;
 };
 
 // Identity transformation
 extern const b3Transform b3Transform_identity;
-
-// Convert a transform to a 4-by-4 transformation matrix. 
-inline b3Mat44 b3TransformMat44(const b3Transform& T)
-{
-	b3Vec3 t = T.translation;
-	b3Mat33 R = b3QuatMat33(T.rotation);
-
-	return b3Mat44(
-		b3Vec4(R.x.x, R.x.y, R.x.z, scalar(0)),
-		b3Vec4(R.y.x, R.y.y, R.y.z, scalar(0)),
-		b3Vec4(R.z.x, R.z.y, R.z.z, scalar(0)),
-		b3Vec4(t.x, t.y, t.z, scalar(1)));
-}
 
 // Multiply a transform times a vector.
 inline b3Vec3 b3Mul(const b3Transform& T, const b3Vec3& v)

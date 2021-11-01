@@ -18,7 +18,7 @@
 
 #include "body_dragger.h"
 
-b3BodyDragger::b3BodyDragger(b3Ray3* ray, b3World* world)
+b3BodyDragger::b3BodyDragger(b3Ray* ray, b3World* world)
 {
 	m_ray = ray;
 	m_world = world;

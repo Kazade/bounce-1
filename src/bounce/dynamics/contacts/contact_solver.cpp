@@ -21,7 +21,6 @@
 #include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/body.h>
 #include <bounce/common/memory/stack_allocator.h>
-#include <bounce/common/math/mat.h>
 
 // This solver implements PGS for solving velocity constraints and 
 // NGS for solving position constraints.

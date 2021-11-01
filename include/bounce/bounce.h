@@ -22,7 +22,6 @@
 // Include this file header in your project to directly access Bounce objects.
 
 #include <bounce/common/settings.h>
-#include <bounce/common/geometry.h>
 
 #include <bounce/common/draw.h>
 
@@ -34,6 +33,7 @@
 #include <bounce/collision/broad_phase.h>
 #include <bounce/collision/time_of_impact.h>
 
+#include <bounce/collision/geometry/geometry.h>
 #include <bounce/collision/geometry/sphere.h>
 #include <bounce/collision/geometry/capsule.h>
 #include <bounce/collision/geometry/hull.h>

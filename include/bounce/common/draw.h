@@ -19,7 +19,6 @@
 #ifndef B3_DRAW_H
 #define B3_DRAW_H
 
-#include <bounce/common/geometry.h>
 #include <bounce/common/math/vec2.h>
 #include <bounce/common/math/vec3.h>
 #include <bounce/common/math/mat33.h>
@@ -27,6 +26,7 @@
 #include <bounce/common/math/transform.h>
 #include <bounce/common/graphics/color.h>
 #include <bounce/collision/geometry/aabb.h>
+#include <bounce/collision/geometry/plane.h>
 
 // Debug draw interface.
 class b3Draw

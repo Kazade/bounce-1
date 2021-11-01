@@ -348,12 +348,6 @@ inline b3Quat b3Mat33Quat(const b3Mat33& m)
 	return result;
 }
 
-// Convert a rotation quaternion to a 3-by-3 rotation matrix.
-inline b3Mat33 b3QuatMat33(const b3Quat& q)
-{
-	return q.GetRotationMatrix();
-}
-
 // Rotation about the x-axis.
 inline b3Quat b3QuatRotationX(scalar angle)
 {
