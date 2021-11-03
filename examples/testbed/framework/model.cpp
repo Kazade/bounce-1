@@ -29,19 +29,18 @@ Model::Model() :
 	m_points(512),
 	m_lines(512),
 	m_triangles(512),
-	m_renderer(512, 512, 512)
+	m_pointsRenderer(512),
+	m_linesRenderer(512),
+	m_trianglesRenderer(512)
 {
-	m_points.SetRenderer(&m_renderer);
-	m_lines.SetRenderer(&m_renderer);
-	m_triangles.SetRenderer(&m_renderer);
+	m_points.SetRenderer(&m_pointsRenderer);
+	m_lines.SetRenderer(&m_linesRenderer);
+	m_triangles.SetRenderer(&m_trianglesRenderer);
 
 	m_debugDrawData.points = &m_points;
 	m_debugDrawData.lines = &m_lines;
 	m_debugDrawData.triangles = &m_triangles;
-
-	m_renderer.SetCamera(&m_camera);
-	m_renderer.SetClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-
+	
 	m_test = nullptr;
 	m_viewModel = nullptr;
 	
@@ -52,6 +51,8 @@ Model::Model() :
 	g_camera = &m_camera;
 	g_debugDrawData = &m_debugDrawData;
 	g_profiler = &m_profiler;
+
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	Action_ResetCamera();
 }
@@ -84,33 +85,23 @@ static inline b3Ray ConvertScreenToWorldRay(const b3Camera& camera, const b3Vec2
 void Model::Command_Press_Mouse_Left(const b3Vec2& ps)
 {
 	b3Ray rw = ConvertScreenToWorldRay(m_camera, ps);
-	
 	m_test->MouseLeftDown(rw);
 }
 
 void Model::Command_Release_Mouse_Left(const b3Vec2& ps)
 {
 	b3Ray rw = ConvertScreenToWorldRay(m_camera, ps);
-	
 	m_test->MouseLeftUp(rw);
 }
 
 void Model::Command_Move_Cursor(const b3Vec2& ps)
 {
 	b3Ray rw = ConvertScreenToWorldRay(m_camera, ps);
-	
 	m_test->MouseMove(rw);
 }
 
 void Model::Update()
 {
-	m_points.EnableDraw(g_settings->drawPoints);
-	m_lines.EnableDraw(g_settings->drawLines);
-	m_triangles.EnableDraw(g_settings->drawTriangles);
-
-	m_renderer.SynchronizeViewport();
-	m_renderer.ClearBuffers();
-
 	if (m_setTest)
 	{
 		Action_ResetCamera();
@@ -121,11 +112,6 @@ void Model::Update()
 		
 		m_setTest = false;
 		m_pause = true;
-	}
-	
-	if (g_settings->drawGrid)
-	{
-		b3DrawGrid<20, 20>(&m_debugDrawData, b3Vec3_y, b3Vec3_zero, 20, 20, b3Color(0.4f, 0.4f, 0.4f, 1.0f));
 	}
 
 	if (m_pause)
@@ -143,6 +129,27 @@ void Model::Update()
 	else
 	{
 		g_testSettings->inv_hertz = g_testSettings->hertz > 0.0f ? 1.0f / g_testSettings->hertz : 0.0f;
+	}
+	
+	m_points.EnableDraw(g_settings->drawPoints);
+	m_lines.EnableDraw(g_settings->drawLines);
+	m_triangles.EnableDraw(g_settings->drawTriangles);
+
+	// Rendering code begins here.
+	glViewport(0, 0, GLsizei(m_camera.GetWidth()), GLsizei(m_camera.GetHeight()));
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	b3Mat44 V = m_camera.BuildViewMatrix();
+	b3Mat44 P = m_camera.BuildProjectionMatrix();
+	b3Mat44 VP = P * V;
+
+	m_pointsRenderer.SetMVP(&VP.x.x);
+	m_linesRenderer.SetMVP(&VP.x.x);
+	m_trianglesRenderer.SetMVP(&VP.x.x);
+
+	if (g_settings->drawGrid)
+	{
+		b3DrawGrid<20, 20>(&m_debugDrawData, b3Vec3_y, b3Vec3_zero, 20, 20, b3Color(0.4f, 0.4f, 0.4f, 1.0f));
 	}
 
 	m_test->Step();

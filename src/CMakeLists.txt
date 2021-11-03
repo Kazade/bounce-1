@@ -10,7 +10,9 @@ ${BOUNCE_INCLUDE_DIR}/bounce/common/common.h
 
 ${BOUNCE_INCLUDE_DIR}/bounce/common/graphics/color.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/graphics/camera.h
-${BOUNCE_INCLUDE_DIR}/bounce/common/graphics/debug_primitives.h
+${BOUNCE_INCLUDE_DIR}/bounce/common/graphics/debug_points.h
+${BOUNCE_INCLUDE_DIR}/bounce/common/graphics/debug_lines.h
+${BOUNCE_INCLUDE_DIR}/bounce/common/graphics/debug_triangles.h
 ${BOUNCE_INCLUDE_DIR}/bounce/common/graphics/debugdraw.h
 
 ${BOUNCE_INCLUDE_DIR}/bounce/common/math/math.h

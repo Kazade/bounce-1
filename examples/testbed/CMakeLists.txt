@@ -1,14 +1,12 @@
 set(TESTBED_SOURCE_FILES
-	framework/open_gl/gl_renderer.h
-	framework/open_gl/gl_renderer.cpp
 	framework/open_gl/gl_shader.h
 	framework/open_gl/gl_shader.cpp
-	framework/open_gl/gl_render_points.h
-	framework/open_gl/gl_render_points.cpp
-	framework/open_gl/gl_render_lines.h
-	framework/open_gl/gl_render_lines.cpp
-	framework/open_gl/gl_render_triangles.h
-	framework/open_gl/gl_render_triangles.cpp
+	framework/open_gl/gl_points_renderer.h
+	framework/open_gl/gl_points_renderer.cpp
+	framework/open_gl/gl_lines_renderer.h
+	framework/open_gl/gl_lines_renderer.cpp
+	framework/open_gl/gl_triangles_renderer.h
+	framework/open_gl/gl_triangles_renderer.cpp
 	framework/imgui/imgui_impl_glfw.cpp
 	framework/imgui/imgui_impl_glfw.h
 	framework/imgui/imgui_impl_opengl2.cpp

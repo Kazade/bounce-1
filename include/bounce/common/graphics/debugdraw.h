@@ -19,9 +19,11 @@
 #ifndef B3_DEBUGDRAW_H
 #define B3_DEBUGDRAW_H
 
-#include <bounce/common/graphics/debug_primitives.h>
 #include <bounce/common/math/mat33.h>
 #include <bounce/common/math/transform.h>
+#include <bounce/common/graphics/debug_points.h>
+#include <bounce/common/graphics/debug_lines.h>
+#include <bounce/common/graphics/debug_triangles.h>
 
 // This contains the primitives to be used by the debug draw utilities.
 // You must setup this structure with the pointers before calling any debug draw function.

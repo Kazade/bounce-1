@@ -16,26 +16,32 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "gl_render_points.h"
+#include "gl_triangles_renderer.h"
 #include "gl_shader.h"
 
 #include <stdlib.h>
 #include <assert.h>
 
-GLRenderPoints::GLRenderPoints(uint32_t point_capacity)
+GLTrianglesRenderer::GLTrianglesRenderer(int triangle_capacity)
 {
 	const char* vs = \
 		"#version 120\n"
 		"uniform mat4 m_projection;\n"
 		"attribute vec3 v_position;\n"
 		"attribute vec4 v_color;\n"
-		"attribute float v_size;\n"
+		"attribute vec3 v_normal;\n"
 		"varying vec4 f_color;\n"
-		"void main()\n"
+		"void main(void)\n"
 		"{\n"
-		"	f_color = v_color;\n"
+		"	vec3 La = vec3(0.5f, 0.5f, 0.5f);\n"
+		"	vec3 Ld = vec3(0.5f, 0.5f, 0.5f);\n"
+		"	vec3 L = vec3(0.0f, 0.3f, 0.7f);\n"
+		"	vec3 Ma = v_color.xyz;\n"
+		"	vec3 Md = v_color.xyz;\n"
+		"	vec3 a = La * Ma;\n"
+		"	vec3 d = max(dot(v_normal, L), 0.0f) * Ld * Md;\n"
+		"	f_color = vec4(a + d, v_color.w);\n"
 		"	gl_Position = m_projection * vec4(v_position, 1.0f);\n"
-		"   gl_PointSize = v_size;\n"
 		"}\n";
 
 	const char* fs = \
@@ -49,57 +55,57 @@ GLRenderPoints::GLRenderPoints(uint32_t point_capacity)
 	m_program = GLCreateShaderProgram(vs, fs);
 	m_position_attribute = glGetAttribLocation(m_program, "v_position");
 	m_color_attribute = glGetAttribLocation(m_program, "v_color");
-	m_size_attribute = glGetAttribLocation(m_program, "v_size");
+	m_normal_attribute = glGetAttribLocation(m_program, "v_normal");
 	m_projection_uniform = glGetUniformLocation(m_program, "m_projection");
 
-	m_vertex_capacity = point_capacity;
-	m_positions = (float*)malloc(point_capacity * 3 * sizeof(float));
-	m_colors = (float*)malloc(point_capacity * 4 * sizeof(float));
-	m_sizes = (float*)malloc(point_capacity * sizeof(float));
+	m_vertex_capacity = 3 * triangle_capacity;
+	m_positions = (float*)malloc(m_vertex_capacity * 3 * sizeof(float));
+	m_colors = (float*)malloc(m_vertex_capacity * 4 * sizeof(float));
+	m_normals = (float*)malloc(m_vertex_capacity * 3 * sizeof(float));
 	m_vertex_count = 0;
 
 	glGenBuffers(3, m_vbos);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[0]);
-	glBufferData(GL_ARRAY_BUFFER, point_capacity * 3 * sizeof(float), m_positions, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_vertex_capacity * 3 * sizeof(float), m_positions, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[1]);
-	glBufferData(GL_ARRAY_BUFFER, point_capacity * 4 * sizeof(float), m_colors, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_vertex_capacity * 4 * sizeof(float), m_colors, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[2]);
-	glBufferData(GL_ARRAY_BUFFER, point_capacity * sizeof(float), m_sizes, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_vertex_capacity * 3 * sizeof(float), m_normals, GL_DYNAMIC_DRAW);
 
 	GLAssert();
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+	
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
 		{
-			if (i == j) 
-			{ 
-				m_mvp[i + 4 * j] = 1.0f; 
+			if (i == j)
+			{
+				m_mvp[i + 4 * j] = 1.0f;
 			}
-			else 
-			{ 
-				m_mvp[i + 4 * j] = 0.0f; 
+			else
+			{
+				m_mvp[i + 4 * j] = 0.0f;
 			}
 		}
 	}
 }
 
-GLRenderPoints::~GLRenderPoints()
+GLTrianglesRenderer::~GLTrianglesRenderer()
 {
 	glDeleteProgram(m_program);
 	glDeleteBuffers(3, m_vbos);
 
 	free(m_positions);
 	free(m_colors);
-	free(m_sizes);
+	free(m_normals);
 }
 
-void GLRenderPoints::PushVertex(float x, float y, float z, float r, float g, float b, float a, float point_size)
+void GLTrianglesRenderer::Vertex(float x, float y, float z, float r, float g, float b, float a, float nx, float ny, float nz)
 {
 	if (m_vertex_count == m_vertex_capacity)
 	{
@@ -113,11 +119,13 @@ void GLRenderPoints::PushVertex(float x, float y, float z, float r, float g, flo
 	m_colors[4 * m_vertex_count + 1] = g;
 	m_colors[4 * m_vertex_count + 2] = b;
 	m_colors[4 * m_vertex_count + 3] = a;
-	m_sizes[m_vertex_count] = point_size;
+	m_normals[3 * m_vertex_count] = nx;
+	m_normals[3 * m_vertex_count + 1] = ny;
+	m_normals[3 * m_vertex_count + 2] = nz;
 	++m_vertex_count;
 }
 
-void GLRenderPoints::SetMVP(float* mvp)
+void GLTrianglesRenderer::SetMVP(float* mvp)
 {
 	for (int i = 0; i < 16; ++i)
 	{
@@ -125,7 +133,7 @@ void GLRenderPoints::SetMVP(float* mvp)
 	}
 }
 
-void GLRenderPoints::Flush()
+void GLTrianglesRenderer::Flush()
 {
 	if (m_vertex_count == 0)
 	{
@@ -143,26 +151,45 @@ void GLRenderPoints::Flush()
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[1]);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertex_count * 4 * sizeof(float), m_colors);
-	glEnableVertexAttribArray(m_color_attribute);
 	glVertexAttribPointer(m_color_attribute, 4, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
+	glEnableVertexAttribArray(m_color_attribute);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[2]);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertex_count * sizeof(float), m_sizes);
-	glEnableVertexAttribArray(m_size_attribute);
-	glVertexAttribPointer(m_size_attribute, 1, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
+	glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertex_count * 3 * sizeof(float), m_normals);
+	glVertexAttribPointer(m_normal_attribute, 3, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
+	glEnableVertexAttribArray(m_normal_attribute);
 
-	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-	glDrawArrays(GL_POINTS, 0, m_vertex_count);
-	glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	glDrawArrays(GL_TRIANGLES, 0, m_vertex_count);
 
 	m_vertex_count = 0;
 
-	glDisableVertexAttribArray(m_size_attribute);
-	glDisableVertexAttribArray(m_color_attribute);
-	glDisableVertexAttribArray(m_position_attribute);
-
 	GLAssert();
+
+	glDisableVertexAttribArray(m_position_attribute);
+	glDisableVertexAttribArray(m_color_attribute);
+	glDisableVertexAttribArray(m_normal_attribute);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glUseProgram(0);
+}
+
+void GLTrianglesRenderer::AddTriangle(const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, const b3Vec3& normal)
+{
+	Vertex(p1.x, p1.y, p1.z, color.r, color.g, color.b, color.a, normal.x, normal.y, normal.z);
+	Vertex(p2.x, p2.y, p2.z, color.r, color.g, color.b, color.a, normal.x, normal.y, normal.z);
+	Vertex(p3.x, p3.y, p3.z, color.r, color.g, color.b, color.a, normal.x, normal.y, normal.z);
+}
+
+void GLTrianglesRenderer::FlushTriangles(bool depthEnabled) 
+{
+	if (depthEnabled)
+	{
+		glEnable(GL_DEPTH_TEST);
+	}
+	else
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	Flush();
 }

@@ -16,13 +16,13 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "gl_render_lines.h"
+#include "gl_lines_renderer.h"
 #include "gl_shader.h"
 
 #include <stdlib.h>
 #include <assert.h>
 
-GLRenderLines::GLRenderLines(uint32_t line_capacity)
+GLLinesRenderer::GLLinesRenderer(int line_capacity)
 {
 	const char* vs = \
 		"#version 120\n"
@@ -82,7 +82,7 @@ GLRenderLines::GLRenderLines(uint32_t line_capacity)
 	}
 }
 
-GLRenderLines::~GLRenderLines()
+GLLinesRenderer::~GLLinesRenderer()
 {
 	glDeleteProgram(m_program);
 	glDeleteBuffers(2, m_vbos);
@@ -91,7 +91,7 @@ GLRenderLines::~GLRenderLines()
 	free(m_colors);
 }
 
-void GLRenderLines::PushVertex(float x, float y, float z, float r, float g, float b, float a)
+void GLLinesRenderer::Vertex(float x, float y, float z, float r, float g, float b, float a)
 {
 	if (m_vertex_count == m_vertex_capacity)
 	{
@@ -108,7 +108,7 @@ void GLRenderLines::PushVertex(float x, float y, float z, float r, float g, floa
 	++m_vertex_count;
 }
 
-void GLRenderLines::SetMVP(float* mvp)
+void GLLinesRenderer::SetMVP(float* mvp)
 {
 	for (int i = 0; i < 16; ++i)
 	{
@@ -116,7 +116,7 @@ void GLRenderLines::SetMVP(float* mvp)
 	}
 }
 
-void GLRenderLines::Flush()
+void GLLinesRenderer::Flush()
 {
 	if (m_vertex_count == 0)
 	{
@@ -148,4 +148,24 @@ void GLRenderLines::Flush()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glUseProgram(0);
+}
+
+void GLLinesRenderer::AddLine(const b3Vec3& p1, const b3Vec3& p2, const b3Color& color)
+{
+	Vertex(p1.x, p1.y, p1.z, color.r, color.g, color.b, color.a);
+	Vertex(p2.x, p2.y, p2.z, color.r, color.g, color.b, color.a);
+}
+
+void GLLinesRenderer::FlushLines(bool depthEnabled) 
+{
+	if (depthEnabled)
+	{
+		glEnable(GL_DEPTH_TEST);
+	}
+	else
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	Flush();
 }

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2016-2019 Irlan Robson 
+* Copyright (c) 2016-2019 Irlan Robson
 *
 * This software is provided 'as-is', without any express or implied
 * warranty.  In no event will the authors be held liable for any damages
@@ -16,40 +16,42 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef GL_RENDERER_H
-#define GL_RENDERER_H
+#ifndef GL_TRIANGLES_RENDERER_H
+#define GL_TRIANGLES_RENDERER_H
 
-#include <bounce/common/graphics/debug_primitives.h>
-#include "gl_render_points.h"
-#include "gl_render_lines.h"
-#include "gl_render_triangles.h"
+#include <bounce/common/graphics/debug_triangles.h>
+#include "glad/glad.h"
 
-class b3Camera;
-
-class GLRenderer : public b3DebugRenderer
+class GLTrianglesRenderer : public b3DebugTrianglesRenderer
 {
 public:
-	GLRenderer(int pointCapacity, int lineCapacity, int triangleCapacity);
-
-	void SetClearColor(float r, float g, float b, float a);
-	void SynchronizeViewport();
-	void ClearBuffers();
+	GLTrianglesRenderer(int triangle_capacity);
+	~GLTrianglesRenderer();
 	
-	void AddPoint(const b3Vec3& position, const b3Color& color, scalar size) override;
-	void AddLine(const b3Vec3& p1, const b3Vec3& p2, const b3Color& color) override;
+	int GetVertexCapacity() { return m_vertex_capacity; }
+	int GetVertexCount() { return m_vertex_count; }
+	void SetMVP(float* mvp);
+
 	void AddTriangle(const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, const b3Vec3& normal) override;
-	
-	void FlushPoints(bool depthEnabled) override;
-	void FlushLines(bool depthEnabled) override;
 	void FlushTriangles(bool depthEnabled) override;
+private:
+	void Vertex(float x, float y, float z, float r, float g, float b, float a, float nx, float ny, float nz);
+	void Flush();
 
-	void SetCamera(b3Camera* camera) { m_camera = camera; }
-	b3Camera* GetCamera() { return m_camera; };
-protected:
-	GLRenderPoints m_points;
-	GLRenderLines m_lines;
-	GLRenderTriangles m_triangles;
-	b3Camera* m_camera;
+	int m_vertex_capacity;
+	float* m_positions;
+	float* m_colors;
+	float* m_normals;
+	int m_vertex_count;
+	float m_mvp[16];
+
+	GLuint m_vbos[3];
+
+	GLuint m_program;
+	GLuint m_position_attribute;
+	GLuint m_color_attribute;
+	GLuint m_normal_attribute;
+	GLuint m_projection_uniform;
 };
 
 #endif

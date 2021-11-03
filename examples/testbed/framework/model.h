@@ -19,7 +19,9 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "open_gl/gl_renderer.h"
+#include "open_gl/gl_points_renderer.h"
+#include "open_gl/gl_lines_renderer.h"
+#include "open_gl/gl_triangles_renderer.h"
 
 #include <bounce/common/profiler.h>
 #include <bounce/common/graphics/camera.h>
@@ -69,7 +71,9 @@ private:
 	b3DebugLines m_lines;
 	b3DebugTriangles m_triangles;
 	b3DebugDrawData m_debugDrawData;
-	GLRenderer m_renderer;
+	GLPointsRenderer m_pointsRenderer;
+	GLLinesRenderer m_linesRenderer;
+	GLTrianglesRenderer m_trianglesRenderer;
 	Test* m_test;
 	bool m_setTest;
 	bool m_pause;

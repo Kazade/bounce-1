@@ -16,39 +16,41 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef GL_RENDER_LINES_H
-#define GL_RENDER_LINES_H
+#ifndef GL_POINTS_RENDERER_H
+#define GL_POINTS_RENDERER_H
 
+#include <bounce/common/graphics/debug_points.h>
 #include "glad/glad.h"
-#include <stdint.h>
 
-class GLRenderLines
+class GLPointsRenderer : public b3DebugPointsRenderer
 {
 public:
-	GLRenderLines(uint32_t line_capacity);
-	~GLRenderLines();
+	GLPointsRenderer(int point_capacity);
+	~GLPointsRenderer();
 	
-	uint32_t GetVertexCapacity() { return m_vertex_capacity; }
-
-	uint32_t GetVertexCount() { return m_vertex_count; }
-
-	void PushVertex(float x, float y, float z, float r, float g, float b, float a);
-
+	int GetVertexCapacity() { return m_vertex_capacity; }
+	int GetVertexCount() { return m_vertex_count; }
 	void SetMVP(float* mvp);
-
-	void Flush();
+	
+	void AddPoint(const b3Vec3& position, const b3Color& color, scalar size) override;
+	void FlushPoints(bool depthEnabled) override;
 private:
-	uint32_t m_vertex_capacity;
+	void Vertex(float x, float y, float z, float r, float g, float b, float a, float point_size);
+	void Flush();
+	
+	int m_vertex_capacity;
 	float* m_positions;
 	float* m_colors;
-	uint32_t m_vertex_count;
+	float* m_sizes;
+	int m_vertex_count;
 	float m_mvp[16];
 
-	GLuint m_vbos[2];
+	GLuint m_vbos[3];
 
 	GLuint m_program;
 	GLuint m_position_attribute;
 	GLuint m_color_attribute;
+	GLuint m_size_attribute;
 	GLuint m_projection_uniform;
 };
 
