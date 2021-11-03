@@ -114,12 +114,12 @@ public:
 
 		for (u32 i = 0; i < m_hull->vertexCount; ++i)
 		{
-			b3DrawPoint(g_debugDraw, m_hull->vertices[i], 4.0f, b3Color_green, false);
+			b3DrawPoint(g_debugDrawData, m_hull->vertices[i], 4.0f, b3Color_green, false);
 		}
 
 		for (u32 i = 0; i < e_count; ++i)
 		{
-			b3DrawPoint(g_debugDraw, m_points[i], 4.0f, b3Color_black);
+			b3DrawPoint(g_debugDrawData, m_points[i], 4.0f, b3Color_black);
 		}
 
 		{
@@ -145,7 +145,7 @@ public:
 				c += v1;
 				++vn;
 
-				b3DrawSegment(g_debugDraw, v1, v2, b3Color_green, false);
+				b3DrawSegment(g_debugDrawData, v1, v2, b3Color_green, false);
 
 				DrawString(b3Color_white, v1, "v%d", vn);
 				
@@ -153,7 +153,7 @@ public:
 			} while (edge != begin);
 
 			c /= scalar(vn);
-			b3DrawSegment(g_debugDraw, c, c + n, b3Color_white, false);
+			b3DrawSegment(g_debugDrawData, c, c + n, b3Color_white, false);
 		}
 
 		for (u32 i = 0; i < m_hull->faceCount; ++i)
@@ -183,7 +183,7 @@ public:
 					solidColor.b = 1.0f;
 				}
 				
-				b3DrawSolidTriangle(g_debugDraw, n, v1, v2, v3, solidColor);
+				b3DrawSolidTriangle(g_debugDrawData, n, v1, v2, v3, solidColor);
 
 				edge = next;
 			} while (edge != begin);

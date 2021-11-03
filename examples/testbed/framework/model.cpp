@@ -21,35 +21,45 @@
 #include "view_model.h"
 #include "test.h"
 
-b3Camera* g_camera = nullptr;
-b3DebugDraw* g_debugDraw = nullptr;
 b3Profiler* g_profiler = nullptr;
+b3Camera* g_camera = nullptr;
+b3DebugDrawData* g_debugDrawData = nullptr;
 
 Model::Model() :
-	m_debugDraw(512, 512, 512, &m_glDebugDraw),
-	m_glDebugDraw(512, 512, 512)
+	m_points(512),
+	m_lines(512),
+	m_triangles(512),
+	m_renderer(512, 512, 512)
 {
-	m_glDebugDraw.SetCamera(&m_camera);
-	m_glDebugDraw.SetClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	
+	m_points.SetRenderer(&m_renderer);
+	m_lines.SetRenderer(&m_renderer);
+	m_triangles.SetRenderer(&m_renderer);
+
+	m_debugDrawData.points = &m_points;
+	m_debugDrawData.lines = &m_lines;
+	m_debugDrawData.triangles = &m_triangles;
+
+	m_renderer.SetCamera(&m_camera);
+	m_renderer.SetClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+
 	m_test = nullptr;
 	m_viewModel = nullptr;
 	
-	Action_ResetCamera();
-
 	m_setTest = true;
 	m_pause = true;
 	m_singlePlay = false;
 
 	g_camera = &m_camera;
-	g_debugDraw = &m_debugDraw;
+	g_debugDrawData = &m_debugDrawData;
 	g_profiler = &m_profiler;
+
+	Action_ResetCamera();
 }
 
 Model::~Model()
 {
 	delete m_test;
-	g_debugDraw = nullptr;
+	g_debugDrawData = nullptr;
 	g_camera = nullptr;
 	g_profiler = nullptr;
 }
@@ -66,14 +76,9 @@ void Model::Command_Release_Key(int button)
 
 static inline b3Ray ConvertScreenToWorldRay(const b3Camera& camera, const b3Vec2& ps)
 {
-	b3Vec3 pw = camera.ConvertScreenToWorld(b3Vec2(ps.x, ps.y));
-	b3Vec3 cp = camera.BuildPosition();
-	
-	b3Ray rw;
-	rw.origin = b3Vec3(cp.x, cp.y, cp.z);
-	rw.direction = b3Vec3(pw.x, pw.y, pw.z);
-	rw.fraction = camera.GetZFar();
-	return rw;	
+	b3Vec3 origin = camera.BuildPosition();
+	b3Vec3 direction = camera.ConvertScreenToWorld(b3Vec2(ps.x, ps.y));
+	return b3Ray(origin, direction, camera.GetZFar());
 }
 
 void Model::Command_Press_Mouse_Left(const b3Vec2& ps)
@@ -99,12 +104,13 @@ void Model::Command_Move_Cursor(const b3Vec2& ps)
 
 void Model::Update()
 {
-	m_debugDraw.EnableDrawPoints(g_settings->drawPoints);
-	m_debugDraw.EnableDrawLines(g_settings->drawLines);
-	m_debugDraw.EnableDrawTriangles(g_settings->drawTriangles);
+	m_points.EnableDraw(g_settings->drawPoints);
+	m_lines.EnableDraw(g_settings->drawLines);
+	m_triangles.EnableDraw(g_settings->drawTriangles);
 
-	m_glDebugDraw.Begin();
-	
+	m_renderer.SynchronizeViewport();
+	m_renderer.ClearBuffers();
+
 	if (m_setTest)
 	{
 		Action_ResetCamera();
@@ -119,7 +125,7 @@ void Model::Update()
 	
 	if (g_settings->drawGrid)
 	{
-		b3DrawGrid<20, 20>(&m_debugDraw, b3Vec3_y, b3Vec3_zero, 20, 20, b3Color(0.4f, 0.4f, 0.4f, 1.0f));
+		b3DrawGrid<20, 20>(&m_debugDrawData, b3Vec3_y, b3Vec3_zero, 20, 20, b3Color(0.4f, 0.4f, 0.4f, 1.0f));
 	}
 
 	if (m_pause)
@@ -140,8 +146,9 @@ void Model::Update()
 	}
 
 	m_test->Step();
-	
-	m_glDebugDraw.End();
-	
-	m_debugDraw.Flush();
+
+	// Default order: Points over lines and lines over triangles.
+	m_triangles.Flush();
+	m_lines.Flush();
+	m_points.Flush();
 }

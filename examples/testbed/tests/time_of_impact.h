@@ -57,8 +57,8 @@ public:
 		b3Transform xfA0 = m_sweepA.GetTransform(0.0f);
 		b3Transform xfB0 = m_sweepB.GetTransform(0.0f);
 
-		b3DrawTransform(g_debugDraw, xfA0);
-		b3DrawTransform(g_debugDraw, xfB0);
+		b3DrawTransform(g_debugDrawData, xfA0);
+		b3DrawTransform(g_debugDrawData, xfB0);
 
 		m_shapeA.Draw(xfA0, b3Color_black);
 		m_shapeB.Draw(xfB0, b3Color_black);
@@ -70,8 +70,8 @@ public:
 		b3Transform xfA1 = m_sweepA.GetTransform(1.0f);
 		b3Transform xfB1 = m_sweepB.GetTransform(1.0f);
 
-		b3DrawTransform(g_debugDraw, xfA1);
-		b3DrawTransform(g_debugDraw, xfB1);
+		b3DrawTransform(g_debugDrawData, xfA1);
+		b3DrawTransform(g_debugDrawData, xfB1);
 
 		m_shapeA.Draw(xfA1, b3Color_black);
 		m_shapeB.Draw(xfB1, b3Color_black);
@@ -86,8 +86,8 @@ public:
 		b3Transform xfAx = m_sweepA.GetTransform(m_time);
 		b3Transform xfBx = m_sweepB.GetTransform(m_time);
 
-		b3DrawTransform(g_debugDraw, xfAx);
-		b3DrawTransform(g_debugDraw, xfBx);
+		b3DrawTransform(g_debugDrawData, xfAx);
+		b3DrawTransform(g_debugDrawData, xfBx);
 
 		m_shapeA.Draw(xfAx, b3Color_black);
 		m_shapeB.Draw(xfBx, b3Color_black);

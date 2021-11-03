@@ -104,7 +104,7 @@ public:
 
 		Test::Step();
 
-		b3DrawPoint(g_debugDraw, linearOffset, 4.0f, b3Color(0.9f, 0.9f, 0.9f));
+		b3DrawPoint(g_debugDrawData, linearOffset, 4.0f, b3Color(0.9f, 0.9f, 0.9f));
 
 		DrawString(b3Color_white, "S - Play/Pause");
 	}

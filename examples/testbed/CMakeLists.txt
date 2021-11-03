@@ -1,6 +1,6 @@
 set(TESTBED_SOURCE_FILES
-	framework/open_gl/gl_debugdraw.h
-	framework/open_gl/gl_debugdraw.cpp
+	framework/open_gl/gl_renderer.h
+	framework/open_gl/gl_renderer.cpp
 	framework/open_gl/gl_shader.h
 	framework/open_gl/gl_shader.cpp
 	framework/open_gl/gl_render_points.h

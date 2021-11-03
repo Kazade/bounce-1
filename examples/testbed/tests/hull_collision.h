@@ -183,8 +183,8 @@ public:
 
 			b3Vec3 pw = wm.points[i].point;
 
-			b3DrawPoint(g_debugDraw, pw, 4.0f, b3Color_green, false);
-			b3DrawSegment(g_debugDraw, pw, pw + wm.points[i].normal, b3Color_white, false);
+			b3DrawPoint(g_debugDrawData, pw, 4.0f, b3Color_green, false);
+			b3DrawSegment(g_debugDrawData, pw, pw + wm.points[i].normal, b3Color_white, false);
 		}
 
 		sA.Draw(m_xfA, b3Color_black);

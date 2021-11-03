@@ -19,7 +19,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "open_gl/gl_debugdraw.h"
+#include "open_gl/gl_renderer.h"
 
 #include <bounce/common/profiler.h>
 #include <bounce/common/graphics/camera.h>
@@ -27,7 +27,7 @@
 
 extern b3Profiler* g_profiler;
 extern b3Camera* g_camera;
-extern b3DebugDraw* g_debugDraw;
+extern b3DebugDrawData* g_debugDrawData;
 
 class Test;
 class ViewModel;
@@ -63,10 +63,13 @@ private:
 	friend class ViewModel;
 
 	ViewModel* m_viewModel;
-	b3Camera m_camera;
-	b3DebugDraw m_debugDraw;
 	b3Profiler m_profiler;
-	GLDebugDraw m_glDebugDraw;
+	b3Camera m_camera;
+	b3DebugPoints m_points;
+	b3DebugLines m_lines;
+	b3DebugTriangles m_triangles;
+	b3DebugDrawData m_debugDrawData;
+	GLRenderer m_renderer;
 	Test* m_test;
 	bool m_setTest;
 	bool m_pause;

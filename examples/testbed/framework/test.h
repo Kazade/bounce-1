@@ -20,17 +20,17 @@
 #define TEST_H
 
 #include "GLFW/glfw3.h"
-#include "open_gl/gl_debugdraw.h"
 #include "draw.h"
 #include "view_model.h"
 #include "body_dragger.h"
+#include <bounce/bounce.h>
 #include <bounce/common/profiler.h>
+#include <bounce/common/graphics/camera.h>
+#include <bounce/common/graphics/debugdraw.h>
 
 extern b3Profiler* g_profiler;
 extern b3Camera* g_camera;
-extern b3DebugDraw* g_debugDraw;
-
-#include <bounce/bounce.h>
+extern b3DebugDrawData* g_debugDrawData;
 
 b3Hull* CreateHull(const b3Vec3* vertices, int vertexCount);
 void DestroyHull(b3Hull* hull);

@@ -25,13 +25,25 @@
 // R(t) = O + t * n.
 struct b3Ray
 {
-	// Return the begin point of this ray.
-	b3Vec3 A() const
+	// Default ctor does nothing for performance.
+	b3Ray() { }
+	
+	// Construct this ray from origin, direction, and fraction.
+	b3Ray(const b3Vec3& _origin, const b3Vec3& _direction, scalar _fraction) : 
+		origin(_origin), direction(_direction), fraction(_fraction) { }
+
+	// Construct this ray from a line segment.
+	b3Ray(const b3Vec3& A, const b3Vec3& B) 
 	{
-		return origin;
+		origin = A;
+		direction = b3Normalize(B - A);
+		fraction = b3Distance(A, B);
 	}
 
-	// Return the end point.
+	// Return the begin point of this ray.
+	b3Vec3 A() const { return origin; }
+
+	// Return the end point of this ray.
 	b3Vec3 B() const
 	{
 		return origin + fraction * direction;

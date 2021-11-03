@@ -192,14 +192,14 @@ public:
 		b3RayCastSingleOutput out;
 		if (m_world.RayCastSingle(&out, &filter, p1, p2))
 		{
-			b3DrawSegment(g_debugDraw, p1, out.point, b3Color_green);
+			b3DrawSegment(g_debugDrawData, p1, out.point, b3Color_green);
 			
-			b3DrawPoint(g_debugDraw, out.point, 4.0f, b3Color_red);
-			b3DrawSegment(g_debugDraw, out.point, out.point + out.normal, b3Color_white);
+			b3DrawPoint(g_debugDrawData, out.point, 4.0f, b3Color_red);
+			b3DrawSegment(g_debugDrawData, out.point, out.point + out.normal, b3Color_white);
 		}
 		else
 		{
-			b3DrawSegment(g_debugDraw, p1, p2, b3Color_green);
+			b3DrawSegment(g_debugDrawData, p1, p2, b3Color_green);
 		}
 	}
 

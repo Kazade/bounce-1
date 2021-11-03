@@ -233,8 +233,8 @@ public:
 		b3ShapeCastSingleOutput out;
 		if (m_world.ShapeCastSingle(&out, &filter, shape, xf, m_d))
 		{
-			b3DrawPoint(g_debugDraw, out.point, 4.0f, b3Color_red);
-			b3DrawSegment(g_debugDraw, out.point, out.point + out.normal, b3Color_white);
+			b3DrawPoint(g_debugDrawData, out.point, 4.0f, b3Color_red);
+			b3DrawSegment(g_debugDrawData, out.point, out.point + out.normal, b3Color_white);
 			
 			b3Transform xft;
 			xft.rotation = xf.rotation;
@@ -242,11 +242,11 @@ public:
 
 			shape->Draw(xft, b3Color_red);
 
-			b3DrawSegment(g_debugDraw, p1, xft.translation, b3Color_green);
+			b3DrawSegment(g_debugDrawData, p1, xft.translation, b3Color_green);
 		}
 		else
 		{
-			b3DrawSegment(g_debugDraw, p1, p2, b3Color_green);
+			b3DrawSegment(g_debugDrawData, p1, p2, b3Color_green);
 			
 			b3Transform xf1;
 			xf1.rotation = xf.rotation;

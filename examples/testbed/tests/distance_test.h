@@ -47,22 +47,22 @@ public:
 			for (u32 i = 0; i < featurePair.count1; ++i)
 			{
 				u32 index = featurePair.index1[i];
-				b3DrawPoint(g_debugDraw, m_xfA * m_proxyA.GetVertex(index), 4.0f, b3Color(1.0f, 1.0f, 0.0f));
+				b3DrawPoint(g_debugDrawData, m_xfA * m_proxyA.GetVertex(index), 4.0f, b3Color(1.0f, 1.0f, 0.0f));
 			}
 
 			for (u32 i = 0; i < featurePair.count2; ++i)
 			{
 				u32 index = featurePair.index2[i];
-				b3DrawPoint(g_debugDraw, m_xfB * m_proxyB.GetVertex(index), 4.0f, b3Color(1.0f, 1.0f, 0.0f));
+				b3DrawPoint(g_debugDrawData, m_xfB * m_proxyB.GetVertex(index), 4.0f, b3Color(1.0f, 1.0f, 0.0f));
 			}
 		}
 		
-		b3DrawPoint(g_debugDraw, out.point1, 4.0f, b3Color(0.0f, 1.0f, 0.0f));
-		b3DrawPoint(g_debugDraw, out.point2, 4.0f, b3Color(0.0f, 1.0f, 0.0f));
-		b3DrawSegment(g_debugDraw, out.point1, out.point2, b3Color(1.0f, 1.0f, 1.0f));
+		b3DrawPoint(g_debugDrawData, out.point1, 4.0f, b3Color(0.0f, 1.0f, 0.0f));
+		b3DrawPoint(g_debugDrawData, out.point2, 4.0f, b3Color(0.0f, 1.0f, 0.0f));
+		b3DrawSegment(g_debugDrawData, out.point1, out.point2, b3Color(1.0f, 1.0f, 1.0f));
 
-		b3DrawTransform(g_debugDraw, m_xfA);
-		b3DrawTransform(g_debugDraw, m_xfB);
+		b3DrawTransform(g_debugDrawData, m_xfA);
+		b3DrawTransform(g_debugDrawData, m_xfB);
 		
 		m_shapeA.Draw(m_xfA, b3Color_black);
 		m_shapeB.Draw(m_xfB, b3Color_black);

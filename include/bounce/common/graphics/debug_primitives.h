@@ -26,6 +26,19 @@
 #include <bounce/common/math/transform.h>
 #include <bounce/common/graphics/color.h>
 
+// Implement this interface to render the debug primitives.
+class b3DebugRenderer
+{
+public:
+	virtual void AddPoint(const b3Vec3& position, const b3Color& color, scalar size) { }
+	virtual void AddLine(const b3Vec3& p1, const b3Vec3& p2, const b3Color& color) { }
+	virtual void AddTriangle(const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, const b3Vec3& normal) { }
+
+	virtual void FlushPoints(bool depthEnabled) { }
+	virtual void FlushLines(bool depthEnabled) { }
+	virtual void FlushTriangles(bool depthEnabled) { }
+};
+
 struct b3DebugPoint
 {
 	b3Vec3 position;
@@ -35,32 +48,37 @@ struct b3DebugPoint
 };
 
 // Draw points with batching and depth test controlling support.
-template<class T>
 class b3DebugPoints
 {
 public:
-	b3DebugPoints(u32 pointCapacity, T* callback)
+	b3DebugPoints(u32 capacity)
 	{
-		m_debugPointCapacity = pointCapacity;
-		m_debugPointCount = 0;
-		m_debugPoints = (b3DebugPoint*)b3Alloc(m_debugPointCapacity * sizeof(b3DebugPoint));
-		m_callback = callback;
+		m_capacity = capacity;
+		m_count = 0;
+		m_points = (b3DebugPoint*)b3Alloc(m_capacity * sizeof(b3DebugPoint));
+		m_renderer = nullptr;
+		m_drawEnabled = true;
 	}
 	
 	~b3DebugPoints()
 	{
-		b3Free(m_debugPoints);
+		b3Free(m_points);
 	}
-	
+
 	// Draw a point.
 	void Draw(const b3Vec3& p, scalar size, const b3Color& color, bool depthEnabled = true)
 	{
-		if (m_debugPointCount == m_debugPointCapacity)
+		if (m_drawEnabled == false)
+		{
+			return;
+		}
+
+		if (m_count == m_capacity)
 		{
 			Flush();
 		}
 
-		B3_ASSERT(m_debugPointCount < m_debugPointCapacity);
+		B3_ASSERT(m_count < m_capacity);
 		
 		b3DebugPoint point;
 		point.position = p;
@@ -68,43 +86,63 @@ public:
 		point.color = color;
 		point.depthEnabled = depthEnabled;
 		
-		m_debugPoints[m_debugPointCount++] = point;
+		m_points[m_count++] = point;
 	}
 	
 	// Flush the points.
 	void Flush()
 	{
-		// First pass: Depth test enabled.
-		for (u32 i = 0; i < m_debugPointCount; ++i)
+		if (m_renderer == nullptr)
 		{
-			b3DebugPoint point = m_debugPoints[i];	
+			m_count = 0;
+			return;
+		}
+
+		// First pass: Depth test enabled.
+		for (u32 i = 0; i < m_count; ++i)
+		{
+			b3DebugPoint point = m_points[i];	
 			if (point.depthEnabled == true)
 			{
-				m_callback->AddPoint(point.position, point.color, point.size);
+				m_renderer->AddPoint(point.position, point.color, point.size);
 			}
 		}
 		
-		m_callback->FlushPoints(true);
+		m_renderer->FlushPoints(true);
 		
 		// Second pass: Depth test disabled.
-		for (u32 i = 0; i < m_debugPointCount; ++i)
+		for (u32 i = 0; i < m_count; ++i)
 		{
-			b3DebugPoint point = m_debugPoints[i];	
+			b3DebugPoint point = m_points[i];	
 			if (point.depthEnabled == false)
 			{
-				m_callback->AddPoint(point.position, point.color, point.size);
+				m_renderer->AddPoint(point.position, point.color, point.size);
 			}
 		}
 		
-		m_callback->FlushPoints(false);
+		m_renderer->FlushPoints(false);
 		
-		m_debugPointCount = 0;
+		m_count = 0;
 	}
+
+	// Attach a renderer.
+	void SetRenderer(b3DebugRenderer* renderer) { m_renderer = renderer; }
+
+	// Return the attached renderer.
+	b3DebugRenderer* GetRenderer() { return m_renderer; }
+	const b3DebugRenderer* GetRenderer() const { return m_renderer; }
+
+	// Enable drawing the points.
+	void EnableDraw(bool flag) { m_drawEnabled = flag; }
+
+	// Is drawing enabled.
+	bool IsDrawEnabled() const { return m_drawEnabled; }
 private:
-	T* m_callback;
-	u32 m_debugPointCapacity;
-	u32 m_debugPointCount;
-	b3DebugPoint* m_debugPoints;
+	u32 m_capacity;
+	u32 m_count;
+	b3DebugPoint* m_points;
+	b3DebugRenderer* m_renderer;
+	bool m_drawEnabled;
 };
 
 struct b3DebugLine
@@ -115,32 +153,37 @@ struct b3DebugLine
 };
 
 // Draw lines with batching and depth test controlling support.
-template<class T>
 class b3DebugLines
 {
 public:
-	b3DebugLines(u32 lineCapacity, T* callback)
+	b3DebugLines(u32 capacity)
 	{
-		m_debugLineCapacity = lineCapacity;
-		m_debugLineCount = 0;
-		m_debugLines = (b3DebugLine*)b3Alloc(m_debugLineCapacity * sizeof(b3DebugLine));
-		m_callback = callback;
+		m_capacity = capacity;
+		m_count = 0;
+		m_lines = (b3DebugLine*)b3Alloc(m_capacity * sizeof(b3DebugLine));
+		m_renderer = nullptr;
+		m_drawEnabled = true;
 	}
 	
 	~b3DebugLines()
 	{
-		b3Free(m_debugLines);
+		b3Free(m_lines);
 	}
 	
 	// Draw a line.
 	void Draw(const b3Vec3& p1, const b3Vec3& p2, const b3Color& color, bool depthEnabled = true)
-	{		
-		if (m_debugLineCount == m_debugLineCapacity)
+	{
+		if (m_drawEnabled == false)
+		{
+			return;
+		}
+
+		if (m_count == m_capacity)
 		{
 			Flush();
 		}
 
-		B3_ASSERT(m_debugLineCount < m_debugLineCapacity);
+		B3_ASSERT(m_count < m_capacity);
 		
 		b3DebugLine line;
 		line.p1 = p1;
@@ -148,43 +191,63 @@ public:
 		line.color = color;
 		line.depthEnabled = depthEnabled;
 		
-		m_debugLines[m_debugLineCount++] = line;	
+		m_lines[m_count++] = line;	
 	}
 	
 	// Flush the lines.
 	void Flush()
 	{
-		// First pass: Depth test enabled.
-		for (u32 i = 0; i < m_debugLineCount; ++i)
+		if (m_renderer == nullptr)
 		{
-			b3DebugLine line = m_debugLines[i];	
+			m_count = 0;
+			return;
+		}
+
+		// First pass: Depth test enabled.
+		for (u32 i = 0; i < m_count; ++i)
+		{
+			b3DebugLine line = m_lines[i];	
 			if (line.depthEnabled == true)
 			{
-				m_callback->AddLine(line.p1, line.p2, line.color);
+				m_renderer->AddLine(line.p1, line.p2, line.color);
 			}
 		}
 		
-		m_callback->FlushLines(true);
+		m_renderer->FlushLines(true);
 		
 		// Second pass: Depth test disabled.
-		for (u32 i = 0; i < m_debugLineCount; ++i)
+		for (u32 i = 0; i < m_count; ++i)
 		{
-			b3DebugLine line = m_debugLines[i];	
+			b3DebugLine line = m_lines[i];	
 			if (line.depthEnabled == false)
 			{	
-				m_callback->AddLine(line.p1, line.p2, line.color);
+				m_renderer->AddLine(line.p1, line.p2, line.color);
 			}
 		}
 		
-		m_callback->FlushLines(false);
+		m_renderer->FlushLines(false);
 		
-		m_debugLineCount = 0;	
+		m_count = 0;	
 	}
+
+	// Attach a renderer.
+	void SetRenderer(b3DebugRenderer* renderer) { m_renderer = renderer; }
+
+	// Return the attached renderer.
+	b3DebugRenderer* GetRenderer() { return m_renderer; }
+	const b3DebugRenderer* GetRenderer() const { return m_renderer; }
+
+	// Enable drawing the points.
+	void EnableDraw(bool flag) { m_drawEnabled = flag; }
+
+	// Is drawing enabled.
+	bool IsDrawEnabled() const { return m_drawEnabled; }
 private:
-	T* m_callback;
-	u32 m_debugLineCapacity;
-	u32 m_debugLineCount;
-	b3DebugLine* m_debugLines;
+	u32 m_capacity;
+	u32 m_count;
+	b3DebugLine* m_lines;
+	b3DebugRenderer* m_renderer;
+	bool m_drawEnabled;
 };
 
 struct b3DebugTriangle
@@ -196,32 +259,37 @@ struct b3DebugTriangle
 };
 
 // Draw triangles with batching and depth test controlling support.
-template<class T>
 class b3DebugTriangles
 {
 public:
-	b3DebugTriangles(u32 triangleCapacity, T* callback)
+	b3DebugTriangles(u32 capacity)
 	{
-		m_debugTriangleCapacity = triangleCapacity;
-		m_debugTriangleCount = 0;
-		m_debugTriangles = (b3DebugTriangle*)b3Alloc(m_debugTriangleCapacity * sizeof(b3DebugTriangle));
-		m_callback = callback;
+		m_capacity = capacity;
+		m_count = 0;
+		m_triangles = (b3DebugTriangle*)b3Alloc(m_capacity * sizeof(b3DebugTriangle));
+		m_renderer = nullptr;
+		m_drawEnabled = true;
 	}
 	
 	~b3DebugTriangles()
 	{		
-		b3Free(m_debugTriangles);
+		b3Free(m_triangles);
 	}
 	
 	// Draw a triangle.
 	void Draw(const b3Vec3& normal, const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, bool depthEnabled = true)
-	{		
-		if (m_debugTriangleCount == m_debugTriangleCapacity)
+	{	
+		if (m_drawEnabled == false)
+		{
+			return;
+		}
+
+		if (m_count == m_capacity)
 		{
 			Flush();
 		}
 
-		B3_ASSERT(m_debugTriangleCount < m_debugTriangleCapacity);
+		B3_ASSERT(m_count < m_capacity);
 		
 		b3DebugTriangle triangle;
 		triangle.p1 = p1;
@@ -231,43 +299,63 @@ public:
 		triangle.normal = normal;
 		triangle.depthEnabled = depthEnabled;
 		
-		m_debugTriangles[m_debugTriangleCount++] = triangle;
+		m_triangles[m_count++] = triangle;
 	}
 	
 	// Flush the triangles.
 	void Flush()
 	{
-		// First pass: Depth test enabled.
-		for (u32 i = 0; i < m_debugTriangleCount; ++i)
+		if (m_renderer == nullptr)
 		{
-			b3DebugTriangle triangle = m_debugTriangles[i];	
+			m_count = 0;
+			return;
+		}
+
+		// First pass: Depth test enabled.
+		for (u32 i = 0; i < m_count; ++i)
+		{
+			b3DebugTriangle triangle = m_triangles[i];	
 			if (triangle.depthEnabled == true)
 			{
-				m_callback->AddTriangle(triangle.p1, triangle.p2, triangle.p3, triangle.color, triangle.normal);
+				m_renderer->AddTriangle(triangle.p1, triangle.p2, triangle.p3, triangle.color, triangle.normal);
 			}
 		}
 		
-		m_callback->FlushTriangles(true);
+		m_renderer->FlushTriangles(true);
 		
 		// Second pass: Depth test disabled.
-		for (u32 i = 0; i < m_debugTriangleCount; ++i)
+		for (u32 i = 0; i < m_count; ++i)
 		{
-			b3DebugTriangle triangle = m_debugTriangles[i];	
+			b3DebugTriangle triangle = m_triangles[i];	
 			if (triangle.depthEnabled == false)
 			{
-				m_callback->AddTriangle(triangle.p1, triangle.p2, triangle.p3, triangle.color, triangle.normal);
+				m_renderer->AddTriangle(triangle.p1, triangle.p2, triangle.p3, triangle.color, triangle.normal);
 			}
 		}
 		
-		m_callback->FlushTriangles(false);
+		m_renderer->FlushTriangles(false);
 		
-		m_debugTriangleCount = 0;	
+		m_count = 0;	
 	}
+
+	// Attach a renderer.
+	void SetRenderer(b3DebugRenderer* renderer) { m_renderer = renderer; }
+
+	// Return the attached renderer.
+	b3DebugRenderer* GetRenderer() { return m_renderer; }
+	const b3DebugRenderer* GetRenderer() const { return m_renderer; }
+
+	// Enable drawing the points.
+	void EnableDraw(bool flag) { m_drawEnabled = flag; }
+
+	// Is drawing enabled.
+	bool IsDrawEnabled() const { return m_drawEnabled; }
 private:
-	T* m_callback;
-	u32 m_debugTriangleCapacity;
-	u32 m_debugTriangleCount;
-	b3DebugTriangle* m_debugTriangles;
+	u32 m_capacity;
+	u32 m_count;
+	b3DebugTriangle* m_triangles;
+	b3DebugRenderer* m_renderer;
+	bool m_drawEnabled;
 };
 
 #endif

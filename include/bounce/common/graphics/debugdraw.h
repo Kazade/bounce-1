@@ -21,104 +21,17 @@
 
 #include <bounce/common/graphics/debug_primitives.h>
 
-// Implement this interface and pass it into b3DebugDraw so it can render the debug primitives.
-class b3DebugDrawCallback
+// This contains the primitives to be used by the debug data utilities.
+// You must setup this structure with the pointers before calling any debug data function.
+// None of the pointers must be null pointers.
+struct b3DebugDrawData
 {
-public:
-	virtual void AddPoint(const b3Vec3& position, const b3Color& color, scalar size) = 0;
-	virtual void AddLine(const b3Vec3& p1, const b3Vec3& p2, const b3Color& color) = 0;
-	virtual void AddTriangle(const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, const b3Vec3& normal) = 0;
-
-	virtual void FlushPoints(bool depthEnabled) = 0;
-	virtual void FlushLines(bool depthEnabled) = 0;
-	virtual void FlushTriangles(bool depthEnabled) = 0;
+	b3DebugPoints* points = nullptr;
+	b3DebugLines* lines = nullptr;
+	b3DebugTriangles* triangles = nullptr;
 };
 
-// Draw primitives with batching and depth test controlling support.
-class b3DebugDraw
-{
-public:
-	b3DebugDraw(u32 pointCapacity, u32 lineCapacity, u32 triangleCapacity, b3DebugDrawCallback* callback) :
-		m_points(pointCapacity, callback),
-		m_lines(lineCapacity, callback),
-		m_triangles(triangleCapacity, callback)
-	{
-		m_drawPoints = true;
-		m_drawLines = true;
-		m_drawTriangles = true;
-	}
-
-	// Call this function to render the primitives.
-	void Flush()
-	{
-		// Order: Points over lines and lines over triangles.
-		m_triangles.Flush();
-		m_lines.Flush();
-		m_points.Flush();
-	}
-
-	// Should points be rendered at the end?
-	void EnableDrawPoints(bool flag)
-	{
-		m_drawPoints = flag;
-	}
-
-	// Should lines be rendered at the end?
-	void EnableDrawLines(bool flag)
-	{
-		m_drawLines = flag;
-	}
-
-	// Should triangles be rendered at the end?
-	void EnableDrawTriangles(bool flag)
-	{
-		m_drawTriangles = flag;
-	}
-
-	// Draw a point.
-	void DrawPoint(const b3Vec3& p, scalar size, const b3Color& color, bool depthEnabled = true)
-	{
-		if (!m_drawPoints)
-		{
-			return;
-		}
-
-		m_points.Draw(p, size, color, depthEnabled);
-	}
-
-	// Draw a line segment.
-	void DrawLine(const b3Vec3& p1, const b3Vec3& p2, const b3Color& color, bool depthEnabled = true)
-	{
-		if (!m_drawLines)
-		{
-			return;
-		}
-
-		m_lines.Draw(p1, p2, color, depthEnabled);
-	}
-
-	// Draw a solid triangle with vertices ordered CCW.
-	void DrawTriangle(const b3Vec3& normal, const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, bool depthEnabled = true)
-	{
-		if (!m_drawTriangles)
-		{
-			return;
-		}
-
-		m_triangles.Draw(normal, p1, p2, p3, color, depthEnabled);
-	}
-private:
-	bool m_drawPoints;
-	b3DebugPoints<b3DebugDrawCallback> m_points;
-
-	bool m_drawLines;
-	b3DebugLines<b3DebugDrawCallback> m_lines;
-
-	bool m_drawTriangles;
-	b3DebugTriangles<b3DebugDrawCallback> m_triangles;
-};
-
-// The debug draw utility section.
+// The debug data utility section.
 
 // Rotation between two normal vectors.
 static inline b3Quat b3RotationBetween(const b3Vec3& n1, const b3Vec3& n2)
@@ -148,29 +61,29 @@ static inline b3Quat b3RotationBetween(const b3Vec3& n1, const b3Vec3& n2)
 }
 
 // Draw a point.
-inline void b3DrawPoint(b3DebugDraw* draw, const b3Vec3& p, scalar size, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawPoint(b3DebugDrawData* data, const b3Vec3& p, scalar size, const b3Color& color, bool depthEnabled = true)
 {
-	draw->DrawPoint(p, size, color, depthEnabled);
+	data->points->Draw(p, size, color, depthEnabled);
 }
 
 // Draw a segment.
-inline void b3DrawSegment(b3DebugDraw* draw, const b3Vec3& p1, const b3Vec3& p2, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawSegment(b3DebugDrawData* data, const b3Vec3& p1, const b3Vec3& p2, const b3Color& color, bool depthEnabled = true)
 {
-	draw->DrawLine(p1, p2, color, depthEnabled);
+	data->lines->Draw(p1, p2, color, depthEnabled);
 }
 
 // Draw a triangle.
-inline void b3DrawTriangle(b3DebugDraw* draw, const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawTriangle(b3DebugDrawData* data, const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, bool depthEnabled = true)
 {
-	draw->DrawLine(p1, p2, color, depthEnabled);
-	draw->DrawLine(p2, p3, color, depthEnabled);
-	draw->DrawLine(p3, p1, color, depthEnabled);
+	data->lines->Draw(p1, p2, color, depthEnabled);
+	data->lines->Draw(p2, p3, color, depthEnabled);
+	data->lines->Draw(p3, p1, color, depthEnabled);
 }
 
 // Draw a solid triangle.
-inline void b3DrawSolidTriangle(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawSolidTriangle(b3DebugDrawData* data, const b3Vec3& normal, const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, bool depthEnabled = true)
 {
-	draw->DrawTriangle(normal, p1, p2, p3, color, depthEnabled);
+	data->triangles->Draw(normal, p1, p2, p3, color, depthEnabled);
 }
 
 static inline b3Vec3 b3MakeVec3(int vertexStride, const void* vertexBase, int vtx)
@@ -180,21 +93,21 @@ static inline b3Vec3 b3MakeVec3(int vertexStride, const void* vertexBase, int vt
 }
 
 // Draw a polygon.
-inline void b3DrawPolygon(b3DebugDraw* draw, const void* vertices, u32 vertexStride, u32 count, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawPolygon(b3DebugDrawData* data, const void* vertices, u32 vertexStride, u32 count, const b3Color& color, bool depthEnabled = true)
 {
 	b3Vec3 p1 = b3MakeVec3(vertexStride, vertices, count - 1);
 	for (u32 i = 0; i < count; ++i)
 	{
 		b3Vec3 p2 = b3MakeVec3(vertexStride, vertices, i);
 
-		draw->DrawLine(p1, p2, color, depthEnabled);
+		data->lines->Draw(p1, p2, color, depthEnabled);
 
 		p1 = p2;
 	}
 }
 
 // Draw a solid polygon with vertices ordered CCW.
-inline void b3DrawSolidPolygon(b3DebugDraw* draw, const b3Vec3& normal, const void* vertices, u32 vertexStride, u32 count, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawSolidPolygon(b3DebugDrawData* data, const b3Vec3& normal, const void* vertices, u32 vertexStride, u32 count, const b3Color& color, bool depthEnabled = true)
 {
 	b3Vec3 p1 = b3MakeVec3(vertexStride, vertices, 0);
 	for (u32 i = 1; i < count - 1; ++i)
@@ -202,13 +115,13 @@ inline void b3DrawSolidPolygon(b3DebugDraw* draw, const b3Vec3& normal, const vo
 		b3Vec3 p2 = b3MakeVec3(vertexStride, vertices, i);
 		b3Vec3 p3 = b3MakeVec3(vertexStride, vertices, i + 1);
 
-		draw->DrawTriangle(normal, p1, p2, p3, color, depthEnabled);
+		data->triangles->Draw(normal, p1, p2, p3, color, depthEnabled);
 	}
 }
 
 // Draw a circle.
 template <u32 E = 20>
-inline void b3DrawCircle(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawCircle(b3DebugDrawData* data, const b3Vec3& normal, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
 {
 	b3Vec3 n1, n3;
 	b3ComputeBasis(normal, n1, n3);
@@ -224,7 +137,7 @@ inline void b3DrawCircle(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& 
 		b3Vec3 n2 = b3Mul(q, n1);
 		b3Vec3 p2 = center + radius * n2;
 
-		draw->DrawLine(p1, p2, color, depthEnabled);
+		data->lines->Draw(p1, p2, color, depthEnabled);
 
 		n1 = n2;
 		p1 = p2;
@@ -233,7 +146,7 @@ inline void b3DrawCircle(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& 
 
 // Draw a solid circle.
 template<u32 E = 20>
-void b3DrawSolidCircle(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
+void b3DrawSolidCircle(b3DebugDrawData* data, const b3Vec3& normal, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
 {
 	b3Vec3 n1, n3;
 	b3ComputeBasis(normal, n1, n3);
@@ -249,7 +162,7 @@ void b3DrawSolidCircle(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& ce
 		b3Vec3 n2 = b3Mul(q, n1);
 		b3Vec3 p2 = center + radius * n2;
 
-		draw->DrawTriangle(normal, center, p1, p2, color, depthEnabled);
+		data->triangles->Draw(normal, center, p1, p2, color, depthEnabled);
 
 		n1 = n2;
 		p1 = p2;
@@ -341,7 +254,7 @@ struct b3SphereMesh
 
 // Draw a sphere.
 template<u32 H = 20, u32 W = 20>
-inline void b3DrawSphere(b3DebugDraw* draw, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawSphere(b3DebugDrawData* data, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
 {
 	b3SphereMesh<H, W> sphere;
 	
@@ -363,18 +276,18 @@ inline void b3DrawSphere(b3DebugDraw* draw, const b3Vec3& center, scalar radius,
 		p3 *= radius;
 		p3 += center;
 		
-		b3DrawTriangle(draw, p1, p2, p3, color, depthEnabled);
+		b3DrawTriangle(data, p1, p2, p3, color, depthEnabled);
 	}
 }
 
 // Draw a solid sphere.
 template<u32 H = 20, u32 W = 20>
-inline void b3DrawSolidSphere(b3DebugDraw* draw, const b3Vec3& axis, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawSolidSphere(b3DebugDrawData* data, const b3Vec3& yAxis, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
 {
 	b3SphereMesh<H, W> sphere;
 	
 	b3Transform xf;
-	xf.rotation = b3RotationBetween(b3Vec3_y, axis);
+	xf.rotation = b3RotationBetween(b3Vec3_y, yAxis);
 	xf.translation = center;
 
 	for (u32 i = 0; i < sphere.indexCount / 3; ++i)
@@ -407,7 +320,7 @@ inline void b3DrawSolidSphere(b3DebugDraw* draw, const b3Vec3& axis, const b3Vec
 		b3Vec3 n = (n1 + n2 + n3) / 3.0f;
 		n = b3Mul(xf.rotation, n);
 
-		draw->DrawTriangle(n, p1, p2, p3, color, depthEnabled);
+		data->triangles->Draw(n, p1, p2, p3, color, depthEnabled);
 	}
 }
 
@@ -527,7 +440,7 @@ struct b3CylinderMesh
 
 // Draw a cylinder.
 template<u32 H = 20, u32 W = 20>
-inline void b3DrawCylinder(b3DebugDraw* draw, const b3Vec3& axis, const b3Vec3& center, scalar radius, scalar height, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawCylinder(b3DebugDrawData* data, const b3Vec3& axis, const b3Vec3& center, scalar radius, scalar height, const b3Color& color, bool depthEnabled = true)
 {
 	b3CylinderMesh<H, W> cylinder;
 	
@@ -562,13 +475,13 @@ inline void b3DrawCylinder(b3DebugDraw* draw, const b3Vec3& axis, const b3Vec3& 
 		p3.z *= radius;
 		p3 = b3Mul(xf, p3);
 
-		b3DrawTriangle(draw, p1, p2, p3, color, depthEnabled);
+		b3DrawTriangle(data, p1, p2, p3, color, depthEnabled);
 	}
 }
 
 // Draw a solid cylinder.
 template<u32 H = 20, u32 W = 20>
-inline void b3DrawSolidCylinder(b3DebugDraw* draw, const b3Vec3& axis, const b3Vec3& center, scalar radius, scalar height, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawSolidCylinder(b3DebugDrawData* data, const b3Vec3& axis, const b3Vec3& center, scalar radius, scalar height, const b3Color& color, bool depthEnabled = true)
 {
 	b3CylinderMesh<H, W> cylinder;
 	
@@ -606,28 +519,28 @@ inline void b3DrawSolidCylinder(b3DebugDraw* draw, const b3Vec3& axis, const b3V
 		p3.z *= radius;
 		p3 = b3Mul(xf, p3);
 
-		draw->DrawTriangle(n, p1, p2, p3, color, depthEnabled);
+		data->triangles->Draw(n, p1, p2, p3, color, depthEnabled);
 	}
 }
 
 // Draw a capsule.
 template<u32 H = 20, u32 W = 20>
-inline void b3DrawCapsule(b3DebugDraw* draw, const b3Vec3& c1, const b3Vec3& c2, scalar radius, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawCapsule(b3DebugDrawData* data, const b3Vec3& c1, const b3Vec3& c2, scalar radius, const b3Color& color, bool depthEnabled = true)
 {
-	b3DrawSphere<H, W>(draw, c1, radius, color);
+	b3DrawSphere<H, W>(data, c1, radius, color);
 	if (b3LengthSquared(c1 - c2) > B3_EPSILON * B3_EPSILON)
 	{
-		draw->DrawLine(c1, c2, color, depthEnabled);
+		data->lines->Draw(c1, c2, color, depthEnabled);
 		
-		b3DrawSphere<H, W>(draw, c2, radius, color, depthEnabled);
+		b3DrawSphere<H, W>(data, c2, radius, color, depthEnabled);
 	}
 }
 
 // Draw a capsule in solid rendering mode.
 template<u32 H = 20, u32 W = 20>
-inline void b3DrawSolidCapsule(b3DebugDraw* draw, const b3Vec3& axis, const b3Vec3& c1, const b3Vec3& c2, scalar radius, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawSolidCapsule(b3DebugDrawData* data, const b3Vec3& axis, const b3Vec3& c1, const b3Vec3& c2, scalar radius, const b3Color& color, bool depthEnabled = true)
 {
-	b3DrawSolidSphere<H, W>(draw, axis, c1, radius, color, depthEnabled);
+	b3DrawSolidSphere<H, W>(data, axis, c1, radius, color, depthEnabled);
 	if (b3LengthSquared(c1 - c2) > B3_EPSILON * B3_EPSILON)
 	{
 		{
@@ -635,15 +548,15 @@ inline void b3DrawSolidCapsule(b3DebugDraw* draw, const b3Vec3& axis, const b3Ve
 			b3Vec3 axis = (c1 - c2) / height;
 			b3Vec3 center = scalar(0.5) * (c1 + c2);
 						
-			b3DrawSolidCylinder<H, W>(draw, axis, center, radius, height, color, depthEnabled);
+			b3DrawSolidCylinder<H, W>(data, axis, center, radius, height, color, depthEnabled);
 		}
 
-		b3DrawSolidSphere<H, W>(draw, axis, c2, radius, color, depthEnabled);
+		b3DrawSolidSphere<H, W>(data, axis, c2, radius, color, depthEnabled);
 	}
 }
 
 // Draw a transform.
-inline void b3DrawTransform(b3DebugDraw* draw, const b3Transform& xf, bool depthEnabled = true)
+inline void b3DrawTransform(b3DebugDrawData* data, const b3Transform& xf, bool depthEnabled = true)
 {
 	scalar lenght = scalar(1);
 
@@ -654,13 +567,13 @@ inline void b3DrawTransform(b3DebugDraw* draw, const b3Transform& xf, bool depth
 	b3Vec3 B = translation + lenght * rotation.GetYAxis();
 	b3Vec3 C = translation + lenght * rotation.GetZAxis();
 
-	draw->DrawLine(translation, A, b3Color_red, depthEnabled);
-	draw->DrawLine(translation, B, b3Color_green, depthEnabled);
-	draw->DrawLine(translation, C, b3Color_blue, depthEnabled);
+	data->lines->Draw(translation, A, b3Color_red, depthEnabled);
+	data->lines->Draw(translation, B, b3Color_green, depthEnabled);
+	data->lines->Draw(translation, C, b3Color_blue, depthEnabled);
 }
 
 // Draw an AABB.
-inline void b3DrawAABB(b3DebugDraw* draw, const b3Vec3& lowerBound, const b3Vec3& upperBound, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawAABB(b3DebugDrawData* data, const b3Vec3& lowerBound, const b3Vec3& upperBound, const b3Color& color, bool depthEnabled = true)
 {
 	b3Vec3 vs[8];
 
@@ -674,26 +587,26 @@ inline void b3DrawAABB(b3DebugDraw* draw, const b3Vec3& lowerBound, const b3Vec3
 	vs[6] = b3Vec3(lowerBound.x, lowerBound.y, upperBound.z);
 	vs[7] = b3Vec3(lowerBound.x, upperBound.y, upperBound.z);
 
-	draw->DrawLine(vs[0], vs[1], color, depthEnabled);
-	draw->DrawLine(vs[1], vs[2], color, depthEnabled);
-	draw->DrawLine(vs[2], vs[3], color, depthEnabled);
-	draw->DrawLine(vs[3], vs[0], color, depthEnabled);
+	data->lines->Draw(vs[0], vs[1], color, depthEnabled);
+	data->lines->Draw(vs[1], vs[2], color, depthEnabled);
+	data->lines->Draw(vs[2], vs[3], color, depthEnabled);
+	data->lines->Draw(vs[3], vs[0], color, depthEnabled);
 
-	draw->DrawLine(vs[4], vs[5], color, depthEnabled);
-	draw->DrawLine(vs[5], vs[6], color, depthEnabled);
-	draw->DrawLine(vs[6], vs[7], color, depthEnabled);
-	draw->DrawLine(vs[7], vs[4], color, depthEnabled);
+	data->lines->Draw(vs[4], vs[5], color, depthEnabled);
+	data->lines->Draw(vs[5], vs[6], color, depthEnabled);
+	data->lines->Draw(vs[6], vs[7], color, depthEnabled);
+	data->lines->Draw(vs[7], vs[4], color, depthEnabled);
 
-	draw->DrawLine(vs[2], vs[4], color, depthEnabled);
-	draw->DrawLine(vs[5], vs[3], color, depthEnabled);
+	data->lines->Draw(vs[2], vs[4], color, depthEnabled);
+	data->lines->Draw(vs[5], vs[3], color, depthEnabled);
 
-	draw->DrawLine(vs[6], vs[0], color, depthEnabled);
-	draw->DrawLine(vs[1], vs[7], color, depthEnabled);
+	data->lines->Draw(vs[6], vs[0], color, depthEnabled);
+	data->lines->Draw(vs[1], vs[7], color, depthEnabled);
 }
 
 // Draw a grid.
 template<u32 H = 32, u32 W = 32>
-inline void b3DrawGrid(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& center, u32 width, u32 height, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawGrid(b3DebugDrawData* data, const b3Vec3& normal, const b3Vec3& center, u32 width, u32 height, const b3Color& color, bool depthEnabled = true)
 {
 	b3Vec3 vs[(H + 1) * (W + 1)];
 	
@@ -738,17 +651,17 @@ inline void b3DrawGrid(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& ce
 		
 		if (i == 0 || i == (h - 1))
 		{
-			draw->DrawLine(v1, v2, borderColor, depthEnabled);
+			data->lines->Draw(v1, v2, borderColor, depthEnabled);
 			continue;
 		}
 
 		if (i == (h - 1) / 2)
 		{
-			draw->DrawLine(v1, v2, centerColor, depthEnabled);
+			data->lines->Draw(v1, v2, centerColor, depthEnabled);
 			continue;
 		}
 
-		draw->DrawLine(v1, v2, color, depthEnabled);
+		data->lines->Draw(v1, v2, color, depthEnabled);
 	}
 
 	// Up to bottom lines
@@ -762,22 +675,22 @@ inline void b3DrawGrid(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& ce
 		
 		if (j == 0 || j == (w - 1))
 		{
-			draw->DrawLine(v1, v2, borderColor, depthEnabled);
+			data->lines->Draw(v1, v2, borderColor, depthEnabled);
 			continue;
 		}
 
 		if (j == (w - 1) / 2)
 		{
-			draw->DrawLine(v1, v2, centerColor, depthEnabled);
+			data->lines->Draw(v1, v2, centerColor, depthEnabled);
 			continue;
 		}
 
-		draw->DrawLine(v1, v2, color, depthEnabled);
+		data->lines->Draw(v1, v2, color, depthEnabled);
 	}
 }
 
 // Draw a plane.
-inline void b3DrawPlane(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawPlane(b3DebugDrawData* data, const b3Vec3& normal, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
 {
 	b3Vec3 n1, n2;
 	b3ComputeBasis(normal, n1, n2);
@@ -789,14 +702,14 @@ inline void b3DrawPlane(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& c
 	b3Vec3 v3 = center + scale * (n1 + n2);
 	b3Vec3 v4 = center - scale * (n1 + n2);
 
-	draw->DrawLine(v1, v2, color, depthEnabled);
-	draw->DrawLine(v2, v3, color, depthEnabled);
-	draw->DrawLine(v3, v4, color, depthEnabled);
-	draw->DrawLine(v4, v1, color, depthEnabled);
+	data->lines->Draw(v1, v2, color, depthEnabled);
+	data->lines->Draw(v2, v3, color, depthEnabled);
+	data->lines->Draw(v3, v4, color, depthEnabled);
+	data->lines->Draw(v4, v1, color, depthEnabled);
 }
 
 // Draw a solid plane.
-inline void b3DrawSolidPlane(b3DebugDraw* draw, const b3Vec3& normal, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawSolidPlane(b3DebugDrawData* data, const b3Vec3& normal, const b3Vec3& center, scalar radius, const b3Color& color, bool depthEnabled = true)
 {
 	b3Vec3 n1, n2;
 	b3ComputeBasis(normal, n1, n2);
@@ -808,8 +721,8 @@ inline void b3DrawSolidPlane(b3DebugDraw* draw, const b3Vec3& normal, const b3Ve
 	b3Vec3 v3 = center + scale * (n1 + n2);
 	b3Vec3 v4 = center - scale * (n1 + n2);
 
-	draw->DrawTriangle(normal, v1, v2, v3, color, depthEnabled);
-	draw->DrawTriangle(normal, v3, v4, v1, color, depthEnabled);
+	data->triangles->Draw(normal, v1, v2, v3, color, depthEnabled);
+	data->triangles->Draw(normal, v3, v4, v1, color, depthEnabled);
 }
 
 #endif

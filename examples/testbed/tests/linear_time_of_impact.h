@@ -68,8 +68,8 @@ public:
 			b3Vec3 n1 = b3Normalize(p2 - p1);
 			b3Vec3 p = 0.5f * (p1 + p2);
 
-			b3DrawPoint(g_debugDraw, p, 4.0f, b3Color_green);
-			b3DrawSegment(g_debugDraw, p1, p1 + n1, b3Color_green);
+			b3DrawPoint(g_debugDrawData, p, 4.0f, b3Color_green);
+			b3DrawSegment(g_debugDrawData, p1, p1 + n1, b3Color_green);
 
 			m_shapeA.Draw(xfA, b3Color_black);
 			m_shapeB.Draw(xfB, b3Color_black);
@@ -97,8 +97,8 @@ public:
 		DrawString(b3Color_white, "Left/Right/Up/Down Arrow - Translate shape");
 		DrawString(b3Color_white, "X/Y/Z - Rotate shape");
 
-		b3DrawTransform(g_debugDraw, m_xfA);
-		b3DrawTransform(g_debugDraw, m_xfB);
+		b3DrawTransform(g_debugDrawData, m_xfA);
+		b3DrawTransform(g_debugDrawData, m_xfB);
 
 		m_shapeA.Draw(m_xfA, b3Color_black);
 		m_shapeB.Draw(m_xfB, b3Color_black);
@@ -106,8 +106,8 @@ public:
 		m_shapeA.DrawSolid(m_xfA, b3Color_white);
 		m_shapeA.DrawSolid(m_xfB, b3Color_white);
 
-		b3DrawSegment(g_debugDraw, m_xfA.translation, m_xfA.translation + dA, b3Color_white);
-		b3DrawSegment(g_debugDraw, m_xfB.translation, m_xfB.translation + dB, b3Color_white);
+		b3DrawSegment(g_debugDrawData, m_xfA.translation, m_xfA.translation + dA, b3Color_white);
+		b3DrawSegment(g_debugDrawData, m_xfB.translation, m_xfB.translation + dB, b3Color_white);
 	}
 
 	void KeyDown(int key)

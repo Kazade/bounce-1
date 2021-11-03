@@ -16,31 +16,24 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef GL_DEBUGDRAW_H
-#define GL_DEBUGDRAW_H
+#ifndef GL_RENDERER_H
+#define GL_RENDERER_H
 
-#include <bounce/common/graphics/debugdraw.h>
-
-class GLRenderPoints;
-class GLRenderLines;
-class GLRenderTriangles;
+#include <bounce/common/graphics/debug_primitives.h>
+#include "gl_render_points.h"
+#include "gl_render_lines.h"
+#include "gl_render_triangles.h"
 
 class b3Camera;
 
-class GLDebugDraw : public b3DebugDrawCallback
+class GLRenderer : public b3DebugRenderer
 {
 public:
-	GLDebugDraw(int pointCapacity, int lineCapacity, int triangleCapacity);
-	~GLDebugDraw();
-	
-	void Begin();
-	
-	void End();
-	
+	GLRenderer(int pointCapacity, int lineCapacity, int triangleCapacity);
+
 	void SetClearColor(float r, float g, float b, float a);
-	
-	void SetCamera(b3Camera* camera) { m_camera = camera; }
-	b3Camera* GetCamera() { return m_camera; };
+	void SynchronizeViewport();
+	void ClearBuffers();
 	
 	void AddPoint(const b3Vec3& position, const b3Color& color, scalar size) override;
 	void AddLine(const b3Vec3& p1, const b3Vec3& p2, const b3Color& color) override;
@@ -49,11 +42,14 @@ public:
 	void FlushPoints(bool depthEnabled) override;
 	void FlushLines(bool depthEnabled) override;
 	void FlushTriangles(bool depthEnabled) override;
-protected:	
+
+	void SetCamera(b3Camera* camera) { m_camera = camera; }
+	b3Camera* GetCamera() { return m_camera; };
+protected:
+	GLRenderPoints m_points;
+	GLRenderLines m_lines;
+	GLRenderTriangles m_triangles;
 	b3Camera* m_camera;
-	GLRenderPoints* m_points;
-	GLRenderLines* m_lines;
-	GLRenderTriangles* m_triangles;
 };
 
 #endif

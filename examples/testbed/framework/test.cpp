@@ -97,7 +97,7 @@ void DestroyHull(b3Hull* hull)
 Test::Test() : 
 	m_rigidBodyDragger(&m_ray, &m_world)
 {
-	m_draw.m_debugDraw = g_debugDraw;
+	m_draw.m_debugDrawData = g_debugDrawData;
 	
 	b3Draw_draw = &m_draw;
 	b3Profiler_profiler = g_profiler;

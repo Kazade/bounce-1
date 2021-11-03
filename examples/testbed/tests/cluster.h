@@ -93,15 +93,15 @@ public:
 		{
 			b3Vec3 centroid = clusters[i].centroid;
 
-			b3DrawSegment(g_debugDraw, b3Vec3_zero, centroid, b3Color_white);
-			b3DrawPoint(g_debugDraw, centroid, 4.0f, m_colors[i]);
+			b3DrawSegment(g_debugDrawData, b3Vec3_zero, centroid, b3Color_white);
+			b3DrawPoint(g_debugDrawData, centroid, 4.0f, m_colors[i]);
 
 			for (u32 j = 0; j < observations.Count(); ++j)
 			{
 				b3Observation obs = observations[j];
 				if (obs.cluster == i)
 				{
-					b3DrawPoint(g_debugDraw, obs.point, 4.0f, m_colors[i]);
+					b3DrawPoint(g_debugDrawData, obs.point, 4.0f, m_colors[i]);
 				}
 			}
 		}

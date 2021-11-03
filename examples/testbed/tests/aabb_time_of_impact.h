@@ -41,8 +41,8 @@ public:
 	{
 		DrawString(b3Color_white, "Arrows - Translate AABB");
 
-		b3DrawAABB(g_debugDraw, m_aabbA.lowerBound, m_aabbA.upperBound, b3Color_white);
-		b3DrawAABB(g_debugDraw, m_aabbB.lowerBound, m_aabbB.upperBound, b3Color_white);
+		b3DrawAABB(g_debugDrawData, m_aabbA.lowerBound, m_aabbA.upperBound, b3Color_white);
+		b3DrawAABB(g_debugDrawData, m_aabbB.lowerBound, m_aabbB.upperBound, b3Color_white);
 
 		b3Vec3 cA = m_aabbA.GetCenter();
 		b3Vec3 cB = m_aabbB.GetCenter();
@@ -53,8 +53,8 @@ public:
 		b3Vec3 dA = b3Vec3_zero;
 		b3Vec3 dB = m_dB;
 
-		b3DrawSegment(g_debugDraw, cA, cA + dA, b3Color_white);
-		b3DrawSegment(g_debugDraw, cB, cB + dB, b3Color_white);
+		b3DrawSegment(g_debugDrawData, cA, cA + dA, b3Color_white);
+		b3DrawSegment(g_debugDrawData, cB, cB + dB, b3Color_white);
 
 		{
 			b3Vec3 cBt = cB + m_time * dB;
@@ -62,7 +62,7 @@ public:
 			b3AABB B;
 			B.Set(cBt, eB);
 
-			b3DrawAABB(g_debugDraw, B.lowerBound, B.upperBound, b3Color_red);
+			b3DrawAABB(g_debugDrawData, B.lowerBound, B.upperBound, b3Color_red);
 		}
 
 		b3TOIOutput out = b3TimeOfImpact(m_aabbA, dA, m_aabbB, dB);
@@ -81,8 +81,8 @@ public:
 			b3AABB B;
 			B.Set(cBt, eB);
 
-			b3DrawAABB(g_debugDraw, A.lowerBound, A.upperBound, b3Color_black);
-			b3DrawAABB(g_debugDraw, B.lowerBound, B.upperBound, b3Color_black);
+			b3DrawAABB(g_debugDrawData, A.lowerBound, A.upperBound, b3Color_black);
+			b3DrawAABB(g_debugDrawData, B.lowerBound, B.upperBound, b3Color_black);
 		}
 
 		if (state == b3TOIOutput::e_failed)
