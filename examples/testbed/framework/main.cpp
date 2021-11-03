@@ -142,7 +142,19 @@ int main(int argc, char** args)
 	}
 
 	// Create window
-	g_window = glfwCreateWindow(1024, 768, "Bounce Testbed", NULL, NULL);
+	char buffer[128];
+	sprintf_s(buffer, "Bounce Testbed Version %d.%d.%d", b3_version.major, b3_version.minor, b3_version.revision);
+
+	bool fullscreen = false;
+	if (fullscreen)
+	{
+		g_window = glfwCreateWindow(1024, 768, buffer, glfwGetPrimaryMonitor(), NULL);
+	}
+	else
+	{
+		g_window = glfwCreateWindow(1024, 768, buffer, NULL, NULL);
+	}
+
 	if (g_window == NULL)
 	{
 		fprintf(stderr, "Failed to create GLFW window\n");
