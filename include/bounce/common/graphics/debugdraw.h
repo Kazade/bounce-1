@@ -440,12 +440,12 @@ struct b3CylinderMesh
 
 // Draw a cylinder.
 template<u32 H = 20, u32 W = 20>
-inline void b3DrawCylinder(b3DebugDrawData* data, const b3Vec3& axis, const b3Vec3& center, scalar radius, scalar height, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawCylinder(b3DebugDrawData* data, const b3Vec3& yAxis, const b3Vec3& center, scalar radius, scalar height, const b3Color& color, bool depthEnabled = true)
 {
 	b3CylinderMesh<H, W> cylinder;
 	
 	b3Transform xf;
-	xf.rotation = b3RotationBetween(b3Vec3_y, axis);
+	xf.rotation = b3RotationBetween(b3Vec3_y, yAxis);
 	xf.translation = center;
 
 	for (u32 i = 0; i < cylinder.indexCount / 3; ++i)
@@ -481,12 +481,12 @@ inline void b3DrawCylinder(b3DebugDrawData* data, const b3Vec3& axis, const b3Ve
 
 // Draw a solid cylinder.
 template<u32 H = 20, u32 W = 20>
-inline void b3DrawSolidCylinder(b3DebugDrawData* data, const b3Vec3& axis, const b3Vec3& center, scalar radius, scalar height, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawSolidCylinder(b3DebugDrawData* data, const b3Vec3& yAxis, const b3Vec3& center, scalar radius, scalar height, const b3Color& color, bool depthEnabled = true)
 {
 	b3CylinderMesh<H, W> cylinder;
 	
 	b3Transform xf;
-	xf.rotation = b3RotationBetween(b3Vec3_y, axis);
+	xf.rotation = b3RotationBetween(b3Vec3_y, yAxis);
 	xf.translation = center;
 
 	for (u32 i = 0; i < cylinder.indexCount / 3; ++i)
@@ -530,17 +530,23 @@ inline void b3DrawCapsule(b3DebugDrawData* data, const b3Vec3& c1, const b3Vec3&
 	b3DrawSphere<H, W>(data, c1, radius, color);
 	if (b3LengthSquared(c1 - c2) > B3_EPSILON * B3_EPSILON)
 	{
-		data->lines->Draw(c1, c2, color, depthEnabled);
-		
+		{
+			scalar height = b3Length(c1 - c2);
+			b3Vec3 axis = (c1 - c2) / height;
+			b3Vec3 center = scalar(0.5) * (c1 + c2);
+
+			b3DrawCylinder<H, W>(data, axis, center, radius, height, color, depthEnabled);
+		}
+
 		b3DrawSphere<H, W>(data, c2, radius, color, depthEnabled);
 	}
 }
 
 // Draw a capsule in solid rendering mode.
 template<u32 H = 20, u32 W = 20>
-inline void b3DrawSolidCapsule(b3DebugDrawData* data, const b3Vec3& axis, const b3Vec3& c1, const b3Vec3& c2, scalar radius, const b3Color& color, bool depthEnabled = true)
+inline void b3DrawSolidCapsule(b3DebugDrawData* data, const b3Vec3& yAxis, const b3Vec3& c1, const b3Vec3& c2, scalar radius, const b3Color& color, bool depthEnabled = true)
 {
-	b3DrawSolidSphere<H, W>(data, axis, c1, radius, color, depthEnabled);
+	b3DrawSolidSphere<H, W>(data, yAxis, c1, radius, color, depthEnabled);
 	if (b3LengthSquared(c1 - c2) > B3_EPSILON * B3_EPSILON)
 	{
 		{
@@ -551,7 +557,7 @@ inline void b3DrawSolidCapsule(b3DebugDrawData* data, const b3Vec3& axis, const 
 			b3DrawSolidCylinder<H, W>(data, axis, center, radius, height, color, depthEnabled);
 		}
 
-		b3DrawSolidSphere<H, W>(data, axis, c2, radius, color, depthEnabled);
+		b3DrawSolidSphere<H, W>(data, yAxis, c2, radius, color, depthEnabled);
 	}
 }
 
