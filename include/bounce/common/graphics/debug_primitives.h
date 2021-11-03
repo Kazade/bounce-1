@@ -19,11 +19,7 @@
 #ifndef B3_DEBUG_PRIMITIVES_H
 #define B3_DEBUG_PRIMITIVES_H
 
-#include <bounce/common/math/vec2.h>
 #include <bounce/common/math/vec3.h>
-#include <bounce/common/math/mat33.h>
-#include <bounce/common/math/mat44.h>
-#include <bounce/common/math/transform.h>
 #include <bounce/common/graphics/color.h>
 
 // Implement this interface to render the debug primitives.
