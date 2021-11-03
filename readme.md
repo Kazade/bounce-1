@@ -10,6 +10,8 @@ Bounce is a 3D physics engine for games.
 * Fast memory allocators
 * Built-in math library
 * Tunable settings used across the entire library
+* Integrated profiler
+* Included debug draw utility
 
 ### Collision
 
@@ -41,6 +43,7 @@ Bounce is a 3D physics engine for games.
 * OpenGL with GLFW and GLAD
 * UI by imgui
 * Mouse picking
+* Orbit camera
 * CMake build system
 
 ### Documentation
