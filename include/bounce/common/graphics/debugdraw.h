@@ -21,8 +21,8 @@
 
 #include <bounce/common/graphics/debug_primitives.h>
 
-// This contains the primitives to be used by the debug data utilities.
-// You must setup this structure with the pointers before calling any debug data function.
+// This contains the primitives to be used by the debug draw utilities.
+// You must setup this structure with the pointers before calling any debug draw function.
 // None of the pointers must be null pointers.
 struct b3DebugDrawData
 {
@@ -31,7 +31,7 @@ struct b3DebugDrawData
 	b3DebugTriangles* triangles = nullptr;
 };
 
-// The debug data utility section.
+// The debug draw utility section.
 
 // Rotation between two normal vectors.
 static inline b3Quat b3RotationBetween(const b3Vec3& n1, const b3Vec3& n2)
