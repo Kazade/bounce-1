@@ -323,7 +323,7 @@ Finally, destroying the world will destroy all the rigid bodies that were create
 delete world;
 ```
 
-### End
+## End
 
 Congratulations! You’ve reached the end of Bounce Quickstart Guide. For further information about the project please visit https://github.com/irlanrobson/bounce. 
 
