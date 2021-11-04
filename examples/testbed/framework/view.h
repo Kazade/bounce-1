@@ -28,7 +28,7 @@ class ViewModel;
 class View
 {	
 public:
-	View(GLFWwindow* window);
+	View(GLFWwindow* window, const char* glslVersion = nullptr);
 	~View();
 
 	void Event_SetWindowSize(int w, int h);
@@ -41,7 +41,7 @@ public:
 	
 	void BeginInterface();
 	void Interface();
-	void EndInterface();
+	void RenderInterface();
 private:
 	friend class ViewModel;
 

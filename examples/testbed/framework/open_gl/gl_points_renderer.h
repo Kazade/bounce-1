@@ -45,13 +45,14 @@ private:
 	int m_vertex_count;
 	float m_mvp[16];
 
+	GLuint m_vao;
 	GLuint m_vbos[3];
-
+	
 	GLuint m_program;
+	GLuint m_projection_uniform;
 	GLuint m_position_attribute;
 	GLuint m_color_attribute;
 	GLuint m_size_attribute;
-	GLuint m_projection_uniform;
 };
 
 #endif

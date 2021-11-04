@@ -32,6 +32,11 @@ static Model* g_model;
 static View* g_view;
 static ViewModel* g_viewModel;
 
+static void glfwErrorCallback(int error, const char* description)
+{
+	fprintf(stderr, "GLFW error occured. Code: %d. Description: %s\n", error, description);
+}
+
 static void WindowSize(GLFWwindow* ww, int w, int h)
 {
 	g_view->Event_SetWindowSize(w, h);
@@ -118,7 +123,7 @@ static void Run()
 		
 		g_view->Interface();
 
-		g_view->EndInterface();
+		g_view->RenderInterface();
 
 		g_profiler->End();
 
@@ -135,11 +140,24 @@ int main(int argc, char** args)
 	//_CrtSetBreakAlloc();
 #endif
 
+	glfwSetErrorCallback(glfwErrorCallback);
+
 	if (glfwInit() == 0)
 	{
 		fprintf(stderr, "Failed to initialize GLFW\n");
 		return -1;
 	}
+
+#if __APPLE__
+	const char* glslVersion = "#version 150";
+#else
+	const char* glslVersion = NULL;
+#endif
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create window
 	char buffer[128];
@@ -148,11 +166,11 @@ int main(int argc, char** args)
 	bool fullscreen = false;
 	if (fullscreen)
 	{
-		g_window = glfwCreateWindow(1024, 768, buffer, glfwGetPrimaryMonitor(), NULL);
+		g_window = glfwCreateWindow(1920, 1080, buffer, glfwGetPrimaryMonitor(), NULL);
 	}
 	else
 	{
-		g_window = glfwCreateWindow(1024, 768, buffer, NULL, NULL);
+		g_window = glfwCreateWindow(1280, 720, buffer, NULL, NULL);
 	}
 
 	if (g_window == NULL)
@@ -161,7 +179,20 @@ int main(int argc, char** args)
 		glfwTerminate();
 		return -1;
 	}
-	
+
+	glfwMakeContextCurrent(g_window);
+
+	// Load OpenGL functions using glad
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		fprintf(stderr, "Failed to load OpenGL functions using glad\n");
+		glfwTerminate();
+		return -1;
+	}
+
+	printf("GL %d.%d\n", GLVersion.major, GLVersion.minor);
+	printf("OpenGL %s, GLSL %s\n", glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION));
+
 	glfwSetWindowSizeCallback(g_window, WindowSize);
 	glfwSetCursorPosCallback(g_window, CursorMove);
 	glfwSetScrollCallback(g_window, WheelScroll);
@@ -169,20 +200,8 @@ int main(int argc, char** args)
 	glfwSetKeyCallback(g_window, KeyButton);
 	glfwSwapInterval(1);
 
-	glfwMakeContextCurrent(g_window);
-	
-	if (gladLoadGL() == 0)
-	{
-		fprintf(stderr, "Failed to load OpenGL extensions\n");
-		fprintf(stderr, "Error: %d\n", glad_glGetError());
-		glfwTerminate();
-		return -1;
-	}
-
-	printf("OpenGL %s, GLSL %s\n", glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION));
-
 	g_model = new Model();
-	g_view = new View(g_window);
+	g_view = new View(g_window, glslVersion);
 	g_viewModel = new ViewModel(g_model, g_view);
 
 	// Run

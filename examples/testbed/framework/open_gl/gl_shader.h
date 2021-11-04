@@ -23,7 +23,7 @@
 
 #define GL_PTR_ADD(ptr, size) ((void*)(((char*)ptr) + (size)))
 
-void GLAssert();
+void GLCheckGLError();
 
 void GLPrintLog(GLuint id);
 

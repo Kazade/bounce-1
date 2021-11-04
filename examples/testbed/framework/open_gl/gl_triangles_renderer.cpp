@@ -25,12 +25,12 @@
 GLTrianglesRenderer::GLTrianglesRenderer(int triangle_capacity)
 {
 	const char* vs = \
-		"#version 120\n"
-		"uniform mat4 m_projection;\n"
-		"attribute vec3 v_position;\n"
-		"attribute vec4 v_color;\n"
-		"attribute vec3 v_normal;\n"
-		"varying vec4 f_color;\n"
+		"#version 330\n"
+		"uniform mat4 projectionMatrix;\n"
+		"layout(location = 0) in vec3 v_position;\n"
+		"layout(location = 1) in vec4 v_color;\n"
+		"layout(location = 2) in vec3 v_normal;\n"
+		"out vec4 f_color;\n"
 		"void main(void)\n"
 		"{\n"
 		"	vec3 La = vec3(0.5f, 0.5f, 0.5f);\n"
@@ -41,22 +41,23 @@ GLTrianglesRenderer::GLTrianglesRenderer(int triangle_capacity)
 		"	vec3 a = La * Ma;\n"
 		"	vec3 d = max(dot(v_normal, L), 0.0f) * Ld * Md;\n"
 		"	f_color = vec4(a + d, v_color.w);\n"
-		"	gl_Position = m_projection * vec4(v_position, 1.0f);\n"
+		"	gl_Position = projectionMatrix * vec4(v_position, 1.0f);\n"
 		"}\n";
 
 	const char* fs = \
-		"#version 120\n"
-		"varying vec4 f_color;\n"
+		"#version 330\n"
+		"in vec4 f_color;\n"
+		"out vec4 color;\n"
 		"void main(void)\n"
 		"{\n"
-		"	gl_FragColor = f_color;\n"
+		"	color = f_color;\n"
 		"}\n";
 
 	m_program = GLCreateShaderProgram(vs, fs);
-	m_position_attribute = glGetAttribLocation(m_program, "v_position");
-	m_color_attribute = glGetAttribLocation(m_program, "v_color");
-	m_normal_attribute = glGetAttribLocation(m_program, "v_normal");
-	m_projection_uniform = glGetUniformLocation(m_program, "m_projection");
+	m_projection_uniform = glGetUniformLocation(m_program, "projectionMatrix");
+	m_position_attribute = 0;
+	m_color_attribute = 1;
+	m_normal_attribute = 2;
 
 	m_vertex_capacity = 3 * triangle_capacity;
 	m_positions = (float*)malloc(m_vertex_capacity * 3 * sizeof(float));
@@ -64,21 +65,34 @@ GLTrianglesRenderer::GLTrianglesRenderer(int triangle_capacity)
 	m_normals = (float*)malloc(m_vertex_capacity * 3 * sizeof(float));
 	m_vertex_count = 0;
 
+	// Generate
+	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(3, m_vbos);
 
+	glBindVertexArray(m_vao);
+	glEnableVertexAttribArray(m_position_attribute);
+	glEnableVertexAttribArray(m_color_attribute);
+	glEnableVertexAttribArray(m_normal_attribute);
+
+	// Vertex buffers
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[0]);
+	glVertexAttribPointer(m_position_attribute, 3, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
 	glBufferData(GL_ARRAY_BUFFER, m_vertex_capacity * 3 * sizeof(float), m_positions, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[1]);
+	glVertexAttribPointer(m_color_attribute, 4, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
 	glBufferData(GL_ARRAY_BUFFER, m_vertex_capacity * 4 * sizeof(float), m_colors, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[2]);
+	glVertexAttribPointer(m_normal_attribute, 3, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
 	glBufferData(GL_ARRAY_BUFFER, m_vertex_capacity * 3 * sizeof(float), m_normals, GL_DYNAMIC_DRAW);
 
-	GLAssert();
+	GLCheckGLError();
 
+	// Cleanup
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
+	glBindVertexArray(0);
+
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
@@ -99,6 +113,7 @@ GLTrianglesRenderer::~GLTrianglesRenderer()
 {
 	glDeleteProgram(m_program);
 	glDeleteBuffers(3, m_vbos);
+	glDeleteVertexArrays(1, &m_vao);
 
 	free(m_positions);
 	free(m_colors);
@@ -144,33 +159,29 @@ void GLTrianglesRenderer::Flush()
 
 	glUniformMatrix4fv(m_projection_uniform, 1, GL_FALSE, m_mvp);
 
+	glBindVertexArray(m_vao);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[0]);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertex_count * 3 * sizeof(float), m_positions);
-	glVertexAttribPointer(m_position_attribute, 3, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
-	glEnableVertexAttribArray(m_position_attribute);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[1]);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertex_count * 4 * sizeof(float), m_colors);
-	glVertexAttribPointer(m_color_attribute, 4, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
-	glEnableVertexAttribArray(m_color_attribute);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[2]);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertex_count * 3 * sizeof(float), m_normals);
-	glVertexAttribPointer(m_normal_attribute, 3, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
-	glEnableVertexAttribArray(m_normal_attribute);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDrawArrays(GL_TRIANGLES, 0, m_vertex_count);
+	glDisable(GL_BLEND);
 
-	m_vertex_count = 0;
-
-	GLAssert();
-
-	glDisableVertexAttribArray(m_position_attribute);
-	glDisableVertexAttribArray(m_color_attribute);
-	glDisableVertexAttribArray(m_normal_attribute);
+	GLCheckGLError();
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 	glUseProgram(0);
+
+	m_vertex_count = 0;
 }
 
 void GLTrianglesRenderer::AddTriangle(const b3Vec3& p1, const b3Vec3& p2, const b3Vec3& p3, const b3Color& color, const b3Vec3& normal)

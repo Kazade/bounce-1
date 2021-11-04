@@ -22,7 +22,7 @@
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl2.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 #include "GLFW/glfw3.h"
 
@@ -72,22 +72,28 @@ void DrawString(const b3Color& color, const char* string, ...)
 	va_end(args);	
 }
 
-View::View(GLFWwindow* window)
+View::View(GLFWwindow* window, const char* glslVersion)
 {
 	m_viewModel = nullptr;
 	m_window = window;
 
 	// Create UI
+	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
-	ImGuiIO& io = ImGui::GetIO();
+	bool success = ImGui_ImplGlfw_InitForOpenGL(m_window, false);
+	if (success == false)
+	{
+		printf("ImGui_ImplGlfw_InitForOpenGL failed.\n");
+		assert(false);
+	}
 
-	io.IniFilename = NULL;
-
-	ImGui_ImplGlfw_InitForOpenGL(m_window, false);
-	ImGui_ImplOpenGL2_Init();
-
-	ImGui::StyleColorsDark();
+	success = ImGui_ImplOpenGL3_Init(glslVersion);
+	if (success == false)
+	{
+		printf("ImGui_ImplOpenGL3_Init failed.\n");
+		assert(false);
+	}
 
 	m_ps0.SetZero();
 }
@@ -95,9 +101,8 @@ View::View(GLFWwindow* window)
 View::~View()
 {
 	// Destroy UI
-	ImGui_ImplOpenGL2_Shutdown();
+	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
-
 	ImGui::DestroyContext();
 }
 
@@ -146,11 +151,9 @@ void View::Event_Scroll(float dx, float dy)
 
 void View::BeginInterface()
 {
-	ImGui_ImplOpenGL2_NewFrame();
+	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 }
 
 static void TreeNode(const b3ProfilerNode* node, u32& index)
@@ -414,11 +417,8 @@ void View::Interface()
 	}
 }
 
-void View::EndInterface()
+void View::RenderInterface()
 {
-	ImGui::PopStyleVar();
-
 	ImGui::Render();
-
-	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

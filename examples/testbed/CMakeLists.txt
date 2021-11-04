@@ -9,8 +9,9 @@ set(TESTBED_SOURCE_FILES
 	framework/open_gl/gl_triangles_renderer.cpp
 	framework/imgui/imgui_impl_glfw.cpp
 	framework/imgui/imgui_impl_glfw.h
-	framework/imgui/imgui_impl_opengl2.cpp
-	framework/imgui/imgui_impl_opengl2.h
+	framework/imgui/imgui_impl_opengl3.cpp
+	framework/imgui/imgui_impl_opengl3.h
+	framework/imgui/imgui_impl_opengl3_loader.h
 	framework/body_dragger.cpp
 	framework/body_dragger.h
 	framework/draw.h

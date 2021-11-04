@@ -25,32 +25,33 @@
 GLPointsRenderer::GLPointsRenderer(int point_capacity)
 {
 	const char* vs = \
-		"#version 120\n"
-		"uniform mat4 m_projection;\n"
-		"attribute vec3 v_position;\n"
-		"attribute vec4 v_color;\n"
-		"attribute float v_size;\n"
-		"varying vec4 f_color;\n"
-		"void main()\n"
+		"#version 330\n"
+		"uniform mat4 projectionMatrix;\n"
+		"layout(location = 0) in vec3 v_position;\n"
+		"layout(location = 1) in vec4 v_color;\n"
+		"layout(location = 2) in float v_size;\n"
+		"out vec4 f_color;\n"
+		"void main(void)\n"
 		"{\n"
 		"	f_color = v_color;\n"
-		"	gl_Position = m_projection * vec4(v_position, 1.0f);\n"
+		"	gl_Position = projectionMatrix * vec4(v_position, 1.0f);\n"
 		"   gl_PointSize = v_size;\n"
 		"}\n";
 
 	const char* fs = \
-		"#version 120\n"
-		"varying vec4 f_color;\n"
+		"#version 330\n"
+		"in vec4 f_color;\n"
+		"out vec4 color;\n"
 		"void main(void)\n"
 		"{\n"
-		"	gl_FragColor = f_color;\n"
+		"	color = f_color;\n"
 		"}\n";
 
 	m_program = GLCreateShaderProgram(vs, fs);
-	m_position_attribute = glGetAttribLocation(m_program, "v_position");
-	m_color_attribute = glGetAttribLocation(m_program, "v_color");
-	m_size_attribute = glGetAttribLocation(m_program, "v_size");
-	m_projection_uniform = glGetUniformLocation(m_program, "m_projection");
+	m_projection_uniform = glGetUniformLocation(m_program, "projectionMatrix");
+	m_position_attribute = 0;
+	m_color_attribute = 1;
+	m_size_attribute = 2;
 
 	m_vertex_capacity = point_capacity;
 	m_positions = (float*)malloc(point_capacity * 3 * sizeof(float));
@@ -58,20 +59,32 @@ GLPointsRenderer::GLPointsRenderer(int point_capacity)
 	m_sizes = (float*)malloc(point_capacity * sizeof(float));
 	m_vertex_count = 0;
 
+	// Generate
+	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(3, m_vbos);
 
+	glBindVertexArray(m_vao);
+	glEnableVertexAttribArray(m_position_attribute);
+	glEnableVertexAttribArray(m_color_attribute);
+	glEnableVertexAttribArray(m_size_attribute);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[0]);
+	glVertexAttribPointer(m_position_attribute, 3, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
 	glBufferData(GL_ARRAY_BUFFER, point_capacity * 3 * sizeof(float), m_positions, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[1]);
+	glVertexAttribPointer(m_color_attribute, 4, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
 	glBufferData(GL_ARRAY_BUFFER, point_capacity * 4 * sizeof(float), m_colors, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[2]);
+	glVertexAttribPointer(m_size_attribute, 1, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
 	glBufferData(GL_ARRAY_BUFFER, point_capacity * sizeof(float), m_sizes, GL_DYNAMIC_DRAW);
 
-	GLAssert();
+	GLCheckGLError();
 
+	// Cleanup
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -93,6 +106,7 @@ GLPointsRenderer::~GLPointsRenderer()
 {
 	glDeleteProgram(m_program);
 	glDeleteBuffers(3, m_vbos);
+	glDeleteVertexArrays(1, &m_vao);
 
 	free(m_positions);
 	free(m_colors);
@@ -135,36 +149,29 @@ void GLPointsRenderer::Flush()
 	glUseProgram(m_program);
 
 	glUniformMatrix4fv(m_projection_uniform, 1, GL_FALSE, m_mvp);
+	
+	glBindVertexArray(m_vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[0]);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertex_count * 3 * sizeof(float), m_positions);
-	glVertexAttribPointer(m_position_attribute, 3, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
-	glEnableVertexAttribArray(m_position_attribute);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[1]);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertex_count * 4 * sizeof(float), m_colors);
-	glEnableVertexAttribArray(m_color_attribute);
-	glVertexAttribPointer(m_color_attribute, 4, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbos[2]);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertex_count * sizeof(float), m_sizes);
-	glEnableVertexAttribArray(m_size_attribute);
-	glVertexAttribPointer(m_size_attribute, 1, GL_FLOAT, GL_FALSE, 0, GL_PTR_ADD(NULL, 0));
 
 	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 	glDrawArrays(GL_POINTS, 0, m_vertex_count);
 	glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
-	m_vertex_count = 0;
-
-	glDisableVertexAttribArray(m_size_attribute);
-	glDisableVertexAttribArray(m_color_attribute);
-	glDisableVertexAttribArray(m_position_attribute);
-
-	GLAssert();
+	GLCheckGLError();
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 	glUseProgram(0);
+
+	m_vertex_count = 0;
 }
 
 void GLPointsRenderer::AddPoint(const b3Vec3& position, const b3Color& color, scalar size) 

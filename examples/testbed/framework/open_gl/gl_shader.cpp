@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-void GLAssert()
+void GLCheckGLError()
 {
 	GLenum error_code = glGetError();
 	if (error_code != GL_NO_ERROR)
