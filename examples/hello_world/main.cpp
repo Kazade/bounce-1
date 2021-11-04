@@ -49,11 +49,11 @@ int main(int argc, char** argv)
 	// aligned with the world frame.
 	b3BoxHull groundBox(10.0f, 1.0f, 10.0f);
 
-	// Create the box physics wrapper.
+	// Create the box collision shape. 
 	b3HullShape groundShape;
 	groundShape.m_hull = &groundBox;
 
-	// Add the box to the ground body.
+	// Add the box to the ground body. This creates the box physics wrapper.
 	b3FixtureDef groundBoxDef;
 	groundBoxDef.shape = &groundShape;
 	ground->CreateFixture(groundBoxDef);
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 	b3BoxHull bodyBox;
 	bodyBox.SetIdentity();
 
-	// Create the box physics wrapper.
+	// Create the box collision shape.
 	b3HullShape bodyShape;
 	bodyShape.m_hull = &bodyBox;
 
