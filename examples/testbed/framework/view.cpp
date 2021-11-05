@@ -219,11 +219,6 @@ void View::Interface()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Tools"))
-		{
-			ImGui::EndMenu();
-		}
-
 		if (ImGui::BeginMenu("Help"))
 		{
 			if (ImGui::MenuItem("Controls"))
