@@ -25,7 +25,7 @@
 
 #include <stdio.h>
 
-GLFWwindow* g_window;
+static GLFWwindow* s_window;
 
 // MVVM pattern
 // See https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel
@@ -98,10 +98,10 @@ static void KeyButton(GLFWwindow* w, int button, int scancode, int action, int m
 static void Run()
 {
 	int w, h;
-	glfwGetWindowSize(g_window, &w, &h);
+	glfwGetWindowSize(s_window, &w, &h);
 	s_view->Event_SetWindowSize(u32(w), u32(h));
 
-	while (glfwWindowShouldClose(g_window) == 0)
+	while (glfwWindowShouldClose(s_window) == 0)
 	{
 		g_profiler->Begin();
 
@@ -119,7 +119,7 @@ static void Run()
 
 		g_profiler->End();
 
-		glfwSwapBuffers(g_window);
+		glfwSwapBuffers(s_window);
 		glfwPollEvents();
 	}
 }
@@ -158,21 +158,21 @@ int main(int argc, char** args)
 	bool fullscreen = false;
 	if (fullscreen)
 	{
-		g_window = glfwCreateWindow(1920, 1080, buffer, glfwGetPrimaryMonitor(), NULL);
+		s_window = glfwCreateWindow(1920, 1080, buffer, glfwGetPrimaryMonitor(), NULL);
 	}
 	else
 	{
-		g_window = glfwCreateWindow(1280, 720, buffer, NULL, NULL);
+		s_window = glfwCreateWindow(1280, 720, buffer, NULL, NULL);
 	}
 
-	if (g_window == NULL)
+	if (s_window == NULL)
 	{
 		fprintf(stderr, "Failed to create GLFW window\n");
 		glfwTerminate();
 		return -1;
 	}
 
-	glfwMakeContextCurrent(g_window);
+	glfwMakeContextCurrent(s_window);
 
 	// Load OpenGL functions using glad
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -185,16 +185,16 @@ int main(int argc, char** args)
 	printf("GL %d.%d\n", GLVersion.major, GLVersion.minor);
 	printf("OpenGL %s, GLSL %s\n", glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-	glfwSetWindowSizeCallback(g_window, WindowSize);
-	glfwSetCursorPosCallback(g_window, CursorMove);
-	glfwSetScrollCallback(g_window, WheelScroll);
-	glfwSetMouseButtonCallback(g_window, MouseButton);
-	glfwSetKeyCallback(g_window, KeyButton);
+	glfwSetWindowSizeCallback(s_window, WindowSize);
+	glfwSetCursorPosCallback(s_window, CursorMove);
+	glfwSetScrollCallback(s_window, WheelScroll);
+	glfwSetMouseButtonCallback(s_window, MouseButton);
+	glfwSetKeyCallback(s_window, KeyButton);
 	glfwSwapInterval(1);
 
 	s_model = new Model();
-	s_viewModel = new ViewModel(s_model, g_window);
-	s_view = new View(s_viewModel, g_window, glslVersion);
+	s_viewModel = new ViewModel(s_model, s_window);
+	s_view = new View(s_viewModel, s_window, glslVersion);
 
 	Run();
 
@@ -208,7 +208,7 @@ int main(int argc, char** args)
 	s_model = nullptr;
 
 	glfwTerminate();
-	g_window = nullptr;
+	s_window = nullptr;
 
 	return 0;
 }
