@@ -19,8 +19,11 @@
 #ifndef VIEW_MODEL_H
 #define VIEW_MODEL_H
 
+#include <bounce/common/math/vec2.h>
+
+struct GLFWwindow;
+
 class Model;
-class View;
 
 class Test;
 typedef Test* (*TestCreate)();
@@ -72,6 +75,8 @@ struct TestSettings
 		drawContactNormals = false;
 		drawContactTangents = false;
 		drawContactPolygons = false;
+		pause = true;
+		singlePlay = false;
 	}
 
 	float hertz, inv_hertz;
@@ -89,6 +94,9 @@ struct TestSettings
 	bool drawContactNormals;
 	bool drawContactTangents;
 	bool drawContactPolygons;
+
+	bool pause;
+	bool singlePlay;
 };
 
 extern TestSettings* g_testSettings;
@@ -96,8 +104,7 @@ extern TestSettings* g_testSettings;
 class ViewModel
 {
 public:
-	ViewModel(Model* model, View* view);
-
+	ViewModel(Model* model, GLFWwindow* window);
 	~ViewModel();
 	
 	void Action_SetTest();
@@ -115,14 +122,15 @@ public:
 	void Event_Move_Cursor(float x, float y);
 	void Event_Scroll(float dx, float dy);
 private:
-	friend class Model;
 	friend class View;
-
-	Settings m_settings;
-	TestSettings m_testSettings;
+	
+	b3Vec2 GetCursorPosition() const;
 
 	Model* m_model;
-	View* m_view;
+	Settings m_settings;
+	TestSettings m_testSettings;
+	GLFWwindow* m_window;
+	b3Vec2 m_ps0;
 };
 
 #endif

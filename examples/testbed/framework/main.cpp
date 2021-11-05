@@ -18,19 +18,20 @@
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+
 #include "model.h"
-#include "view.h"
 #include "view_model.h"
+#include "view.h"
 
 #include <stdio.h>
 
-extern void DrawString(const b3Color& color, const char* string, ...);
-
 GLFWwindow* g_window;
 
-static Model* g_model;
-static View* g_view;
-static ViewModel* g_viewModel;
+// MVVM pattern
+// See https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel
+static Model* s_model;
+static ViewModel* s_viewModel;
+static View* s_view;
 
 static void glfwErrorCallback(int error, const char* description)
 {
@@ -39,17 +40,17 @@ static void glfwErrorCallback(int error, const char* description)
 
 static void WindowSize(GLFWwindow* ww, int w, int h)
 {
-	g_view->Event_SetWindowSize(w, h);
+	s_view->Event_SetWindowSize(w, h);
 }
 
 static void CursorMove(GLFWwindow* w, double x, double y)
 {
-	g_view->Event_Move_Cursor(float(x), float(y));
+	s_view->Event_Move_Cursor(float(x), float(y));
 }
 
 static void WheelScroll(GLFWwindow* w, double dx, double dy)
 {
-	g_view->Event_Scroll(float(dx), float(dy));
+	s_view->Event_Scroll(float(dx), float(dy));
 }
 
 static void MouseButton(GLFWwindow* w, int button, int action, int mods)
@@ -58,12 +59,12 @@ static void MouseButton(GLFWwindow* w, int button, int action, int mods)
 	{
 	case GLFW_PRESS:
 	{
-		g_view->Event_Press_Mouse(button);
+		s_view->Event_Press_Mouse(button);
 		break;
 	}
 	case GLFW_RELEASE:
 	{
-		g_view->Event_Release_Mouse(button);
+		s_view->Event_Release_Mouse(button);
 		break;
 	}
 	default:
@@ -79,12 +80,12 @@ static void KeyButton(GLFWwindow* w, int button, int scancode, int action, int m
 	{
 	case GLFW_PRESS:
 	{
-		g_view->Event_Press_Key(button);
+		s_view->Event_Press_Key(button);
 		break;
 	}
 	case GLFW_RELEASE:
 	{
-		g_view->Event_Release_Key(button);
+		s_view->Event_Release_Key(button);
 		break;
 	}
 	default:
@@ -98,7 +99,7 @@ static void Run()
 {
 	int w, h;
 	glfwGetWindowSize(g_window, &w, &h);
-	g_view->Event_SetWindowSize(u32(w), u32(h));
+	s_view->Event_SetWindowSize(u32(w), u32(h));
 
 	while (glfwWindowShouldClose(g_window) == 0)
 	{
@@ -106,24 +107,15 @@ static void Run()
 
 		g_profiler->OpenScope("Frame");
 
-		g_view->BeginInterface();
+		s_view->BeginInterface();
 
-		if (g_model->IsPaused())
-		{
-			DrawString(b3Color_white, "*PAUSED*");
-		}
-		else
-		{
-			DrawString(b3Color_white, "*PLAYING*");
-		}
-
-		g_model->Update();
+		s_model->Update();
 
 		g_profiler->CloseScope();
 		
-		g_view->Interface();
+		s_view->Interface();
 
-		g_view->RenderInterface();
+		s_view->RenderInterface();
 
 		g_profiler->End();
 
@@ -200,21 +192,20 @@ int main(int argc, char** args)
 	glfwSetKeyCallback(g_window, KeyButton);
 	glfwSwapInterval(1);
 
-	g_model = new Model();
-	g_view = new View(g_window, glslVersion);
-	g_viewModel = new ViewModel(g_model, g_view);
+	s_model = new Model();
+	s_viewModel = new ViewModel(s_model, g_window);
+	s_view = new View(s_viewModel, g_window, glslVersion);
 
-	// Run
 	Run();
 
-	delete g_viewModel;
-	g_viewModel = nullptr;
+	delete s_view;
+	s_view = nullptr;
 
-	delete g_view;
-	g_view = nullptr;
+	delete s_viewModel;
+	s_viewModel = nullptr;
 
-	delete g_model;
-	g_model = nullptr;
+	delete s_model;
+	s_model = nullptr;
 
 	glfwTerminate();
 	g_window = nullptr;

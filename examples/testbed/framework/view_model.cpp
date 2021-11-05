@@ -95,19 +95,12 @@ void Settings::RegisterTest(const char* name, TestCreate createFn)
 	test->create = createFn;
 }
 	
-ViewModel::ViewModel(Model* model, View* view)
+ViewModel::ViewModel(Model* model, GLFWwindow* window)
 {
 	m_model = model;
-	assert(m_model->m_viewModel == nullptr);
-	m_model->m_viewModel = this;
+	m_window = window;
+	m_ps0.SetZero();
 
-	m_view = view;
-	assert(m_view->m_viewModel == nullptr);
-	m_view->m_viewModel = this;
-
-	g_settings = &m_settings;
-	g_testSettings = &m_testSettings;
-	
 	m_settings.RegisterTest("Convex Hull", &ConvexHull::Create );
 	m_settings.RegisterTest("Cluster", &Cluster::Create );
 	m_settings.RegisterTest("Distance", &Distance::Create );
@@ -157,12 +150,22 @@ ViewModel::ViewModel(Model* model, View* view)
 	m_settings.RegisterTest("Multiple Pendulum", &MultiplePendulum::Create );
 	m_settings.RegisterTest("Conveyor Belt", &ConveyorBelt::Create );
 	m_settings.RegisterTest("Rope", &Rope::Create);
+
+	g_settings = &m_settings;
+	g_testSettings = &m_testSettings;
 }
 
 ViewModel::~ViewModel()
 {
 	g_settings = nullptr;
 	g_testSettings = nullptr;
+}
+
+b3Vec2 ViewModel::GetCursorPosition() const
+{
+	double x, y;
+	glfwGetCursorPos(m_window, &x, &y);
+	return b3Vec2(scalar(x), scalar(y));
 }
 
 void ViewModel::Action_SetTest()
@@ -184,12 +187,13 @@ void ViewModel::Action_NextTest()
 
 void ViewModel::Action_PlayPause()
 {
-	m_model->Action_PlayPause();
+	m_testSettings.pause = !m_testSettings.pause;
 }
 
 void ViewModel::Action_SinglePlay()
 {
-	m_model->Action_SinglePlay();
+	m_testSettings.pause = true;
+	m_testSettings.singlePlay = true;
 }
 
 void ViewModel::Action_ResetCamera()
@@ -204,7 +208,7 @@ void ViewModel::Event_SetWindowSize(int w, int h)
 
 void ViewModel::Event_Press_Key(int button)
 {
-	bool shiftDown = glfwGetKey(m_view->m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	bool shiftDown = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 	if (shiftDown)
 	{
 		if (button == GLFW_KEY_DOWN)
@@ -225,7 +229,7 @@ void ViewModel::Event_Press_Key(int button)
 
 void ViewModel::Event_Release_Key(int button)
 {
-	bool shiftDown = glfwGetKey(m_view->m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	bool shiftDown = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 	if (!shiftDown)
 	{
 		m_model->Command_Release_Key(button);
@@ -236,10 +240,10 @@ void ViewModel::Event_Press_Mouse(int button)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT)
 	{
-		bool shiftDown = glfwGetKey(m_view->m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+		bool shiftDown = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 		if (!shiftDown)
 		{
-			m_model->Command_Press_Mouse_Left(m_view->GetCursorPosition());
+			m_model->Command_Press_Mouse_Left(GetCursorPosition());
 		}
 	}
 }
@@ -248,10 +252,10 @@ void ViewModel::Event_Release_Mouse(int button)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT)
 	{
-		bool shiftDown = glfwGetKey(m_view->m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+		bool shiftDown = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 		if (!shiftDown)
 		{
-			m_model->Command_Release_Mouse_Left(m_view->GetCursorPosition());
+			m_model->Command_Release_Mouse_Left(GetCursorPosition());
 		}
 	}
 }
@@ -261,13 +265,15 @@ void ViewModel::Event_Move_Cursor(float x, float y)
 	b3Vec2 ps;
 	ps.Set(x, y);
 
-	b3Vec2 dp = ps - m_view->m_ps0;
+	b3Vec2 dp = ps - m_ps0;
+
+	m_ps0 = ps;
 
 	b3Vec2 n = b3Normalize(dp);
 
-	bool shiftDown = glfwGetKey(m_view->m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
-	bool leftDown = glfwGetMouseButton(m_view->m_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-	bool rightDown = glfwGetMouseButton(m_view->m_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
+	bool shiftDown = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	bool leftDown = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+	bool rightDown = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
 
 	if (shiftDown)
 	{
@@ -300,7 +306,7 @@ void ViewModel::Event_Scroll(float dx, float dy)
 	b3Vec2 n(dx, dy);
 	n.Normalize();
 
-	bool shiftDown = glfwGetKey(m_view->m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	bool shiftDown = glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 	if (shiftDown)
 	{
 		m_model->Command_ZoomCamera(1.0f * n.y);

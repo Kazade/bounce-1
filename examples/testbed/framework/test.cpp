@@ -151,6 +151,15 @@ void Test::Step()
 		m_world.DrawSolid();
 	}
 
+	if (g_testSettings->pause)
+	{
+		DrawString(b3Color_white, "*PAUSED*");
+	}
+	else
+	{
+		DrawString(b3Color_white, "*PLAYING*");
+	}
+
 	if (g_settings->drawStats)
 	{
 		DrawString(b3Color_white, "Bodies %d", m_world.GetBodyList().m_count);

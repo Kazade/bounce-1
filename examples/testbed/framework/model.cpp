@@ -42,11 +42,8 @@ Model::Model() :
 	m_debugDrawData.triangles = &m_triangles;
 	
 	m_test = nullptr;
-	m_viewModel = nullptr;
 	
 	m_setTest = true;
-	m_pause = true;
-	m_singlePlay = false;
 
 	g_camera = &m_camera;
 	g_debugDrawData = &m_debugDrawData;
@@ -111,15 +108,15 @@ void Model::Update()
 		m_test = g_settings->tests[g_settings->testID].create();
 		
 		m_setTest = false;
-		m_pause = true;
+		g_testSettings->pause = true;
 	}
 
-	if (m_pause)
+	if (g_testSettings->pause)
 	{
-		if (m_singlePlay)
+		if (g_testSettings->singlePlay)
 		{
 			g_testSettings->inv_hertz = g_testSettings->hertz > 0.0f ? 1.0f / g_testSettings->hertz : 0.0f;
-			m_singlePlay = false;
+			g_testSettings->singlePlay = false;
 		}
 		else
 		{

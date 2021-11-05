@@ -18,7 +18,6 @@
 
 #include "view.h"
 #include "view_model.h"
-#include "test.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
@@ -28,9 +27,9 @@
 
 #include <bounce/common/profiler.h>
 #include <bounce/common/graphics/camera.h>
+#include <bounce/common/graphics/color.h>
 
-extern b3Profiler* g_profiler;
-extern GLFWwindow* g_window;
+#include <stdio.h>
 
 static inline bool GetTestName(void* userData, int idx, const char** name)
 {
@@ -41,6 +40,8 @@ static inline bool GetTestName(void* userData, int idx, const char** name)
 
 void DrawString(const b3Color& color, const b3Vec3& pw, const char* string, ...)
 {
+	extern b3Camera* g_camera;
+
 	b3Vec2 ps = g_camera->ConvertWorldToScreen(pw);
 	
 	va_list args;
@@ -72,9 +73,9 @@ void DrawString(const b3Color& color, const char* string, ...)
 	va_end(args);	
 }
 
-View::View(GLFWwindow* window, const char* glslVersion)
+View::View(ViewModel* viewModel, GLFWwindow* window, const char* glslVersion)
 {
-	m_viewModel = nullptr;
+	m_viewModel = viewModel;
 	m_window = window;
 
 	// Create UI
@@ -95,7 +96,6 @@ View::View(GLFWwindow* window, const char* glslVersion)
 		assert(false);
 	}
 
-	m_ps0.SetZero();
 }
 
 View::~View()
@@ -104,13 +104,6 @@ View::~View()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
-}
-
-b3Vec2 View::GetCursorPosition() const
-{
-	double x, y;
-	glfwGetCursorPos(m_window, &x, &y);
-	return b3Vec2(scalar(x), scalar(y));
 }
 
 void View::Event_SetWindowSize(int w, int h)
@@ -141,7 +134,6 @@ void View::Event_Release_Mouse(int button)
 void View::Event_Move_Cursor(float x, float y)
 {
 	m_viewModel->Event_Move_Cursor(x, y);
-	m_ps0.Set(x, y);
 }
 
 void View::Event_Scroll(float dx, float dy)
@@ -386,6 +378,8 @@ void View::Interface()
 
 	if (g_settings->drawProfiler)
 	{
+		extern b3Profiler* g_profiler;
+
 		ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
 		ImVec2 wp = ImGui::GetWindowPos();
 		ImVec2 ws = ImGui::GetWindowSize();

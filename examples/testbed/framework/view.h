@@ -19,8 +19,6 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#include <bounce/common/math/vec2.h>
-
 struct GLFWwindow;
 
 class ViewModel;
@@ -28,7 +26,7 @@ class ViewModel;
 class View
 {	
 public:
-	View(GLFWwindow* window, const char* glslVersion = nullptr);
+	View(ViewModel* viewModel, GLFWwindow* window, const char* glslVersion = nullptr);
 	~View();
 
 	void Event_SetWindowSize(int w, int h);
@@ -43,14 +41,8 @@ public:
 	void Interface();
 	void RenderInterface();
 private:
-	friend class ViewModel;
-
-	b3Vec2 GetCursorPosition() const;
-
 	ViewModel* m_viewModel;
-
 	GLFWwindow* m_window;
-	b3Vec2 m_ps0;
 };
 
 #endif

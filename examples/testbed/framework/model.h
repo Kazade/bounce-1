@@ -32,7 +32,6 @@ extern b3Camera* g_camera;
 extern b3DebugDrawData* g_debugDrawData;
 
 class Test;
-class ViewModel;
 
 class Model
 {
@@ -41,8 +40,6 @@ public:
 	~Model();
 
 	void Action_SetTest();
-	void Action_PlayPause();
-	void Action_SinglePlay();
 	void Action_ResetCamera();
 
 	void Command_Press_Key(int button);
@@ -59,12 +56,7 @@ public:
 	void Command_ZoomCamera(scalar d);
 
 	void Update();
-
-	bool IsPaused() const { return m_pause; }
 private:
-	friend class ViewModel;
-
-	ViewModel* m_viewModel;
 	b3Profiler m_profiler;
 	b3Camera m_camera;
 	b3DebugPoints m_points;
@@ -76,24 +68,11 @@ private:
 	GLTrianglesRenderer m_trianglesRenderer;
 	Test* m_test;
 	bool m_setTest;
-	bool m_pause;
-	bool m_singlePlay;
 };
 
 inline void Model::Action_SetTest()
 {
 	m_setTest = true;
-}
-
-inline void Model::Action_PlayPause()
-{
-	m_pause = !m_pause;
-}
-
-inline void Model::Action_SinglePlay()
-{
-	m_pause = true;
-	m_singlePlay = true;
 }
 
 inline void Model::Action_ResetCamera()
