@@ -215,7 +215,7 @@ int main(int argc, char** args)
 	glfwSetScrollCallback(s_window, WheelScroll);
 	glfwSetMouseButtonCallback(s_window, MouseButton);
 	glfwSetKeyCallback(s_window, KeyButton);
-	glfwSwapInterval(1);
+	//glfwSwapInterval(1);
 
 	s_model = new Model();
 	s_viewModel = new ViewModel(s_model, s_window);
