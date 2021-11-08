@@ -387,4 +387,31 @@ inline b3Quat b3QuatRotationZ(scalar angle)
 	return q;
 }
 
+// Rotation between two normal vectors.
+inline b3Quat b3QuatRotationBetween(const b3Vec3& a, const b3Vec3& b)
+{
+	// |a x b| = sin(theta)
+	// a . b = cos(theta)
+	// sin(theta / 2) = +/- sqrt([1 - cos(theta)] / 2)
+	// cos(theta / 2) = +/- sqrt([1 + cos(theta)] / 2)
+	// q.v = sin(theta / 2) * (a x b) / |a x b|
+	// q.v = cos(theta / 2)
+	b3Quat q;
+
+	b3Vec3 axis = b3Cross(a, b);
+	scalar s = b3Length(axis);
+	scalar c = b3Dot(a, b);
+	if (s > B3_EPSILON)
+	{
+		q.v = b3Sqrt(scalar(0.5) * (scalar(1) - c)) * (axis / s);
+		q.s = b3Sqrt(scalar(0.5) * (scalar(1) + c));
+	}
+	else
+	{
+		q.SetIdentity();
+	}
+
+	return q;
+}
+
 #endif

@@ -37,33 +37,6 @@ struct b3DebugDrawData
 
 // The debug draw utility section.
 
-// Rotation between two normal vectors.
-static inline b3Quat b3RotationBetween(const b3Vec3& n1, const b3Vec3& n2)
-{
-	// |n1 x n2| = sin(theta)
-	// n1 . n2 = cos(theta)
-	// sin(theta / 2) = +/- sqrt([1 - cos(theta)] / 2)
-	// cos(theta / 2) = +/- sqrt([1 + cos(theta)] / 2)
-	// q.v = sin(theta / 2) * (n1 x n2) / |n1 x n2|
-	// q.v = cos(theta / 2)
-	b3Quat rotation;
-	
-	b3Vec3 axis = b3Cross(n1, n2);
-	scalar s = b3Length(axis);
-	scalar c = b3Dot(n1, n2);
-	if (s > B3_EPSILON)
-	{
-		rotation.v = b3Sqrt(scalar(0.5) * (scalar(1) - c)) * (axis / s);
-		rotation.s = b3Sqrt(scalar(0.5) * (scalar(1) + c));
-	}
-	else
-	{
-		rotation.SetIdentity();
-	}
-	
-	return rotation;	
-}
-
 // Draw a point.
 inline void b3DrawPoint(b3DebugDrawData* data, const b3Vec3& p, scalar size, const b3Color& color, bool depthEnabled = true)
 {
@@ -92,7 +65,7 @@ inline void b3DrawSolidTriangle(b3DebugDrawData* data, const b3Vec3& normal, con
 
 static inline b3Vec3 b3MakeVec3(int vertexStride, const void* vertexBase, int vtx)
 {
-	float* p = (float*)((char*)vertexBase + vertexStride * vtx);
+	scalar* p = (scalar*)((char*)vertexBase + vertexStride * vtx);
 	return b3Vec3(p[0], p[1], p[2]);
 }
 
@@ -291,7 +264,7 @@ inline void b3DrawSolidSphere(b3DebugDrawData* data, const b3Vec3& yAxis, const 
 	b3SphereMesh<H, W> sphere;
 	
 	b3Transform xf;
-	xf.rotation = b3RotationBetween(b3Vec3_y, yAxis);
+	xf.rotation = b3QuatRotationBetween(b3Vec3_y, yAxis);
 	xf.translation = center;
 
 	for (u32 i = 0; i < sphere.indexCount / 3; ++i)
@@ -449,7 +422,7 @@ inline void b3DrawCylinder(b3DebugDrawData* data, const b3Vec3& yAxis, const b3V
 	b3CylinderMesh<H, W> cylinder;
 	
 	b3Transform xf;
-	xf.rotation = b3RotationBetween(b3Vec3_y, yAxis);
+	xf.rotation = b3QuatRotationBetween(b3Vec3_y, yAxis);
 	xf.translation = center;
 
 	for (u32 i = 0; i < cylinder.indexCount / 3; ++i)
@@ -490,7 +463,7 @@ inline void b3DrawSolidCylinder(b3DebugDrawData* data, const b3Vec3& yAxis, cons
 	b3CylinderMesh<H, W> cylinder;
 	
 	b3Transform xf;
-	xf.rotation = b3RotationBetween(b3Vec3_y, yAxis);
+	xf.rotation = b3QuatRotationBetween(b3Vec3_y, yAxis);
 	xf.translation = center;
 
 	for (u32 i = 0; i < cylinder.indexCount / 3; ++i)
@@ -645,7 +618,7 @@ inline void b3DrawGrid(b3DebugDrawData* data, const b3Vec3& normal, const b3Vec3
 		}
 	}
 
-	b3Quat q = b3RotationBetween(b3Vec3_y, normal);
+	b3Quat q = b3QuatRotationBetween(b3Vec3_y, normal);
 	
 	b3Color borderColor(scalar(0), scalar(0), scalar(0), scalar(1));
 	b3Color centerColor(scalar(0.8), scalar(0.8), scalar(0.8), scalar(1));
