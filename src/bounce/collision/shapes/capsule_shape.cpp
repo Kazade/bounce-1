@@ -17,11 +17,21 @@
 */
 
 #include <bounce/collision/shapes/capsule_shape.h>
+#include <bounce/common/memory/block_allocator.h>
 
 b3CapsuleShape::b3CapsuleShape() 
 {
 	m_type = e_capsule;
 	m_radius = scalar(0);
+}
+
+b3Shape* b3CapsuleShape::Clone(b3BlockAllocator* allocator) const
+{
+	void* mem = allocator->Allocate(sizeof(b3CapsuleShape));
+	b3CapsuleShape* clone = new (mem)b3CapsuleShape;
+	*clone = *this;
+	return clone;
+
 }
 
 void b3CapsuleShape::ComputeMass(b3MassData* massData, scalar density) const 

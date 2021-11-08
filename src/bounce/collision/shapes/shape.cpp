@@ -27,66 +27,6 @@
 #include <bounce/common/memory/block_allocator.h>
 #include <bounce/common/draw.h>
 
-b3Shape* b3Shape::Clone(const b3Shape* shape, b3BlockAllocator* allocator)
-{
-	b3Shape* clone = nullptr;
-	switch (shape->GetType())
-	{
-	case e_sphere:
-	{
-		b3SphereShape* sphere1 = (b3SphereShape*)shape;
-		void* mem = allocator->Allocate(sizeof(b3SphereShape));
-		b3SphereShape* sphere2 = new (mem)b3SphereShape();
-		*sphere2 = *sphere1;
-		clone = sphere2;
-		break;
-	}
-	case e_capsule:
-	{
-		b3CapsuleShape* capsule1 = (b3CapsuleShape*)shape;
-		void* block = allocator->Allocate(sizeof(b3CapsuleShape));
-		b3CapsuleShape* capsule2 = new (block)b3CapsuleShape();
-		*capsule2 = *capsule1;
-		clone = capsule2;
-		break;
-	}
-	case e_triangle:
-	{
-		b3TriangleShape* triangle1 = (b3TriangleShape*)shape;
-		void* block = allocator->Allocate(sizeof(b3TriangleShape));
-		b3TriangleShape* triangle2 = new (block)b3TriangleShape();
-		*triangle2 = *triangle1;
-		clone = triangle2;
-		break;
-	}
-	case e_hull:
-	{
-		b3HullShape* hull1 = (b3HullShape*)shape;
-		void* block = allocator->Allocate(sizeof(b3HullShape));
-		b3HullShape* hull2 = new (block)b3HullShape();
-		*hull2 = *hull1;
-		clone = hull2;
-		break;
-	}
-	case e_mesh:
-	{
-		b3MeshShape* mesh1 = (b3MeshShape*)shape;
-		void* block = allocator->Allocate(sizeof(b3MeshShape));
-		b3MeshShape* mesh2 = new (block) b3MeshShape();
-		*mesh2 = *mesh1;
-		clone = mesh2;
-		break;
-	}
-	default:
-	{
-		B3_ASSERT(false);
-		break;
-	}
-	}
-
-	return clone;
-}
-
 void b3Shape::Destroy(b3Shape* shape, b3BlockAllocator* allocator)
 {
 	switch (shape->GetType())
@@ -100,8 +40,8 @@ void b3Shape::Destroy(b3Shape* shape, b3BlockAllocator* allocator)
 	}
 	case e_capsule:
 	{
-		b3CapsuleShape* caps = (b3CapsuleShape*)shape;
-		caps->~b3CapsuleShape();
+		b3CapsuleShape* capsule = (b3CapsuleShape*)shape;
+		capsule->~b3CapsuleShape();
 		allocator->Free(shape, sizeof(b3CapsuleShape));
 		break;
 	}

@@ -96,6 +96,9 @@ public:
 	// Get the shape type.
 	Type GetType() const;
 
+	// Clone this shape using the given allocator.
+	virtual b3Shape* Clone(b3BlockAllocator* allocator) const = 0;
+
 	// Calculate the mass data for this shape given the shape density.
 	virtual void ComputeMass(b3MassData* data, scalar density) const = 0;
 
@@ -114,8 +117,7 @@ public:
 	// Debug draw this shape in solid mode.
 	void DrawSolid(const b3Transform& xf, const b3Color& color) const;
 	
-	// Factory clone/destroy.
-	static b3Shape* Clone(const b3Shape* shape, b3BlockAllocator* allocator);
+	// Factory destroy.
 	static void Destroy(b3Shape* shape, b3BlockAllocator* allocator);
 
 	// The shape types. 

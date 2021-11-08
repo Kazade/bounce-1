@@ -20,12 +20,22 @@
 #include <bounce/collision/geometry/hull.h>
 #include <bounce/collision/gjk/gjk.h>
 #include <bounce/collision/gjk/gjk_proxy.h>
+#include <bounce/common/memory/block_allocator.h>
 
 b3HullShape::b3HullShape()
 {
 	m_type = e_hull;
 	m_radius = B3_HULL_RADIUS;
 	m_hull = nullptr;
+}
+
+b3Shape* b3HullShape::Clone(b3BlockAllocator* allocator) const
+{
+	void* mem = allocator->Allocate(sizeof(b3HullShape));
+	b3HullShape* clone = new (mem)b3HullShape;
+	*clone = *this;
+	return clone;
+
 }
 
 void b3HullShape::ComputeMass(b3MassData* massData, scalar density) const

@@ -19,6 +19,7 @@
 #include <bounce/collision/shapes/mesh_shape.h>
 #include <bounce/collision/geometry/mesh.h>
 #include <bounce/collision/shapes/triangle_shape.h>
+#include <bounce/common/memory/block_allocator.h>
 
 b3MeshShape::b3MeshShape() 
 {
@@ -26,6 +27,15 @@ b3MeshShape::b3MeshShape()
 	m_radius = B3_HULL_RADIUS;
 	m_mesh = nullptr;
 	m_scale.Set(scalar(1), scalar(1), scalar(1));
+}
+
+b3Shape* b3MeshShape::Clone(b3BlockAllocator* allocator) const
+{
+	void* mem = allocator->Allocate(sizeof(b3MeshShape));
+	b3MeshShape* clone = new (mem)b3MeshShape;
+	*clone = *this;
+	return clone;
+
 }
 
 void b3MeshShape::ComputeMass(b3MassData* massData, scalar density) const 

@@ -29,6 +29,8 @@ class b3HullShape : public b3Shape
 public:
 	b3HullShape();
 
+	b3Shape* Clone(b3BlockAllocator* allocator) const;
+
 	void ComputeMass(b3MassData* data, scalar density) const;
 
 	void ComputeAABB(b3AABB* aabb, const b3Transform& xf) const;	

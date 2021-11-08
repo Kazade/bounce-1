@@ -26,6 +26,8 @@ class b3TriangleShape : public b3Shape
 {
 public:
 	b3TriangleShape();
+	
+	b3Shape* Clone(b3BlockAllocator* allocator) const;
 
 	// Set this triangle as an isolated triangle.
 	void Set(const b3Vec3& v1, const b3Vec3& v2, const b3Vec3& v3);

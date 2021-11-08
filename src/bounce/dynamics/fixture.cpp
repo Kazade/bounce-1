@@ -48,7 +48,7 @@ void b3Fixture::Create(b3BlockAllocator* allocator, b3Body* body, const b3Fixtur
 
 	m_isSensor = def->isSensor;
 
-	m_shape = b3Shape::Clone(def->shape, allocator);
+	m_shape = def->shape->Clone(allocator);
 
 	m_density = def->density;
 }

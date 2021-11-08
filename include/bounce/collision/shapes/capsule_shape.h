@@ -26,6 +26,8 @@ class b3CapsuleShape : public b3Shape
 {
 public:
 	b3CapsuleShape();
+	
+	b3Shape* Clone(b3BlockAllocator* allocator) const;
 
 	void ComputeMass(b3MassData* data, scalar density) const;
 

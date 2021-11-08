@@ -17,12 +17,22 @@
 */
 
 #include <bounce/collision/shapes/sphere_shape.h>
+#include <bounce/common/memory/block_allocator.h>
 
 b3SphereShape::b3SphereShape() 
 {
 	m_type = e_sphere;
 	m_radius = scalar(0);
 	m_center.SetZero();
+}
+
+b3Shape* b3SphereShape::Clone(b3BlockAllocator* allocator) const
+{
+	void* mem = allocator->Allocate(sizeof(b3SphereShape));
+	b3SphereShape* clone = new (mem)b3SphereShape;
+	*clone = *this;
+	return clone;
+
 }
 
 void b3SphereShape::ComputeMass(b3MassData* massData, scalar density) const 

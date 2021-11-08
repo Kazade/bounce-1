@@ -19,6 +19,7 @@
 #include <bounce/collision/shapes/triangle_shape.h>
 #include <bounce/collision/gjk/gjk_proxy.h>
 #include <bounce/collision/gjk/gjk.h>
+#include <bounce/common/memory/block_allocator.h>
 
 b3TriangleShape::b3TriangleShape()
 {
@@ -27,6 +28,15 @@ b3TriangleShape::b3TriangleShape()
 	m_hasE1Vertex = false;
 	m_hasE2Vertex = false;
 	m_hasE3Vertex = false;
+}
+
+b3Shape* b3TriangleShape::Clone(b3BlockAllocator* allocator) const
+{
+	void* mem = allocator->Allocate(sizeof(b3TriangleShape));
+	b3TriangleShape* clone = new (mem)b3TriangleShape;
+	*clone = *this;
+	return clone;
+
 }
 
 void b3TriangleShape::Set(const b3Vec3& v1, const b3Vec3& v2, const b3Vec3& v3)
