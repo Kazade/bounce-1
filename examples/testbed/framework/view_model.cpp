@@ -18,7 +18,6 @@
 
 #include "view_model.h"
 #include "model.h"
-#include "view.h"
 
 #include "GLFW/glfw3.h"
 
