@@ -174,7 +174,6 @@ static void TreeNode(const b3ProfilerNode* node, u32& index)
 void View::Interface()
 {
 	Settings& settings = m_viewModel->m_settings;
-	TestSettings& testSettings = m_viewModel->m_testSettings;
 
 	bool openControls = false;
 	bool openAbout = false;
@@ -204,17 +203,6 @@ void View::Interface()
 			ImGui::Separator();
 			
 			ImGui::MenuItem("Reference Grid", "", &settings.drawGrid);
-
-			ImGui::Separator();
-
-			ImGui::MenuItem("Center of Masses", "", &testSettings.drawCenterOfMasses);
-			ImGui::MenuItem("Bounding Boxes", "", &testSettings.drawBounds);
-			ImGui::MenuItem("Shapes", "", &testSettings.drawShapes);
-			ImGui::MenuItem("Joints", "", &testSettings.drawJoints);
-			ImGui::MenuItem("Contact Points", "", &testSettings.drawContactPoints);
-			ImGui::MenuItem("Contact Normals", "", &testSettings.drawContactNormals);
-			ImGui::MenuItem("Contact Tangents", "", &testSettings.drawContactTangents);
-			ImGui::MenuItem("Contact Polygons", "", &testSettings.drawContactPolygons);
 
 			ImGui::EndMenu();
 		}
@@ -317,18 +305,6 @@ void View::Interface()
 
 		ImGui::Separator();
 
-		if (ImGui::Button("Play/Pause", menuButtonSize))
-		{
-			m_viewModel->Action_PlayPause();
-		}
-
-		if (ImGui::Button("Single Play", menuButtonSize))
-		{
-			m_viewModel->Action_SinglePlay();
-		}
-
-		ImGui::Separator();
-
 		if (ImGui::Button("Restart", menuButtonSize))
 		{
 			m_viewModel->Action_SetTest();
@@ -348,6 +324,8 @@ void View::Interface()
 	
 	ImGui::PopStyleVar();
 
+	TestSettings& testSettings = m_viewModel->m_testSettings;
+	
 	ImGui::SetNextWindowPos(ImVec2(width - 250.0f, 40.0f));
 	ImGui::SetNextWindowSize(ImVec2(250.0f, height - 40.0f));
 	ImGui::Begin("Test Settings", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
@@ -366,6 +344,29 @@ void View::Interface()
 	ImGui::Checkbox("Sleep", &testSettings.sleep);
 	ImGui::Checkbox("Convex Cache", &testSettings.convexCache);
 	ImGui::Checkbox("Warm Start", &testSettings.warmStart);
+
+	if (ImGui::Button("Play/Pause", buttonSize))
+	{
+		m_viewModel->Action_PlayPause();
+	}
+
+	if (ImGui::Button("Single Play", buttonSize))
+	{
+		m_viewModel->Action_SinglePlay();
+	}
+
+	ImGui::Separator();
+	
+	ImGui::Text("View");
+
+	ImGui::MenuItem("Center of Masses", "", &testSettings.drawCenterOfMasses);
+	ImGui::MenuItem("Bounding Boxes", "", &testSettings.drawBounds);
+	ImGui::MenuItem("Shapes", "", &testSettings.drawShapes);
+	ImGui::MenuItem("Joints", "", &testSettings.drawJoints);
+	ImGui::MenuItem("Contact Points", "", &testSettings.drawContactPoints);
+	ImGui::MenuItem("Contact Normals", "", &testSettings.drawContactNormals);
+	ImGui::MenuItem("Contact Tangents", "", &testSettings.drawContactTangents);
+	ImGui::MenuItem("Contact Polygons", "", &testSettings.drawContactPolygons);
 
 	ImGui::PopItemWidth();
 
