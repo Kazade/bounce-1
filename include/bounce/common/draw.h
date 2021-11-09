@@ -90,8 +90,4 @@ public:
 	virtual void DrawTransform(const b3Transform& xf, bool depthEnabled = true) = 0;
 };
 
-// The debug drawer interface used by Bounce. 
-// Set this to an implementation before calling any debug drawing function.
-extern b3Draw* b3Draw_draw;
-
 #endif

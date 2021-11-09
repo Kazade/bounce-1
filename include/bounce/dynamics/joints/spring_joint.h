@@ -95,7 +95,7 @@ public:
 	void SetDampingRatio(scalar ratio);
 
 	// Draw this joint.
-	void Draw() const;
+	void Draw(b3Draw* draw) const;
 private:
 	friend class b3Joint;
 	friend class b3JointManager;

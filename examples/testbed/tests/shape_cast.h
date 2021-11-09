@@ -207,7 +207,7 @@ public:
 		m_d.Set(-50.0f, 2.0f, 0.0f);
 	}
 
-	void CastShape() const
+	void CastShape() 
 	{
 		class ShapeCastFilter : public b3ShapeCastFilter
 		{
@@ -224,7 +224,7 @@ public:
 		b3Body* body = m_fixture->GetBody();
 		b3Transform xf = body->GetTransform();
 
-		shape->DrawSolid(xf, b3Color_red);
+		shape->DrawSolid(&m_draw, xf, b3Color_red);
 
 		b3Vec3 p1 = xf.translation;
 
@@ -240,7 +240,7 @@ public:
 			xft.rotation = xf.rotation;
 			xft.translation = xf.translation + out.fraction * m_d;
 
-			shape->Draw(xft, b3Color_red);
+			shape->Draw(&m_draw, xft, b3Color_red);
 
 			b3DrawSegment(g_debugDrawData, p1, xft.translation, b3Color_green);
 		}
@@ -252,7 +252,7 @@ public:
 			xf1.rotation = xf.rotation;
 			xf1.translation = xf.translation + m_d;
 			
-			shape->Draw(xf1, b3Color_red);
+			shape->Draw(&m_draw, xf1, b3Color_red);
 		}
 	}
 

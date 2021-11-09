@@ -38,30 +38,28 @@ extern u32 b3_convexCalls, b3_convexCacheHits;
 extern u32 b3_gjkCalls, b3_gjkIters, b3_gjkMaxIters;
 extern bool b3_convexCache;
 
-b3Draw* b3Draw_draw = nullptr;
-
 b3World::b3World()
 {
-	b3_allocCalls = 0;
-	b3_maxAllocCalls = 0;
-	
-	b3_gjkCalls = 0;
-	b3_gjkIters = 0;
-
-	b3_convexCalls = 0;
-	b3_convexCacheHits = 0;
-
-	b3_convexCache = true;
-
 	m_flags = e_clearForcesFlag;
 	m_sleeping = false;
 	m_warmStarting = true;
+	
 	m_gravity.Set(scalar(0), scalar(-9.8), scalar(0));
 	
+	m_contactManager.m_allocator = &m_blockAllocator;
+	m_jointManager.m_allocator = &m_blockAllocator;
+	
 	m_drawFlags = 0;
-
-	m_contactMan.m_allocator = &m_blockAllocator;
-	m_jointMan.m_allocator = &m_blockAllocator;
+	m_debugDraw = nullptr;
+	m_profiler = nullptr;
+	
+	b3_allocCalls = 0;
+	b3_maxAllocCalls = 0;
+	b3_gjkCalls = 0;
+	b3_gjkIters = 0;
+	b3_convexCalls = 0;
+	b3_convexCacheHits = 0;
+	b3_convexCache = true;
 }
 
 b3World::~b3World()
@@ -71,15 +69,14 @@ b3World::~b3World()
 	{
 		b->DestroyFixtures();
 		b->DestroyJoints();
+		b->DestroyContacts();
 		b = b->m_next;
 	}
 
 	b3_allocCalls = 0;
 	b3_maxAllocCalls = 0;
-
 	b3_gjkCalls = 0;
 	b3_gjkIters = 0;
-
 	b3_convexCalls = 0;
 	b3_convexCacheHits = 0;
 }
@@ -117,17 +114,17 @@ void b3World::DestroyBody(b3Body* b)
 
 b3Joint* b3World::CreateJoint(const b3JointDef& def)
 {
-	return m_jointMan.Create(&def);
+	return m_jointManager.Create(&def);
 }
 
 void b3World::DestroyJoint(b3Joint* j)
 {
-	m_jointMan.Destroy(j);
+	m_jointManager.Destroy(j);
 }
 
 void b3World::Step(scalar dt, u32 velocityIterations, u32 positionIterations)
 {
-	B3_PROFILE("Step");
+	B3_PROFILE(m_profiler, "Step");
 
 	// Clear statistics
 	b3_allocCalls = 0;
@@ -142,12 +139,12 @@ void b3World::Step(scalar dt, u32 velocityIterations, u32 positionIterations)
 	if (m_flags & e_fixtureAddedFlag)
 	{
 		// If new shapes were added new contacts might be created.
-		m_contactMan.FindNewContacts();
+		m_contactManager.FindNewContacts();
 		m_flags &= ~e_fixtureAddedFlag;
 	}
 
 	// Update contacts. This is where some contacts might be destroyed.
-	m_contactMan.UpdateContacts();
+	m_contactManager.UpdateContacts();
 
 	// Integrate velocities, clear forces and torques, solve constraints, integrate positions.
 	if (dt > scalar(0))
@@ -158,7 +155,7 @@ void b3World::Step(scalar dt, u32 velocityIterations, u32 positionIterations)
 
 void b3World::Solve(scalar dt, u32 velocityIterations, u32 positionIterations)
 {
-	B3_PROFILE("Solve");
+	B3_PROFILE(m_profiler, "Solve");
 
 	// Clear all visited flags for the depth first search.
 	for (b3Body* b = m_bodyList.m_head; b; b = b->m_next)
@@ -166,12 +163,12 @@ void b3World::Solve(scalar dt, u32 velocityIterations, u32 positionIterations)
 		b->m_flags &= ~b3Body::e_islandFlag;
 	}
 
-	for (b3Joint* j = m_jointMan.m_jointList.m_head; j; j = j->m_next)
+	for (b3Joint* j = m_jointManager.m_jointList.m_head; j; j = j->m_next)
 	{
 		j->m_flags &= ~b3Joint::e_islandFlag;
 	}
 
-	for (b3Contact* c = m_contactMan.m_contactList.m_head; c; c = c->m_next)
+	for (b3Contact* c = m_contactManager.m_contactList.m_head; c; c = c->m_next)
 	{
 		c->m_flags &= ~b3Contact::e_islandFlag;
 	}
@@ -181,7 +178,12 @@ void b3World::Solve(scalar dt, u32 velocityIterations, u32 positionIterations)
 	islandFlags |= m_sleeping * b3Island::e_sleepBit;
 
 	// Create a worst case island.
-	b3Island island(&m_stackAllocator, m_bodyList.m_count, m_contactMan.m_contactList.m_count, m_jointMan.m_jointList.m_count, m_contactMan.m_contactListener);
+	b3Island island(&m_stackAllocator, 
+		m_bodyList.m_count, 
+		m_contactManager.m_contactList.m_count, 
+		m_jointManager.m_jointList.m_count, 
+		m_contactManager.m_contactListener, 
+		m_profiler);
 
 	// Build and simulate awake islands.
 	u32 stackSize = m_bodyList.m_count;
@@ -261,9 +263,9 @@ void b3World::Solve(scalar dt, u32 velocityIterations, u32 positionIterations)
 					}
 
 					// Does a contact filter prevent the contact response?
-					if (m_contactMan.m_contactFilter)
+					if (m_contactManager.m_contactFilter)
 					{
-						if (m_contactMan.m_contactFilter->ShouldRespond(contact->GetFixtureA(), contact->GetFixtureB()) == false)
+						if (m_contactManager.m_contactFilter->ShouldRespond(contact->GetFixtureA(), contact->GetFixtureB()) == false)
 						{
 							continue;
 						}
@@ -335,7 +337,7 @@ void b3World::Solve(scalar dt, u32 velocityIterations, u32 positionIterations)
 	m_stackAllocator.Free(stack);
 
 	{
-		B3_PROFILE("Find New Pairs");
+		B3_PROFILE(m_profiler, "Find New Pairs");
 
 		for (b3Body* b = m_bodyList.m_head; b; b = b->m_next)
 		{
@@ -355,10 +357,10 @@ void b3World::Solve(scalar dt, u32 velocityIterations, u32 positionIterations)
 		}
 
 		// Update fixtures for mid-phase.
-		m_contactMan.SynchronizeFixtures();
+		m_contactManager.SynchronizeFixtures();
 
 		// Find new contacts.
-		m_contactMan.FindNewContacts();
+		m_contactManager.FindNewContacts();
 	}
 }
 
@@ -400,14 +402,14 @@ void b3World::RayCast(b3RayCastListener* listener, b3RayCastFilter* filter, cons
 	b3WorldRayCastWrapper wrapper;
 	wrapper.listener = listener;
 	wrapper.filter = filter;
-	wrapper.broadPhase = &m_contactMan.m_broadPhase;
+	wrapper.broadPhase = &m_contactManager.m_broadPhase;
 	
 	b3RayCastInput input;
 	input.p1 = p1;
 	input.p2 = p2;
 	input.maxFraction = scalar(1);
 
-	m_contactMan.m_broadPhase.RayCast(&wrapper, input);
+	m_contactManager.m_broadPhase.RayCast(&wrapper, input);
 }
 
 struct b3WorldRayCastSingleWrapper
@@ -452,7 +454,7 @@ bool b3World::RayCastSingle(b3RayCastSingleOutput* output, b3RayCastFilter* filt
 	b3WorldRayCastSingleWrapper wrapper;
 	wrapper.fixture0 = nullptr;
 	wrapper.output0.fraction = B3_MAX_SCALAR;
-	wrapper.broadPhase = &m_contactMan.m_broadPhase;
+	wrapper.broadPhase = &m_contactManager.m_broadPhase;
 	wrapper.filter = filter;
 	
 	b3RayCastInput input;
@@ -460,7 +462,7 @@ bool b3World::RayCastSingle(b3RayCastSingleOutput* output, b3RayCastFilter* filt
 	input.p2 = p2;
 	input.maxFraction = scalar(1);
 
-	m_contactMan.m_broadPhase.RayCast(&wrapper, input);
+	m_contactManager.m_broadPhase.RayCast(&wrapper, input);
 
 	if (wrapper.fixture0)
 	{
@@ -741,9 +743,9 @@ void b3World::ShapeCast(b3ShapeCastListener* listener, b3ShapeCastFilter* filter
 	wrapper.fixture0 = nullptr;
 	wrapper.fraction0 = B3_MAX_SCALAR;
 	wrapper.childIndex0 = B3_MAX_U32;
-	wrapper.broadPhase = &m_contactMan.m_broadPhase;
+	wrapper.broadPhase = &m_contactManager.m_broadPhase;
 
-	m_contactMan.m_broadPhase.QueryAABB(&wrapper, aabb);
+	m_contactManager.m_broadPhase.QueryAABB(&wrapper, aabb);
 }
 
 bool b3World::ShapeCastSingle(b3ShapeCastSingleOutput* output, b3ShapeCastFilter* filter, 
@@ -798,9 +800,9 @@ bool b3World::ShapeCastSingle(b3ShapeCastSingleOutput* output, b3ShapeCastFilter
 	wrapper.fixture0 = nullptr;
 	wrapper.childIndex0 = B3_MAX_U32;
 	wrapper.fraction0 = B3_MAX_SCALAR;
-	wrapper.broadPhase = &m_contactMan.m_broadPhase;
+	wrapper.broadPhase = &m_contactManager.m_broadPhase;
 
-	m_contactMan.m_broadPhase.QueryAABB(&wrapper, aabb);
+	m_contactManager.m_broadPhase.QueryAABB(&wrapper, aabb);
 
 	if (wrapper.fixture0 == nullptr)
 	{
@@ -849,13 +851,13 @@ void b3World::QueryAABB(b3QueryListener* listener, b3QueryFilter* filter, const 
 	b3WorldQueryWrapper wrapper;
 	wrapper.listener = listener;
 	wrapper.filter = filter;
-	wrapper.broadPhase = &m_contactMan.m_broadPhase;
-	m_contactMan.m_broadPhase.QueryAABB(&wrapper, aabb);
+	wrapper.broadPhase = &m_contactManager.m_broadPhase;
+	m_contactManager.m_broadPhase.QueryAABB(&wrapper, aabb);
 }
 
 void b3World::Draw() const
 {
-	if (b3Draw_draw == nullptr)
+	if (m_debugDraw == nullptr)
 	{
 		return;
 	}
@@ -869,7 +871,7 @@ void b3World::Draw() const
 			b3Transform xf;
 			xf.rotation = b->m_sweep.orientation;
 			xf.translation = b->m_sweep.worldCenter;
-			b3Draw_draw->DrawTransform(xf);
+			m_debugDraw->DrawTransform(xf);
 		}
 	}
 
@@ -879,7 +881,7 @@ void b3World::Draw() const
 		{
 			for (b3Fixture* f = b->m_fixtureList.m_head; f; f = f->m_next)
 			{
-				f->Draw(b3Color_black);
+				f->Draw(m_debugDraw, b3Color_black);
 			}
 		}
 	}
@@ -890,21 +892,21 @@ void b3World::Draw() const
 		{
 			for (b3Fixture* f = b->m_fixtureList.m_head; f; f = f->m_next)
 			{
-				const b3AABB& aabb = m_contactMan.m_broadPhase.GetAABB(f->m_broadPhaseID);
-				b3Draw_draw->DrawAABB(aabb, b3Color_pink);
+				const b3AABB& aabb = m_contactManager.m_broadPhase.GetAABB(f->m_broadPhaseID);
+				m_debugDraw->DrawAABB(aabb, b3Color_pink);
 			}
 		}
 	}
 
 	if (flags & e_jointsFlag)
 	{
-		for (b3Joint* j = m_jointMan.m_jointList.m_head; j; j = j->m_next)
+		for (b3Joint* j = m_jointManager.m_jointList.m_head; j; j = j->m_next)
 		{
-			j->Draw();
+			j->Draw(m_debugDraw);
 		}
 	}
 
-	for (b3Contact* c = m_contactMan.m_contactList.m_head; c; c = c->m_next)
+	for (b3Contact* c = m_contactManager.m_contactList.m_head; c; c = c->m_next)
 	{
 		u32 manifoldCount = c->m_manifoldCount;
 		const b3Manifold* manifolds = c->m_manifolds;
@@ -931,12 +933,12 @@ void b3World::Draw() const
 
 				if (flags & e_contactPointsFlag)
 				{
-					b3Draw_draw->DrawPoint(p, scalar(4), mp->persistCount > 0 ? b3Color_green : b3Color_red);
+					m_debugDraw->DrawPoint(p, scalar(4), mp->persistCount > 0 ? b3Color_green : b3Color_red);
 				}
 
 				if (flags & e_contactNormalsFlag)
 				{
-					b3Draw_draw->DrawSegment(p, p + n, b3Color_white);
+					m_debugDraw->DrawSegment(p, p + n, b3Color_white);
 				}
 			}
 
@@ -949,20 +951,20 @@ void b3World::Draw() const
 
 				if (flags & e_contactNormalsFlag)
 				{
-					b3Draw_draw->DrawSegment(p, p + n, b3Color_yellow);
+					m_debugDraw->DrawSegment(p, p + n, b3Color_yellow);
 				}
 
 				if (flags & e_contactTangentsFlag)
 				{
-					b3Draw_draw->DrawSegment(p, p + t1, b3Color_yellow);
-					b3Draw_draw->DrawSegment(p, p + t2, b3Color_yellow);
+					m_debugDraw->DrawSegment(p, p + t1, b3Color_yellow);
+					m_debugDraw->DrawSegment(p, p + t2, b3Color_yellow);
 				}
 
 				if (m->pointCount > 2)
 				{
 					if (flags & e_contactPolygonsFlag)
 					{
-						b3Draw_draw->DrawSolidPolygon(wm.normal, points, sizeof(b3Vec3), m->pointCount, b3Color_pink, false);
+						m_debugDraw->DrawSolidPolygon(wm.normal, points, sizeof(b3Vec3), m->pointCount, b3Color_pink, false);
 					}
 				}
 			}
@@ -972,6 +974,11 @@ void b3World::Draw() const
 
 void b3World::DrawSolid() const
 {
+	if (m_debugDraw == nullptr)
+	{
+		return;
+	}
+
 	for (b3Body* b = m_bodyList.m_head; b; b = b->GetNext())
 	{
 		b3Color c;
@@ -994,7 +1001,7 @@ void b3World::DrawSolid() const
 
 		for (b3Fixture* f = b->GetFixtureList().m_head; f; f = f->GetNext())
 		{
-			f->DrawSolid(c);
+			f->DrawSolid(m_debugDraw, c);
 		}
 	}
 }

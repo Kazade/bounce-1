@@ -71,8 +71,8 @@ public:
 			b3DrawPoint(g_debugDrawData, p, 4.0f, b3Color_green);
 			b3DrawSegment(g_debugDrawData, p1, p1 + n1, b3Color_green);
 
-			m_shapeA.Draw(xfA, b3Color_black);
-			m_shapeB.Draw(xfB, b3Color_black);
+			m_shapeA.Draw(&m_draw, xfA, b3Color_black);
+			m_shapeB.Draw(&m_draw, xfB, b3Color_black);
 		}
 		
 		if (state == b3TOIOutput::e_failed)
@@ -100,11 +100,11 @@ public:
 		b3DrawTransform(g_debugDrawData, m_xfA);
 		b3DrawTransform(g_debugDrawData, m_xfB);
 
-		m_shapeA.Draw(m_xfA, b3Color_black);
-		m_shapeB.Draw(m_xfB, b3Color_black);
+		m_shapeA.Draw(&m_draw, m_xfA, b3Color_black);
+		m_shapeB.Draw(&m_draw, m_xfB, b3Color_black);
 
-		m_shapeA.DrawSolid(m_xfA, b3Color_white);
-		m_shapeA.DrawSolid(m_xfB, b3Color_white);
+		m_shapeA.DrawSolid(&m_draw, m_xfA, b3Color_white);
+		m_shapeA.DrawSolid(&m_draw, m_xfB, b3Color_white);
 
 		b3DrawSegment(g_debugDrawData, m_xfA.translation, m_xfA.translation + dA, b3Color_white);
 		b3DrawSegment(g_debugDrawData, m_xfB.translation, m_xfB.translation + dB, b3Color_white);

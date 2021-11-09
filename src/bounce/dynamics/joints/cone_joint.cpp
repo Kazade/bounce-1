@@ -601,13 +601,13 @@ scalar b3ConeJoint::GetTwistUpperAngle() const
 	return m_upperAngle;
 }
 
-void b3ConeJoint::Draw() const
+void b3ConeJoint::Draw(b3Draw* draw) const
 {
 	b3Transform xfA(m_localAnchorA, m_localRotationA);
 	xfA = GetBodyA()->GetWorldFrame(xfA);
-	b3Draw_draw->DrawTransform(xfA);
+	draw->DrawTransform(xfA);
 
 	b3Transform xfB(m_localAnchorB, m_localRotationB);
 	xfB = GetBodyB()->GetWorldFrame(xfB);
-	b3Draw_draw->DrawTransform(xfB);
+	draw->DrawTransform(xfB);
 }

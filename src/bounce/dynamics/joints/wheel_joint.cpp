@@ -524,13 +524,13 @@ void b3WheelJoint::SetMaxMotorTorque(scalar torque)
 	}
 }
 
-void b3WheelJoint::Draw() const
+void b3WheelJoint::Draw(b3Draw* draw) const
 {
 	b3Vec3 pA = GetAnchorA();
-	b3Draw_draw->DrawPoint(pA, scalar(4), b3Color_red);
+	draw->DrawPoint(pA, scalar(4), b3Color_red);
 
 	b3Vec3 pB = GetAnchorB();
-	b3Draw_draw->DrawPoint(pB, scalar(4), b3Color_green);
+	draw->DrawPoint(pB, scalar(4), b3Color_green);
 
 	const b3Body* bA = GetBodyA();
 	const b3Body* bB = GetBodyB();
@@ -542,9 +542,9 @@ void b3WheelJoint::Draw() const
 	xfA.translation = pA;
 	xfA.rotation = bA->GetWorldFrame(localRotationA);
 
-	b3Draw_draw->DrawTransform(xfA);
+	draw->DrawTransform(xfA);
 
 	b3Vec3 axisB = bB->GetWorldVector(m_localXAxisB);
 	
-	b3Draw_draw->DrawSegment(pB, pB + axisB, b3Color_white);
+	draw->DrawSegment(pB, pB + axisB, b3Color_white);
 }

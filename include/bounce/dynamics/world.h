@@ -42,6 +42,9 @@ class b3ShapeCastFilter;
 class b3ContactListener;
 class b3ContactFilter;
 
+class b3Draw;
+class b3Profiler;
+
 // Output of b3World::RayCastSingle
 struct b3RayCastSingleOutput
 {
@@ -89,6 +92,13 @@ public:
 	// touching with each other.
 	void SetContactListener(b3ContactListener* listener);
 	
+	// Set the debug draw interface. 
+	// This interface is used for drawing the world entities.
+	void SetDebugDraw(b3Draw* draw);
+
+	// Set the world profiler.
+	void SetProfiler(b3Profiler* profiler);
+
 	// Enable body sleeping. This improves performance.
 	void SetSleeping(bool flag);
 
@@ -209,9 +219,6 @@ private:
 	u32 m_flags;
 	b3Vec3 m_gravity;
 	
-	// Debug draw flags.
-	u32 m_drawFlags;
-	
 	// Stack allocator
 	b3StackAllocator m_stackAllocator;
 
@@ -222,20 +229,40 @@ private:
 	b3List<b3Body> m_bodyList;
 	
 	// List of joints
-	b3JointManager m_jointMan;
+	b3JointManager m_jointManager;
 	
 	// List of contacts
-	b3ContactManager m_contactMan;
+	b3ContactManager m_contactManager;
+
+	// Debug draw flags.
+	u32 m_drawFlags;
+
+	// Debug draw. 
+	b3Draw* m_debugDraw;
+
+	// Profiler.
+	b3Profiler* m_profiler;
 };
 
 inline void b3World::SetContactListener(b3ContactListener* listener)
 {
-	m_contactMan.m_contactListener = listener;
+	m_contactManager.m_contactListener = listener;
 }
 
 inline void b3World::SetContactFilter(b3ContactFilter* filter)
 {
-	m_contactMan.m_contactFilter = filter;
+	m_contactManager.m_contactFilter = filter;
+}
+
+inline void b3World::SetDebugDraw(b3Draw* draw)
+{
+	m_debugDraw = draw;
+}
+
+inline void b3World::SetProfiler(b3Profiler* profiler)
+{
+	m_profiler = profiler;
+	m_contactManager.m_profiler = m_profiler;
 }
 
 inline void b3World::SetGravity(const b3Vec3& gravity)
@@ -265,22 +292,22 @@ inline b3List<b3Body>& b3World::GetBodyList()
 
 inline const b3List<b3Joint>& b3World::GetJointList() const
 {
-	return m_jointMan.m_jointList;
+	return m_jointManager.m_jointList;
 }
 
 inline b3List<b3Joint>& b3World::GetJointList()
 {
-	return m_jointMan.m_jointList;
+	return m_jointManager.m_jointList;
 }
 
 inline const b3List<b3Contact>& b3World::GetContactList() const
 {
-	return m_contactMan.m_contactList;
+	return m_contactManager.m_contactList;
 }
 
 inline b3List<b3Contact>& b3World::GetContactList()
 {
-	return m_contactMan.m_contactList;
+	return m_contactManager.m_contactList;
 }
 
 inline void b3World::SetDrawFlags(u32 flags)

@@ -137,7 +137,7 @@ public:
 	scalar GetSpringDampingRatio() const;
 
 	// Draw this joint.
-	void Draw() const;
+	void Draw(b3Draw* draw) const;
 protected:
 	friend class b3Joint;
 	

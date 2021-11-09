@@ -45,21 +45,22 @@ Model::Model() :
 	
 	m_setTest = true;
 
-	g_camera = &m_camera;
-	g_debugDrawData = &m_debugDrawData;
-	g_profiler = &m_profiler;
-
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	Action_ResetCamera();
+
+	g_profiler = &m_profiler;
+	g_camera = &m_camera;
+	g_debugDrawData = &m_debugDrawData;
 }
 
 Model::~Model()
 {
 	delete m_test;
-	g_debugDrawData = nullptr;
-	g_camera = nullptr;
+	
 	g_profiler = nullptr;
+	g_camera = nullptr;
+	g_debugDrawData = nullptr;
 }
 
 void Model::Command_Press_Key(int button)

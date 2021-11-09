@@ -27,7 +27,7 @@
 #include <bounce/common/memory/stack_allocator.h>
 #include <bounce/common/profiler.h>
 
-b3Island::b3Island(b3StackAllocator* allocator, u32 bodyCapacity, u32 contactCapacity, u32 jointCapacity, b3ContactListener* listener) 
+b3Island::b3Island(b3StackAllocator* allocator, u32 bodyCapacity, u32 contactCapacity, u32 jointCapacity, b3ContactListener* listener, b3Profiler* profiler) 
 {
 	m_allocator = allocator;
 	m_listener = listener;
@@ -45,6 +45,8 @@ b3Island::b3Island(b3StackAllocator* allocator, u32 bodyCapacity, u32 contactCap
 	m_bodyCount = 0;
 	m_contactCount = 0;
 	m_jointCount = 0;
+
+	m_profiler = profiler;
 }
 
 b3Island::~b3Island() 
@@ -192,7 +194,7 @@ void b3Island::Solve(const b3Vec3& gravity, scalar dt, u32 velocityIterations, u
 
 	// 2. Initialize constraints
 	{
-		B3_PROFILE("Initialize Constraints");
+		B3_PROFILE(m_profiler, "Initialize Constraints");
 		
 		contactSolver.InitializeConstraints();
 
@@ -211,7 +213,7 @@ void b3Island::Solve(const b3Vec3& gravity, scalar dt, u32 velocityIterations, u
 
 	// 3. Solve velocity constraints
 	{
-		B3_PROFILE("Solve Velocity Constraints");
+		B3_PROFILE(m_profiler, "Solve Velocity Constraints");
 
 		for (u32 i = 0; i < velocityIterations; ++i)
 		{
@@ -270,7 +272,7 @@ void b3Island::Solve(const b3Vec3& gravity, scalar dt, u32 velocityIterations, u
 	bool positionsSolved = false;
 	
 	{
-		B3_PROFILE("Solve Position Constraints");
+		B3_PROFILE(m_profiler, "Solve Position Constraints");
 		
 		for (u32 i = 0; i < positionIterations; ++i) 
 		{

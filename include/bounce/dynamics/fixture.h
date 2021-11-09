@@ -29,6 +29,7 @@ struct b3ContactEdge;
 class b3Body;
 class b3Shape;
 class b3BlockAllocator;
+class b3Draw;
 
 // Fixture definition. This requires providing a shape pointer that will 
 // be cloned and some physics-related parameters. 
@@ -140,10 +141,10 @@ public:
 	void Dump(u32 bodyIndex) const;
 
 	// Draw this shape geometry.
-	void Draw(const b3Color& color);
+	void Draw(b3Draw* draw, const b3Color& color);
 	
 	// Draw this shape in solid mode.
-	void DrawSolid(const b3Color& color);
+	void DrawSolid(b3Draw* draw, const b3Color& color);
 	
 	// Get the next fixture in the body fixture list.
 	const b3Fixture* GetNext() const;
@@ -301,14 +302,14 @@ inline void b3Fixture::ComputeMass(b3MassData* massData) const
 	m_shape->ComputeMass(massData, m_density);
 }
 
-inline void b3Fixture::Draw(const b3Color& color)
+inline void b3Fixture::Draw(b3Draw* draw, const b3Color& color)
 {
-	m_shape->Draw(m_body->GetTransform(), color);
+	m_shape->Draw(draw, m_body->GetTransform(), color);
 }
 
-inline void b3Fixture::DrawSolid(const b3Color& color)
+inline void b3Fixture::DrawSolid(b3Draw* draw, const b3Color& color)
 {
-	m_shape->DrawSolid(m_body->GetTransform(), color);
+	m_shape->DrawSolid(draw, m_body->GetTransform(), color);
 }
 
 #endif

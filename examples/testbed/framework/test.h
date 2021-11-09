@@ -45,7 +45,7 @@ class Test : public b3ContactListener
 {
 public:
 	Test();
-	virtual ~Test();
+	virtual ~Test() { }
 	
 	virtual void Step();
 
@@ -63,12 +63,9 @@ public:
 	void PreSolve(b3Contact* c) override { }
 
 	Draw m_draw;
-	
 	b3Ray m_ray;
-	
 	b3World m_world;
-	b3BodyDragger m_rigidBodyDragger;
-
+	b3BodyDragger m_bodyDragger;
 	b3BoxHull m_groundHull;
 	b3GridMesh<50, 50> m_groundMesh;
 };

@@ -21,6 +21,8 @@
 
 #include <bounce/common/math/transform.h>
 
+class b3Draw;
+
 struct b3RopeBody;
 
 // Rope definition. 
@@ -104,7 +106,7 @@ public:
 	void Step(scalar dt);
 
 	// Debug draw the links using their transforms.
-	void Draw() const;
+	void Draw(b3Draw* draw) const;
 private:
 	// Acceleration of gravity.
 	b3Vec3 m_gravity;

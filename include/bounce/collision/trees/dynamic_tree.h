@@ -25,6 +25,8 @@
 
 #define B3_NULL_NODE_D B3_MAX_U32
 
+class b3Draw;
+
 // AABB tree for dynamic AABBs.
 // From Box2D.
 class b3DynamicTree
@@ -67,7 +69,7 @@ public:
 	void Validate(u32 node) const;
 
 	// Draw this tree.
-	void Draw() const;
+	void Draw(b3Draw* draw) const;
 private:
 	struct b3Node
 	{

@@ -168,7 +168,7 @@ void b3StaticTree::Build(const b3AABB* set, u32 count)
 	B3_ASSERT(m_nodeCount == nodeCapacity);
 }
 
-void b3StaticTree::Draw() const
+void b3StaticTree::Draw(b3Draw* draw) const
 {
 	if (m_nodeCount == 0)
 	{
@@ -187,11 +187,11 @@ void b3StaticTree::Draw() const
 		const b3Node* node = m_nodes + nodeIndex;
 		if (node->IsLeaf())
 		{
-			b3Draw_draw->DrawAABB(node->aabb, b3Color_pink);
+			draw->DrawAABB(node->aabb, b3Color_pink);
 		}
 		else
 		{
-			b3Draw_draw->DrawAABB(node->aabb, b3Color_red);
+			draw->DrawAABB(node->aabb, b3Color_red);
 			
 			stack.Push(node->child1);
 			stack.Push(node->child2);

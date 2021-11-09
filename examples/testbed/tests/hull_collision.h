@@ -187,11 +187,11 @@ public:
 			b3DrawSegment(g_debugDrawData, pw, pw + wm.points[i].normal, b3Color_white, false);
 		}
 
-		sA.Draw(m_xfA, b3Color_black);
-		sB.Draw(m_xfB, b3Color_black);
+		sA.Draw(&m_draw, m_xfA, b3Color_black);
+		sB.Draw(&m_draw, m_xfB, b3Color_black);
 
-		sA.DrawSolid(m_xfA, b3Color(1.0f, 1.0f, 1.0f, 0.25f));
-		sB.DrawSolid(m_xfB, b3Color(1.0f, 1.0f, 1.0f, 0.25f));
+		sA.DrawSolid(&m_draw, m_xfA, b3Color(1.0f, 1.0f, 1.0f, 0.25f));
+		sB.DrawSolid(&m_draw, m_xfB, b3Color(1.0f, 1.0f, 1.0f, 0.25f));
 
 		DrawString(b3Color_white, "Left/Right/Up/Down Arrow - Translate shape");
 		DrawString(b3Color_white, "X/Y/Z - Rotate shape");

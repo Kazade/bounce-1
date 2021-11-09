@@ -28,6 +28,7 @@
 class b3Body;
 class b3Joint;
 class b3BlockAllocator;
+class b3Draw;
 struct b3SolverData;
 
 enum b3JointType
@@ -122,7 +123,7 @@ public:
 	}
 
 	// Draw this joint.
-	virtual void Draw() const
+	virtual void Draw(b3Draw* draw) const
 	{
 		b3Log("Draw feature not implemented for this joint type.\n");
 	}

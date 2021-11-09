@@ -498,15 +498,15 @@ void b3Rope::Step(scalar h)
 	}
 }
 
-void b3Rope::Draw() const
+void b3Rope::Draw(b3Draw* draw) const
 {
 	B3_ASSERT(m_linkCount > 0);
 
 	{
 		b3RopeBody* b = m_links;
 
-		b3Draw_draw->DrawTransform(b->m_X);
-		b3Draw_draw->DrawSolidSphere(b->m_X.rotation.GetXAxis(), b->m_X.translation, scalar(0.2), b3Color_green);
+		draw->DrawTransform(b->m_X);
+		draw->DrawSolidSphere(b->m_X.rotation.GetXAxis(), b->m_X.translation, scalar(0.2), b3Color_green);
 	}
 
 	for (u32 i = 1; i < m_linkCount; ++i)
@@ -517,13 +517,13 @@ void b3Rope::Draw() const
 		b3Transform X_J = b0->m_X * b3Inverse(b->m_X_i_J);
 		b3Transform X_J0 = b->m_X * b->m_X_J_j;
 
-		b3Draw_draw->DrawTransform(X_J);
-		b3Draw_draw->DrawPoint(X_J.translation, scalar(5), b3Color_red);
+		draw->DrawTransform(X_J);
+		draw->DrawPoint(X_J.translation, scalar(5), b3Color_red);
 
-		b3Draw_draw->DrawTransform(X_J0);
-		b3Draw_draw->DrawPoint(X_J0.translation, scalar(5), b3Color_red);
+		draw->DrawTransform(X_J0);
+		draw->DrawPoint(X_J0.translation, scalar(5), b3Color_red);
 
-		b3Draw_draw->DrawTransform(b->m_X);
-		b3Draw_draw->DrawSolidSphere(b->m_X.rotation.GetXAxis(), b->m_X.translation, scalar(0.2), b3Color_green);
+		draw->DrawTransform(b->m_X);
+		draw->DrawSolidSphere(b->m_X.rotation.GetXAxis(), b->m_X.translation, scalar(0.2), b3Color_green);
 	}
 }

@@ -585,11 +585,11 @@ void b3RevoluteJoint::SetMaxMotorTorque(scalar torque)
 	m_maxMotorTorque = torque;
 }
 
-void b3RevoluteJoint::Draw() const
+void b3RevoluteJoint::Draw(b3Draw* draw) const
 {
 	b3Transform xfA = GetFrameA();
-	b3Draw_draw->DrawTransform(xfA);
+	draw->DrawTransform(xfA);
 	
 	b3Transform xfB = GetFrameB();
-	b3Draw_draw->DrawTransform(xfB);
+	draw->DrawTransform(xfB);
 }

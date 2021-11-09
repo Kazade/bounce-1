@@ -69,7 +69,7 @@ public:
 
 		m_rope->Step(g_testSettings->inv_hertz);
 
-		m_rope->Draw();
+		m_rope->Draw(&m_draw);
 	}
 
 	static Test* Create()

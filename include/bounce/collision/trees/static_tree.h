@@ -25,6 +25,8 @@
 
 #define B3_NULL_NODE_S B3_MAX_U32
 
+class b3Draw;
+
 // AABB tree for static AABBs.
 class b3StaticTree 
 {
@@ -54,7 +56,7 @@ public:
 	void RayCast(T* callback, const b3RayCastInput& input) const;
 
 	// Draw this tree.
-	void Draw() const;
+	void Draw(b3Draw* draw) const;
 
 	// Get the size in bytes of this tree.
 	u32 GetSize() const;

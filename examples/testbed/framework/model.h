@@ -27,11 +27,11 @@
 #include <bounce/common/graphics/camera.h>
 #include <bounce/common/graphics/debugdraw.h>
 
+class Test;
+
 extern b3Profiler* g_profiler;
 extern b3Camera* g_camera;
 extern b3DebugDrawData* g_debugDrawData;
-
-class Test;
 
 class Model
 {

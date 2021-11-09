@@ -60,9 +60,9 @@ public:
 
 	void Generate()
 	{
-		if (m_rigidBodyDragger.IsDragging())
+		if (m_bodyDragger.IsDragging())
 		{
-			m_rigidBodyDragger.StopDragging();
+			m_bodyDragger.StopDragging();
 		}
 
 		for (int i = 0; i < m_count; ++i)

@@ -511,7 +511,7 @@ void b3DynamicTree::Validate(u32 nodeID) const
 	}
 }
 
-void b3DynamicTree::Draw() const
+void b3DynamicTree::Draw(b3Draw* draw) const
 {
 	if (m_nodeCount == 0)
 	{
@@ -534,11 +534,11 @@ void b3DynamicTree::Draw() const
 		const b3Node* node = m_nodes + nodeIndex;
 		if (node->IsLeaf())
 		{
-			b3Draw_draw->DrawAABB(node->aabb, b3Color_pink);
+			draw->DrawAABB(node->aabb, b3Color_pink);
 		}
 		else
 		{
-			b3Draw_draw->DrawAABB(node->aabb, b3Color_red);
+			draw->DrawAABB(node->aabb, b3Color_red);
 			
 			stack.Push(node->child1);
 			stack.Push(node->child2);

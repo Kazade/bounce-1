@@ -42,21 +42,14 @@ b3Profiler::b3Profiler() :
 	m_statsHead = nullptr;
 }
 
-void b3Profiler::Begin()
+void b3Profiler::Clear()
 {
 	B3_ASSERT(m_top == nullptr);
-}
-
-b3ProfilerStats* b3Profiler::FindStats(const char* name)
-{
-	for (b3ProfilerStats* s = m_statsHead; s != nullptr; s = s->next)
+	if (m_root)
 	{
-		if (s->name == name)
-		{
-			return s;
-		}
+		DestroyNodeRecursively(m_root);
+		m_root = nullptr;
 	}
-	return nullptr;
 }
 
 void b3Profiler::OpenScope(const char* name)
@@ -74,7 +67,7 @@ void b3Profiler::OpenScope(const char* name)
 			if (topChild->m_recursionCount == 0)
 			{
 				m_time.Update();
-				topChild->m_t0 = m_time.GetCurrentMilis();
+				topChild->m_t1 = m_time.GetCurrentMilis();
 			}
 
 			++topChild->m_recursionCount;
@@ -88,7 +81,7 @@ void b3Profiler::OpenScope(const char* name)
 	// Create a new node
 	b3ProfilerNode* newNode = (b3ProfilerNode*)m_nodePool.Allocate();
 	newNode->m_name = name;
-	newNode->m_t0 = m_time.GetCurrentMilis();
+	newNode->m_t1 = m_time.GetCurrentMilis();
 	newNode->m_elapsed = 0.0f;
 	newNode->m_callCount = 1;
 	newNode->m_recursionCount = 1;
@@ -129,9 +122,9 @@ void b3Profiler::CloseScope()
 
 	// Update top elapsed time
 	m_time.Update();
-	m_top->m_t1 = m_time.GetCurrentMilis();
+	m_top->m_t2 = m_time.GetCurrentMilis();
 
-	double elapsed = m_top->m_t1 - m_top->m_t0;
+	double elapsed = m_top->m_t2 - m_top->m_t1;
 
 	m_top->m_elapsed += elapsed;
 
@@ -162,6 +155,18 @@ void b3Profiler::CloseScope()
 	m_top = m_top->m_parent;
 }
 
+b3ProfilerStats* b3Profiler::FindStats(const char* name)
+{
+	for (b3ProfilerStats* s = m_statsHead; s != nullptr; s = s->next)
+	{
+		if (s->name == name)
+		{
+			return s;
+		}
+	}
+	return nullptr;
+}
+
 void b3Profiler::DestroyNodeRecursively(b3ProfilerNode* node)
 {
 	b3ProfilerNode* c = node->m_childHead;
@@ -173,14 +178,4 @@ void b3Profiler::DestroyNodeRecursively(b3ProfilerNode* node)
 	}
 	node->~b3ProfilerNode();
 	m_nodePool.Free(node);
-}
-
-void b3Profiler::End()
-{
-	B3_ASSERT(m_top == nullptr);
-	if (m_root)
-	{
-		DestroyNodeRecursively(m_root);
-		m_root = nullptr;
-	}
 }

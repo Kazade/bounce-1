@@ -73,7 +73,7 @@ void b3Shape::Destroy(b3Shape* shape, b3BlockAllocator* allocator)
 	}
 }
 
-void b3Shape::Draw(const b3Transform& xf, const b3Color& color) const
+void b3Shape::Draw(b3Draw* draw, const b3Transform& xf, const b3Color& color) const
 {
 	switch (m_type)
 	{
@@ -81,7 +81,7 @@ void b3Shape::Draw(const b3Transform& xf, const b3Color& color) const
 	{
 		const b3SphereShape* sphere = (b3SphereShape*)this;
 		b3Vec3 p = xf * sphere->m_center;
-		b3Draw_draw->DrawPoint(p, scalar(4), color);
+		draw->DrawPoint(p, scalar(4), color);
 		break;
 	}
 	case b3Shape::e_capsule:
@@ -89,9 +89,9 @@ void b3Shape::Draw(const b3Transform& xf, const b3Color& color) const
 		const b3CapsuleShape* capsule = (b3CapsuleShape*)this;
 		b3Vec3 p1 = xf * capsule->m_vertex1;
 		b3Vec3 p2 = xf * capsule->m_vertex2;
-		b3Draw_draw->DrawPoint(p1, scalar(4), color);
-		b3Draw_draw->DrawPoint(p2, scalar(4), color);
-		b3Draw_draw->DrawSegment(p1, p2, color);
+		draw->DrawPoint(p1, scalar(4), color);
+		draw->DrawPoint(p2, scalar(4), color);
+		draw->DrawSegment(p1, p2, color);
 		break;
 	}
 	case b3Shape::e_triangle:
@@ -102,7 +102,7 @@ void b3Shape::Draw(const b3Transform& xf, const b3Color& color) const
 		b3Vec3 v3 = xf * triangle->m_vertex3;
 		b3Vec3 n = b3Cross(v2 - v1, v3 - v1);
 		n.Normalize();
-		b3Draw_draw->DrawTriangle(v1, v2, v3, color);
+		draw->DrawTriangle(v1, v2, v3, color);
 		break;
 	}
 	case b3Shape::e_hull:
@@ -117,7 +117,7 @@ void b3Shape::Draw(const b3Transform& xf, const b3Color& color) const
 			b3Vec3 p1 = xf * hull->vertices[edge->origin];
 			b3Vec3 p2 = xf * hull->vertices[twin->origin];
 
-			b3Draw_draw->DrawSegment(p1, p2, color);
+			draw->DrawSegment(p1, p2, color);
 		}
 		break;
 	}
@@ -133,7 +133,7 @@ void b3Shape::Draw(const b3Transform& xf, const b3Color& color) const
 			b3Vec3 p2 = xf * b3Mul(ms->m_scale, mesh->vertices[t->v2]);
 			b3Vec3 p3 = xf * b3Mul(ms->m_scale, mesh->vertices[t->v3]);
 
-			b3Draw_draw->DrawTriangle(p1, p2, p3, color);
+			draw->DrawTriangle(p1, p2, p3, color);
 		}
 		break;
 	}
@@ -144,7 +144,7 @@ void b3Shape::Draw(const b3Transform& xf, const b3Color& color) const
 	};
 }
 
-void b3Shape::DrawSolid(const b3Transform& xf, const b3Color& color) const
+void b3Shape::DrawSolid(b3Draw* draw, const b3Transform& xf, const b3Color& color) const
 {
 	switch (m_type)
 	{
@@ -154,7 +154,7 @@ void b3Shape::DrawSolid(const b3Transform& xf, const b3Color& color) const
 
 		b3Vec3 center = xf * sphere->m_center;
 
-		b3Draw_draw->DrawSolidSphere(xf.rotation.GetYAxis(), center, sphere->m_radius, color);
+		draw->DrawSolidSphere(xf.rotation.GetYAxis(), center, sphere->m_radius, color);
 
 		break;
 	}
@@ -165,7 +165,7 @@ void b3Shape::DrawSolid(const b3Transform& xf, const b3Color& color) const
 		b3Vec3 c1 = xf * capsule->m_vertex1;
 		b3Vec3 c2 = xf * capsule->m_vertex2;
 
-		b3Draw_draw->DrawSolidCapsule(xf.rotation.GetYAxis(), c1, c2, capsule->m_radius, color);
+		draw->DrawSolidCapsule(xf.rotation.GetYAxis(), c1, c2, capsule->m_radius, color);
 
 		break;
 	}
@@ -180,8 +180,8 @@ void b3Shape::DrawSolid(const b3Transform& xf, const b3Color& color) const
 		b3Vec3 n = b3Cross(v2 - v1, v3 - v1);
 		n.Normalize();
 
-		b3Draw_draw->DrawSolidTriangle(-n, v3, v2, v1, color);
-		b3Draw_draw->DrawSolidTriangle(n, v1, v2, v3, color);
+		draw->DrawSolidTriangle(-n, v3, v2, v1, color);
+		draw->DrawSolidTriangle(n, v1, v2, v3, color);
 
 		break;
 	}
@@ -210,7 +210,7 @@ void b3Shape::DrawSolid(const b3Transform& xf, const b3Color& color) const
 				b3Vec3 p2 = xf * hull->vertices[i2];
 				b3Vec3 p3 = xf * hull->vertices[i3];
 
-				b3Draw_draw->DrawSolidTriangle(n, p1, p2, p3, color);
+				draw->DrawSolidTriangle(n, p1, p2, p3, color);
 
 				edge = next;
 			} while (hull->GetEdge(edge->next) != begin);
@@ -233,10 +233,10 @@ void b3Shape::DrawSolid(const b3Transform& xf, const b3Color& color) const
 
 			b3Vec3 n1 = b3Cross(p2 - p1, p3 - p1);
 			n1.Normalize();
-			b3Draw_draw->DrawSolidTriangle(n1, p1, p2, p3, color);
+			draw->DrawSolidTriangle(n1, p1, p2, p3, color);
 
 			b3Vec3 n2 = -n1;
-			b3Draw_draw->DrawSolidTriangle(n2, p3, p2, p1, color);
+			draw->DrawSolidTriangle(n2, p3, p2, p1, color);
 		}
 
 		break;

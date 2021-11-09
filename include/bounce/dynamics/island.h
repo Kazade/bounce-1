@@ -28,14 +28,14 @@ class b3Joint;
 class b3Body;
 struct b3Velocity;
 struct b3Position;
-struct b3Profile;
+class b3Profiler;
 
 struct b3ContactVelocityConstraint;
 
 class b3Island 
 {
 public :
-	b3Island(b3StackAllocator* stack, u32 bodyCapacity, u32 contactCapacity, u32 jointCapacity, b3ContactListener* listener);
+	b3Island(b3StackAllocator* stack, u32 bodyCapacity, u32 contactCapacity, u32 jointCapacity, b3ContactListener* listener, b3Profiler* profiler);
 	~b3Island();
 
 	void Clear();
@@ -74,6 +74,8 @@ private :
 	b3Position* m_positions;
 	b3Velocity* m_velocities;
 	b3Mat33* m_invInertias;
+
+	b3Profiler* m_profiler;
 };
 
 #endif

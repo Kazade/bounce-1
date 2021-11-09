@@ -149,7 +149,7 @@ void b3ContactManager::FindNewContacts()
 
 void b3ContactManager::UpdateContacts()
 {
-	B3_PROFILE("Update Contacts");
+	B3_PROFILE(m_profiler, "Update Contacts");
 
 	// Update the state of all contacts.
 	b3Contact* c = m_contactList.m_head;

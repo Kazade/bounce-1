@@ -21,15 +21,14 @@
 
 #include <bounce/common/memory/block_pool.h>
 #include <bounce/common/time.h>
-#include <bounce/common/settings.h>
 
 // Persistent statistics. 
 struct b3ProfilerStats
 {
-	const char* name; // node unique id
-	double minElapsed; // min elapsed time in ms
-	double maxElapsed; // max elapsed time in ms
-	b3ProfilerStats* next; // next stat into profiler list of stats
+	const char* name;
+	double minElapsed;
+	double maxElapsed;
+	b3ProfilerStats* next;
 };
 
 // A profiler node.
@@ -61,16 +60,16 @@ private:
 
 	b3ProfilerNode* FindChildNode(const char* name);
 
-	const char* m_name; // unique id
-	double m_elapsed; // total elapsed time
-	u32 m_callCount; // number of calls inside the parent node
-	u32 m_recursionCount; // internal, recursion helper counter
-	double m_t0; // internal
-	double m_t1; // internal 
-	b3ProfilerNode* m_parent; // parent node
-	b3ProfilerNode* m_childHead; // list of children
-	b3ProfilerNode* m_childNext; // link to the next node in the parent node list of children
-	b3ProfilerStats* m_stats; // persistent node statistics
+	const char* m_name;
+	double m_elapsed;
+	u32 m_callCount;
+	u32 m_recursionCount;
+	double m_t1;
+	double m_t2;
+	b3ProfilerNode* m_parent;
+	b3ProfilerNode* m_childHead;
+	b3ProfilerNode* m_childNext;
+	b3ProfilerStats* m_stats;
 };
 
 // Immediate mode hierarchical profiler. 
@@ -80,11 +79,10 @@ public:
 	// Default ctor.
 	b3Profiler();
 
-	// Return the root node.
-	const b3ProfilerNode* GetRoot() const { return m_root; };
-	
-	// Begin profiling.
-	void Begin();
+	// Clear the profiler tree node buffer. 
+	// This must be called before profiling usually at the 
+	// beginning of each frame.
+	void Clear();
 
 	// Open a scope block.
 	void OpenScope(const char* name);
@@ -92,8 +90,8 @@ public:
 	// Close the last scope block.
 	void CloseScope();
 
-	// End profiling.
-	void End();
+	// Return the root node.
+	const b3ProfilerNode* GetRoot() const { return m_root; };
 private:
 	b3ProfilerStats* FindStats(const char* name);
 	void DestroyNodeRecursively(b3ProfilerNode* node);
@@ -106,32 +104,33 @@ private:
 	b3ProfilerStats* m_statsHead; 
 };
 
-// The profiler used by Bounce. 
-extern b3Profiler* b3Profiler_profiler;
-
 // A profiler scope. 
 struct b3ProfileScope
 {
 	// Open a new scope.
-	b3ProfileScope(const char* name)
+	b3ProfileScope(b3Profiler* _profiler, const char* name)
 	{
-		if (b3Profiler_profiler)
+		profiler = _profiler;
+		if (profiler)
 		{
-			b3Profiler_profiler->OpenScope(name);
+			profiler->OpenScope(name);
 		}
 	}
 
 	// Close this scope.
 	~b3ProfileScope()
 	{
-		if (b3Profiler_profiler)
+		if (profiler)
 		{
-			b3Profiler_profiler->CloseScope();
+			profiler->CloseScope();
 		}
 	}
+	
+	// This scope profiler.
+	b3Profiler* profiler;
 };
 
 // Use this macro to start a block of scope.
-#define B3_PROFILE(name) b3ProfileScope scope(name)
+#define B3_PROFILE(profiler, name) b3ProfileScope scope(profiler, name)
 
 #endif

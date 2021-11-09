@@ -78,13 +78,13 @@ void b3Fixture::DestroyContacts()
 	{
 		b3ContactEdge* tmp = ce;
 		ce = ce->m_next;
-		world->m_contactMan.Destroy(tmp->contact);
+		world->m_contactManager.Destroy(tmp->contact);
 	}
 }
 
 const b3AABB& b3Fixture::GetAABB() const
 {
-	return m_body->GetWorld()->m_contactMan.m_broadPhase.GetAABB(m_broadPhaseID);
+	return m_body->GetWorld()->m_contactManager.m_broadPhase.GetAABB(m_broadPhaseID);
 }
 
 void b3Fixture::Dump(u32 bodyIndex) const

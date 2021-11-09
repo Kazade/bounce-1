@@ -103,14 +103,15 @@ static void Run()
 	glfwGetWindowSize(s_window, &w, &h);
 	s_view->Event_SetWindowSize(u32(w), u32(h));
 
-	std::chrono::duration<double> frameTime(0.0);
 	std::chrono::duration<double> sleepAdjust(0.0);
 
 	while (glfwWindowShouldClose(s_window) == 0)
 	{
 		std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
-
-		g_profiler->Begin();
+		
+		extern b3Profiler* g_profiler;
+		
+		g_profiler->Clear();
 
 		g_profiler->OpenScope("Frame");
 
@@ -124,12 +125,10 @@ static void Run()
 
 		s_view->RenderInterface();
 
-		g_profiler->End();
-
 		glfwSwapBuffers(s_window);
 		glfwPollEvents();
 
-		// From Box2D.
+		// Box2D.
 		// Throttle to cap at 60Hz. This adaptive using a sleep adjustment. This could be improved by
 		// using mm_pause or equivalent for the last millisecond.
 		std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -142,7 +141,7 @@ static void Run()
 		}
 
 		std::chrono::steady_clock::time_point t3 = std::chrono::steady_clock::now();
-		frameTime = t3 - t1;
+		std::chrono::duration<double> frameTime = t3 - t1;
 
 		// Compute the sleep adjustment using a low pass filter
 		sleepAdjust = 0.9 * sleepAdjust + 0.1 * (target - frameTime);

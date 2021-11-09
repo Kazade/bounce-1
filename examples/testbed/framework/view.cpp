@@ -373,8 +373,6 @@ void View::Interface()
 
 	if (g_settings->drawProfiler)
 	{
-		extern b3Profiler* g_profiler;
-
 		ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
 		ImVec2 wp = ImGui::GetWindowPos();
 		ImVec2 ws = ImGui::GetWindowSize();
@@ -386,13 +384,15 @@ void View::Interface()
 
 		int width, height;
 		glfwGetWindowSize(m_window, &width, &height);
-		
+
 		ImGui::SetNextWindowBgAlpha(0.0f);
 		ImGui::SetNextWindowPos(ImVec2(0.0f, wp.y));
 		ImGui::SetNextWindowSize(ImVec2(width - 250.0f, 0.0f));
 
 		ImGui::Begin("Profiler", NULL, ImGuiWindowFlags_AlwaysAutoResize);
 
+		extern b3Profiler* g_profiler;
+		
 		const b3ProfilerNode* root = g_profiler->GetRoot();
 		if (root)
 		{

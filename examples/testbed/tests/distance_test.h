@@ -64,8 +64,8 @@ public:
 		b3DrawTransform(g_debugDrawData, m_xfA);
 		b3DrawTransform(g_debugDrawData, m_xfB);
 		
-		m_shapeA.Draw(m_xfA, b3Color_black);
-		m_shapeB.Draw(m_xfB, b3Color_black);
+		m_shapeA.Draw(&m_draw, m_xfA, b3Color_black);
+		m_shapeB.Draw(&m_draw, m_xfB, b3Color_black);
 
 		DrawString(b3Color_white, "Left/Right/Up/Down Arrow - Translate shape");
 		DrawString(b3Color_white, "X/Y/Z - Rotate shape");

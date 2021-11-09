@@ -27,6 +27,7 @@ class b3Shape;
 class b3ContactFilter;
 class b3ContactListener;
 class b3BlockAllocator;
+class b3Profiler;
 
 // Contact delegator for b3World.
 class b3ContactManager 
@@ -55,6 +56,7 @@ public:
 	b3ContactFilter* m_contactFilter;
 	b3ContactListener* m_contactListener;
 	b3BlockAllocator* m_allocator;
+	b3Profiler* m_profiler;
 };
 
 #endif

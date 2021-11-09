@@ -60,11 +60,11 @@ public:
 		b3DrawTransform(g_debugDrawData, xfA0);
 		b3DrawTransform(g_debugDrawData, xfB0);
 
-		m_shapeA.Draw(xfA0, b3Color_black);
-		m_shapeB.Draw(xfB0, b3Color_black);
+		m_shapeA.Draw(&m_draw, xfA0, b3Color_black);
+		m_shapeB.Draw(&m_draw, xfB0, b3Color_black);
 
-		m_shapeA.DrawSolid(xfA0, colorA0);
-		m_shapeB.DrawSolid(xfB0, colorB0);
+		m_shapeA.DrawSolid(&m_draw, xfA0, colorA0);
+		m_shapeB.DrawSolid(&m_draw, xfB0, colorB0);
 
 		// t1
 		b3Transform xfA1 = m_sweepA.GetTransform(1.0f);
@@ -73,11 +73,11 @@ public:
 		b3DrawTransform(g_debugDrawData, xfA1);
 		b3DrawTransform(g_debugDrawData, xfB1);
 
-		m_shapeA.Draw(xfA1, b3Color_black);
-		m_shapeB.Draw(xfB1, b3Color_black);
+		m_shapeA.Draw(&m_draw, xfA1, b3Color_black);
+		m_shapeB.Draw(&m_draw, xfB1, b3Color_black);
 
-		m_shapeA.DrawSolid(xfA1, colorA0);
-		m_shapeB.DrawSolid(xfB1, colorB0);
+		m_shapeA.DrawSolid(&m_draw, xfA1, colorA0);
+		m_shapeB.DrawSolid(&m_draw, xfB1, colorB0);
 
 		// time
 		b3Color colorAt(1.0f, 0.0f, 0.0f, 0.5f);
@@ -89,11 +89,11 @@ public:
 		b3DrawTransform(g_debugDrawData, xfAx);
 		b3DrawTransform(g_debugDrawData, xfBx);
 
-		m_shapeA.Draw(xfAx, b3Color_black);
-		m_shapeB.Draw(xfBx, b3Color_black);
+		m_shapeA.Draw(&m_draw, xfAx, b3Color_black);
+		m_shapeB.Draw(&m_draw, xfBx, b3Color_black);
 
-		m_shapeA.DrawSolid(xfAx, colorAt);
-		m_shapeB.DrawSolid(xfBx, colorBt);
+		m_shapeA.DrawSolid(&m_draw, xfAx, colorAt);
+		m_shapeB.DrawSolid(&m_draw, xfBx, colorBt);
 
 		b3TOIInput input;
 		input.proxyA = m_proxyA;
@@ -109,8 +109,8 @@ public:
 			b3Transform xfAt = m_sweepA.GetTransform(output.t);
 			b3Transform xfBt = m_sweepB.GetTransform(output.t);
 
-			m_shapeA.Draw(xfAt, b3Color_black);
-			m_shapeB.Draw(xfBt, b3Color_black);
+			m_shapeA.Draw(&m_draw, xfAt, b3Color_black);
+			m_shapeB.Draw(&m_draw, xfBt, b3Color_black);
 		}
 
 		DrawString(b3Color_white, "Left/Right/Up/Down Arrow/W/S - Translate shape");

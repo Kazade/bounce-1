@@ -575,13 +575,13 @@ void b3PrismaticJoint::SetMaxMotorForce(scalar force)
 	}
 }
 
-void b3PrismaticJoint::Draw() const
+void b3PrismaticJoint::Draw(b3Draw* draw) const
 {
 	b3Vec3 pA = GetAnchorA();
-	b3Draw_draw->DrawPoint(pA, scalar(4), b3Color_red);
+	draw->DrawPoint(pA, scalar(4), b3Color_red);
 
 	b3Vec3 pB = GetAnchorB();
-	b3Draw_draw->DrawPoint(pB, scalar(4), b3Color_green);
+	draw->DrawPoint(pB, scalar(4), b3Color_green);
 
 	b3Mat33 localAxesA(m_localXAxisA, m_localYAxisA, m_localZAxisA);
 	b3Quat localRotationA = b3Mat33Quat(localAxesA);
@@ -590,5 +590,5 @@ void b3PrismaticJoint::Draw() const
 	xfA.translation = pA;
 	xfA.rotation = GetBodyA()->GetWorldFrame(localRotationA);
 
-	b3Draw_draw->DrawTransform(xfA);
+	draw->DrawTransform(xfA);
 }

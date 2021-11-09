@@ -143,7 +143,7 @@ public:
 	scalar GetMaxMotorForce() const { return m_maxMotorForce; }
 
 	// Draw this joint
-	void Draw() const;
+	void Draw(b3Draw* draw) const;
 protected:
 	friend class b3Joint;
 

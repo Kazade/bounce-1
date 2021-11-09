@@ -95,15 +95,13 @@ void DestroyHull(b3Hull* hull)
 }
 
 Test::Test() : 
-	m_rigidBodyDragger(&m_ray, &m_world)
+	m_bodyDragger(&m_ray, &m_world)
 {
 	m_draw.m_debugDrawData = g_debugDrawData;
 	
-	b3Draw_draw = &m_draw;
-	b3Profiler_profiler = g_profiler;
-	b3_convexCache = g_testSettings->convexCache;
-
 	m_world.SetContactListener(this);
+	m_world.SetProfiler(g_profiler);
+	m_world.SetDebugDraw(&m_draw);
 
 	m_ray.origin.SetZero();
 	m_ray.direction.Set(0.0f, 0.0f, -1.0f);
@@ -113,12 +111,8 @@ Test::Test() :
 	
 	m_groundMesh.BuildTree();
 	m_groundMesh.BuildAdjacency();
-}
 
-Test::~Test()
-{
-	b3Draw_draw = nullptr;
-	b3Profiler_profiler = nullptr;
+	b3_convexCache = g_testSettings->convexCache;
 }
 
 void Test::Step()
@@ -126,11 +120,9 @@ void Test::Step()
 	b3_convexCache = g_testSettings->convexCache;
 
 	// Step
-	scalar dt = g_testSettings->inv_hertz;
-
 	m_world.SetSleeping(g_testSettings->sleep);
 	m_world.SetWarmStart(g_testSettings->warmStart);
-	m_world.Step(dt, g_testSettings->velocityIterations, g_testSettings->positionIterations);
+	m_world.Step(g_testSettings->inv_hertz, g_testSettings->velocityIterations, g_testSettings->positionIterations);
 
 	// Draw
 	u32 drawFlags = 0;
@@ -145,11 +137,7 @@ void Test::Step()
 
 	m_world.SetDrawFlags(drawFlags);
 	m_world.Draw();
-
-	if (g_settings->drawTriangles)
-	{
-		m_world.DrawSolid();
-	}
+	m_world.DrawSolid();
 
 	if (g_testSettings->pause)
 	{
@@ -191,17 +179,17 @@ void Test::MouseMove(const b3Ray& pw)
 {
 	m_ray = pw;
 
-	if (m_rigidBodyDragger.IsDragging() == true)
+	if (m_bodyDragger.IsDragging() == true)
 	{
-		m_rigidBodyDragger.Drag();
+		m_bodyDragger.Drag();
 	}
 }
 
 void Test::MouseLeftDown(const b3Ray& pw)
 {
-	if (m_rigidBodyDragger.IsDragging() == false)
+	if (m_bodyDragger.IsDragging() == false)
 	{
-		if (m_rigidBodyDragger.StartDragging() == true)
+		if (m_bodyDragger.StartDragging() == true)
 		{
 			BeginDragging();
 		}
@@ -210,9 +198,9 @@ void Test::MouseLeftDown(const b3Ray& pw)
 
 void Test::MouseLeftUp(const b3Ray& pw)
 {
-	if (m_rigidBodyDragger.IsDragging() == true)
+	if (m_bodyDragger.IsDragging() == true)
 	{
-		m_rigidBodyDragger.StopDragging();
+		m_bodyDragger.StopDragging();
 
 		EndDragging();
 	}

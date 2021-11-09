@@ -26,6 +26,7 @@
 #include <bounce/collision/geometry/sphere.h>
 
 class b3BlockAllocator;
+class b3Draw;
 
 // This structure stores the mass-related data of a shape.
 struct b3MassData 
@@ -111,11 +112,11 @@ public:
 	// Compute the ray intersection point, normal of surface, and fraction.
 	virtual bool RayCast(b3RayCastOutput* output, const b3RayCastInput& input, const b3Transform& xf) const = 0;
 
-	// Debug draw this shape.
-	void Draw(const b3Transform& xf, const b3Color& color) const;
+	// Debug draw this shape in frame mode.
+	void Draw(b3Draw* draw, const b3Transform& xf, const b3Color& color) const;
 
 	// Debug draw this shape in solid mode.
-	void DrawSolid(const b3Transform& xf, const b3Color& color) const;
+	void DrawSolid(b3Draw* draw, const b3Transform& xf, const b3Color& color) const;
 	
 	// Factory destroy.
 	static void Destroy(b3Shape* shape, b3BlockAllocator* allocator);
