@@ -19,8 +19,6 @@
 #include <bounce/common/profiler.h>
 #include <bounce/common/math/math.h>
 
-b3Profiler* b3Profiler_profiler = nullptr;
-
 b3ProfilerNode* b3ProfilerNode::FindChildNode(const char* name) 
 {
 	for (b3ProfilerNode* c = m_childHead; c != nullptr; c = c->m_childNext)
