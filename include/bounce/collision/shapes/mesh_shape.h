@@ -48,6 +48,7 @@ public:
 	
 	const b3Mesh* m_mesh;
 
+	// The mesh shape scale. It can be non-uniform and negative.
 	b3Vec3 m_scale;
 };
 
