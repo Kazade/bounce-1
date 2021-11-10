@@ -103,7 +103,7 @@ inline void b3DrawCircle(b3DebugDrawData* data, const b3Vec3& normal, const b3Ve
 	b3Vec3 n1, n3;
 	b3ComputeBasis(normal, n1, n3);
 	
-	scalar kAngleInc = 2.0f * B3_PI / scalar(E);
+	scalar kAngleInc = scalar(2) * B3_PI / scalar(E);
 	
 	b3Quat q;
 	q.SetAxisAngle(normal, kAngleInc);
@@ -128,7 +128,7 @@ void b3DrawSolidCircle(b3DebugDrawData* data, const b3Vec3& normal, const b3Vec3
 	b3Vec3 n1, n3;
 	b3ComputeBasis(normal, n1, n3);
 
-	scalar kAngleInc = 2.0f * B3_PI / scalar(E);
+	scalar kAngleInc = scalar(2) * B3_PI / scalar(E);
 	
 	b3Quat q;
 	q.SetAxisAngle(normal, kAngleInc);
@@ -164,7 +164,7 @@ struct b3SphereMesh
 		scalar kThetaInc = B3_PI / scalar(H);
 		
 		// Longitude increment in range [0, 2*pi]
-		scalar kPhiInc = 2.0f * B3_PI / scalar(W);
+		scalar kPhiInc = scalar(2) * B3_PI / scalar(W);
 		
 		vertexCount = 0;
 		for (u32 i = 0; i < H + 1; ++i)
@@ -294,7 +294,7 @@ inline void b3DrawSolidSphere(b3DebugDrawData* data, const b3Vec3& yAxis, const 
 		p3 *= radius;
 		p3 = b3Mul(xf, p3);
 
-		b3Vec3 n = (n1 + n2 + n3) / 3.0f;
+		b3Vec3 n = (n1 + n2 + n3) / scalar(3);
 		n = b3Mul(xf.rotation, n);
 
 		data->triangles->Draw(n, p1, p2, p3, color, depthEnabled);
@@ -315,10 +315,10 @@ struct b3CylinderMesh
 		// Build vertices
 		
 		// Angular increment in range [0, 2*pi]
-		scalar kPhiInc = 2.0f * B3_PI / scalar(W);
+		scalar kPhiInc = scalar(2) * B3_PI / scalar(W);
 		
 		// Longitude increment in range [0, 1]
-		scalar kYInc = 1.0f / scalar(H);
+		scalar kYInc = scalar(1) / scalar(H);
 		
 		vertexCount = 0;
 		for (u32 i = 0; i < H + 1; ++i)
@@ -336,7 +336,7 @@ struct b3CylinderMesh
 				// Cylindrical to Cartesian coordinates		
 				b3Vec3 p;
 				p.x = cos_phi;
-				p.y = y - 0.5f; // Centralize
+				p.y = y - scalar(0.5); // Centralize
 				p.z = sin_phi;
 				
 				u32 vertex = GetVertex(i, j);
