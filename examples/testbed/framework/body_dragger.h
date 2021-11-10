@@ -16,22 +16,22 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef B3_BODY_DRAGGER_H
-#define B3_BODY_DRAGGER_H
+#ifndef BODY_DRAGGER_H
+#define BODY_DRAGGER_H
 
-#include <bounce/collision/geometry/ray.h>
-#include <bounce/dynamics/fixture.h>
-#include <bounce/dynamics/body.h>
-#include <bounce/dynamics/world.h>
-#include <bounce/dynamics/world_listeners.h>
-#include <bounce/dynamics/joints/mouse_joint.h>
+#include <bounce/common/math/vec3.h>
 
-// A body shape dragger.
-class b3BodyDragger
+struct b3Ray;
+class b3World;
+class b3Fixture;
+class b3MouseJoint;
+
+// A body dragger.
+class BodyDragger
 {
 public:
-	b3BodyDragger(b3Ray* ray, b3World* world);
-	~b3BodyDragger();
+	BodyDragger(b3Ray* ray, b3World* world);
+	~BodyDragger();
 
 	bool StartDragging();
 
@@ -45,28 +45,33 @@ public:
 
 	b3Fixture* GetFixture() const;
 
+	b3MouseJoint* GetMouseJoint();
+
 	b3Vec3 GetPointA() const;
 
 	b3Vec3 GetPointB() const;
 private:
 	b3Ray * m_ray;
-	scalar m_x;
-
+	scalar m_fraction;
 	b3World* m_world;
-	
 	b3Fixture* m_fixture;
-	b3Vec3 m_p;
+	b3Vec3 m_localPoint;
 	b3MouseJoint* m_mouseJoint;
 };
 
-inline bool b3BodyDragger::IsDragging() const
+inline bool BodyDragger::IsDragging() const
 {
 	return m_fixture != nullptr;
 }
 
-inline b3Ray* b3BodyDragger::GetRay() const
+inline b3Ray* BodyDragger::GetRay() const
 {
 	return m_ray;
+}
+
+inline b3MouseJoint* BodyDragger::GetMouseJoint()
+{
+	return m_mouseJoint;
 }
 
 #endif

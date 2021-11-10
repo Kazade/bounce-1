@@ -105,10 +105,10 @@ private:
 };
 
 // A profiler scope. 
-struct b3ProfileScope
+struct b3ProfilerScope
 {
 	// Open a new scope.
-	b3ProfileScope(b3Profiler* _profiler, const char* name)
+	b3ProfilerScope(b3Profiler* _profiler, const char* name)
 	{
 		profiler = _profiler;
 		if (profiler)
@@ -118,7 +118,7 @@ struct b3ProfileScope
 	}
 
 	// Close this scope.
-	~b3ProfileScope()
+	~b3ProfilerScope()
 	{
 		if (profiler)
 		{
@@ -131,6 +131,6 @@ struct b3ProfileScope
 };
 
 // Use this macro to start a block of scope.
-#define B3_PROFILE(profiler, name) b3ProfileScope scope(profiler, name)
+#define B3_PROFILE(profiler, name) b3ProfilerScope profilerScope(profiler, name)
 
 #endif

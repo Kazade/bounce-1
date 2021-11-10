@@ -83,7 +83,7 @@ ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/island.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/joint_manager.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/time_step.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/world.h
-${BOUNCE_INCLUDE_DIR}/bounce/dynamics/world_listeners.h
+${BOUNCE_INCLUDE_DIR}/bounce/dynamics/world_callbacks.h
 
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/contact.h
 ${BOUNCE_INCLUDE_DIR}/bounce/dynamics/contacts/convex_contact.h

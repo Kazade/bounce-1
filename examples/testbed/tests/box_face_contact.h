@@ -19,6 +19,8 @@
 #ifndef BOX_FACE_CONTACT_H
 #define BOX_FACE_CONTACT_H
 
+#include <bounce/collision/collide/collide.h>
+
 class BoxFaceContact : public Test
 {
 public:

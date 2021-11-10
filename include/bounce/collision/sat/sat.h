@@ -89,10 +89,15 @@ inline b3SATFeaturePair b3MakeFeaturePair(b3SATCacheType state, b3SATFeatureType
 	return pair;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 struct b3FeatureCache
 {
+	// Default ctor does nothing for performance.
+	b3FeatureCache() { }
+
 	// Read the current state of the cache.
-	// Return e_unkown if neither a separation or penetration was detected.
+	// Return e_empty if neither a separation or penetration was detected.
 	b3SATCacheType ReadState(const b3Transform& xf1, const b3Hull* hull1,
 		const b3Transform& xf2, const b3Hull* hull2, scalar totalRadius);
 
@@ -102,6 +107,7 @@ struct b3FeatureCache
 	b3SATCacheType ReadFace(const b3Transform& xf1, const b3Hull* hull1,
 		const b3Transform& xf2, const b3Hull* hull2, scalar totalRadius);
 	
+	// The feature pair.
 	b3SATFeaturePair featurePair;
 };
 

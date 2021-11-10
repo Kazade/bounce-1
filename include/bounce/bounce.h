@@ -19,19 +19,10 @@
 #ifndef BOUNCE_H
 #define BOUNCE_H
 
-// Include this file header in your project to directly access Bounce objects.
+// These files constitute the main Bounce API.
 
 #include <bounce/common/settings.h>
-
 #include <bounce/common/draw.h>
-
-#include <bounce/common/math/math.h>
-
-#include <bounce/collision/gjk/gjk.h>
-#include <bounce/collision/sat/sat.h>
-#include <bounce/collision/collision.h>
-#include <bounce/collision/broad_phase.h>
-#include <bounce/collision/time_of_impact.h>
 
 #include <bounce/collision/geometry/geometry.h>
 #include <bounce/collision/geometry/sphere.h>
@@ -49,7 +40,11 @@
 #include <bounce/collision/shapes/hull_shape.h>
 #include <bounce/collision/shapes/mesh_shape.h>
 
-#include <bounce/collision/collide/collide.h>
+#include <bounce/collision/trees/dynamic_tree.h>
+#include <bounce/collision/trees/static_tree.h>
+#include <bounce/collision/broad_phase.h>
+
+#include <bounce/dynamics/contacts/contact.h>
 
 #include <bounce/dynamics/joints/mouse_joint.h>
 #include <bounce/dynamics/joints/spring_joint.h>
@@ -62,10 +57,10 @@
 #include <bounce/dynamics/joints/prismatic_joint.h>
 #include <bounce/dynamics/joints/wheel_joint.h>
 
-#include <bounce/dynamics/contacts/contact.h>
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/fixture.h>
+#include <bounce/dynamics/time_step.h>
 #include <bounce/dynamics/world.h>
-#include <bounce/dynamics/world_listeners.h>
+#include <bounce/dynamics/world_callbacks.h>
 
 #endif

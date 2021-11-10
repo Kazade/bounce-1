@@ -19,13 +19,14 @@
 #include <bounce/dynamics/contact_manager.h>
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/fixture.h>
-#include <bounce/dynamics/world_listeners.h>
+#include <bounce/dynamics/world_callbacks.h>
 #include <bounce/common/profiler.h>
 
 b3ContactManager::b3ContactManager()
 {
 	m_contactListener = nullptr;
 	m_contactFilter = nullptr;
+	m_profiler = nullptr;
 }
 
 void b3ContactManager::AddPair(void* dataA, void* dataB)

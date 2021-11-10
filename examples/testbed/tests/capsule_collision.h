@@ -19,6 +19,8 @@
 #ifndef CAPSULE_COLLISION_H
 #define CAPSULE_COLLISION_H
 
+#include <bounce/collision/collide/collide.h>
+
 class CapsuleCollision : public Test
 {
 public:

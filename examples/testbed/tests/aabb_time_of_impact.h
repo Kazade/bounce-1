@@ -19,6 +19,8 @@
 #ifndef AABB_TIME_OF_IMPACT_H
 #define AABB_TIME_OF_IMPACT_H
 
+#include <bounce/collision/time_of_impact.h>
+
 class AABBTimeOfImpact : public Test
 {
 public:

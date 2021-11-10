@@ -32,7 +32,7 @@
 #include <bounce/dynamics/fixture.h>
 #include <bounce/dynamics/body.h>
 #include <bounce/dynamics/world.h>
-#include <bounce/dynamics/world_listeners.h>
+#include <bounce/dynamics/world_callbacks.h>
 
 bool b3Contact::s_initialized = false;
 b3ContactRegister b3Contact::s_registers[b3Shape::e_typeCount][b3Shape::e_typeCount];
@@ -276,5 +276,5 @@ bool b3Contact::IsSensorContact() const
 
 bool b3Contact::HasDynamicBody() const
 {
-	return m_pair.fixtureA->GetBody()->GetType() == e_dynamicBody || m_pair.fixtureB->GetBody()->GetType() == e_dynamicBody;
+	return m_pair.fixtureA->m_body->m_type == e_dynamicBody || m_pair.fixtureB->m_body->m_type == e_dynamicBody;
 }

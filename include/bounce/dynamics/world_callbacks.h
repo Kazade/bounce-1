@@ -16,13 +16,13 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef B3_WORLD_LISTENERS_H
-#define B3_WORLD_LISTENERS_H
+#ifndef B3_WORLD_CALLBACKS_H
+#define B3_WORLD_CALLBACKS_H
 
 #include <bounce/common/math/math.h>
 
-class b3Shape;
 class b3Contact;
+class b3Fixture;
 
 class b3QueryListener 
 {
@@ -65,7 +65,7 @@ public:
 	virtual ~b3RayCastFilter() { }
 
 	// Return true if ray-cast calculations should be performed on this fixture.
-	virtual bool ShouldRayCast(b3Fixture* shape) = 0;
+	virtual bool ShouldRayCast(b3Fixture* fixture) = 0;
 };
 
 // Implement this class to provide shape-cast filtering.
@@ -87,7 +87,7 @@ public:
 
 	// Report that a fixture was hit by the ray to this contact listener.
 	// The reported information are the fixture hit by the convex shape,
-	// the intersection point on the shape, the surface normal associated with the point, and the 
+	// the intersection point on the fixture, the surface normal associated with the point, and the 
 	// intersection fraction for the displacement vector.
 	virtual scalar ReportFixture(b3Fixture* fixture, const b3Vec3& point, const b3Vec3& normal, scalar fraction) = 0;
 };
@@ -127,7 +127,7 @@ public:
 };
 
 // By implementing this interface the contact filter will 
-// be notified before a contact between two shapes is created, updated, and solved.
+// be notified before a contact between two fixtures is created, updated, and solved.
 class b3ContactFilter
 {
 public:

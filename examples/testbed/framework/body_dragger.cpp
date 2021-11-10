@@ -17,8 +17,14 @@
 */
 
 #include "body_dragger.h"
+#include <bounce/collision/geometry/ray.h>
+#include <bounce/dynamics/fixture.h>
+#include <bounce/dynamics/body.h>
+#include <bounce/dynamics/world.h>
+#include <bounce/dynamics/world_callbacks.h>
+#include <bounce/dynamics/joints/mouse_joint.h>
 
-b3BodyDragger::b3BodyDragger(b3Ray* ray, b3World* world)
+BodyDragger::BodyDragger(b3Ray* ray, b3World* world)
 {
 	m_ray = ray;
 	m_world = world;
@@ -26,12 +32,12 @@ b3BodyDragger::b3BodyDragger(b3Ray* ray, b3World* world)
 	m_mouseJoint = nullptr;
 }
 
-b3BodyDragger::~b3BodyDragger()
+BodyDragger::~BodyDragger()
 {
 
 }
 
-bool b3BodyDragger::StartDragging()
+bool BodyDragger::StartDragging()
 {
 	B3_ASSERT(IsDragging() == false);
 
@@ -52,7 +58,7 @@ bool b3BodyDragger::StartDragging()
 		return false;
 	}
 	
-	m_x = out.fraction;
+	m_fraction = out.fraction;
 	m_fixture = out.fixture;
 
 	b3BodyDef bd;
@@ -69,18 +75,18 @@ bool b3BodyDragger::StartDragging()
 
 	m_mouseJoint = (b3MouseJoint*)m_world->CreateJoint(jd);
 
-	m_p = body->GetLocalPoint(out.point);
+	m_localPoint = body->GetLocalPoint(out.point);
 
 	return true;
 }
 
-void b3BodyDragger::Drag()
+void BodyDragger::Drag()
 {
 	B3_ASSERT(IsDragging() == true);
 	m_mouseJoint->SetTarget(GetPointB());
 }
 
-void b3BodyDragger::StopDragging()
+void BodyDragger::StopDragging()
 {
 	B3_ASSERT(IsDragging() == true);
 	b3Body* groundBody = m_mouseJoint->GetBodyA();
@@ -90,20 +96,20 @@ void b3BodyDragger::StopDragging()
 	m_fixture = nullptr;
 }
 
-b3Fixture* b3BodyDragger::GetFixture() const
+b3Fixture* BodyDragger::GetFixture() const
 {
 	B3_ASSERT(IsDragging() == true);
 	return m_fixture;
 }
 
-b3Vec3 b3BodyDragger::GetPointA() const
+b3Vec3 BodyDragger::GetPointA() const
 {
 	B3_ASSERT(IsDragging() == true);
-	return m_fixture->GetBody()->GetWorldPoint(m_p);
+	return m_fixture->GetBody()->GetWorldPoint(m_localPoint);
 }
 
-b3Vec3 b3BodyDragger::GetPointB() const
+b3Vec3 BodyDragger::GetPointB() const
 {
 	B3_ASSERT(IsDragging() == true);
-	return (1.0f - m_x) * m_ray->A() + m_x * m_ray->B();
+	return (1.0f - m_fraction) * m_ray->A() + m_fraction * m_ray->B();
 }

@@ -27,6 +27,7 @@
 #include <bounce/common/profiler.h>
 #include <bounce/common/graphics/camera.h>
 #include <bounce/common/graphics/debugdraw.h>
+#include <bounce/collision/geometry/ray.h>
 
 extern b3Profiler* g_profiler;
 extern b3Camera* g_camera;
@@ -65,7 +66,7 @@ public:
 	Draw m_draw;
 	b3Ray m_ray;
 	b3World m_world;
-	b3BodyDragger m_bodyDragger;
+	BodyDragger m_bodyDragger;
 	b3BoxHull m_groundHull;
 	b3GridMesh<50, 50> m_groundMesh;
 };

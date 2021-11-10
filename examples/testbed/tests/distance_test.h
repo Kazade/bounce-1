@@ -19,6 +19,8 @@
 #ifndef DISTANCE_H
 #define DISTANCE_H
 
+#include <bounce/collision/collide/collide.h>
+
 class Distance : public Test
 {
 public:

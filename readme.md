@@ -36,7 +36,7 @@ Bounce is a 3D physics engine for games.
 * One-shot contact manifolds
 * Contact clustering, reduction, and persistence
 * Contact callbacks: begin, pre-solve, post-solve
-* Ray-casting, convex-casting, and volume queries
+* Ray-casting, shape-casting, and volume queries
 
 ### Testbed
 	
