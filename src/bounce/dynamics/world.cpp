@@ -64,15 +64,7 @@ b3World::b3World()
 
 b3World::~b3World()
 {
-	b3Body* b = m_bodyList.m_head;
-	while (b)
-	{
-		b->DestroyFixtures();
-		b->DestroyJoints();
-		b->DestroyContacts();
-		b = b->m_next;
-	}
-
+	// None of the objects use b3Alloc.
 	b3_allocCalls = 0;
 	b3_maxAllocCalls = 0;
 	b3_gjkCalls = 0;
