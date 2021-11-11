@@ -49,7 +49,7 @@ public:
 	// Update an existing proxy AABB with a given AABB and a displacement.
 	// displacement = dt * velocity
 	// Return true if the proxy has moved.
-	bool MoveProxy(u32 proxyId, const b3AABB& aabb, const b3Vec3& displacement);
+	void MoveProxy(u32 proxyId, const b3AABB& aabb, const b3Vec3& displacement);
 
 	// Force move the proxy
 	void TouchProxy(u32 proxyId);

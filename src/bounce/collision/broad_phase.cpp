@@ -77,15 +77,9 @@ bool b3BroadPhase::TestOverlap(u32 proxy1, u32 proxy2) const
 
 u32 b3BroadPhase::CreateProxy(const b3AABB& aabb, void* userData) 
 {
-	b3AABB fatAABB = aabb;
-	fatAABB.Extend(B3_AABB_EXTENSION);	
-	
-	u32 proxyId = m_tree.InsertNode(fatAABB, userData);
-	
+	u32 proxyId = m_tree.CreateProxy(aabb, userData);
 	++m_proxyCount;
-	
 	BufferMove(proxyId);
-
 	return proxyId;
 }
 
@@ -93,59 +87,17 @@ void b3BroadPhase::DestroyProxy(u32 proxyId)
 {
 	UnbufferMove(proxyId);
 	--m_proxyCount;
-	m_tree.RemoveNode(proxyId);
+	m_tree.DestroyProxy(proxyId);
 }
 
-bool b3BroadPhase::MoveProxy(u32 proxyId, const b3AABB& aabb, const b3Vec3& displacement)
+void b3BroadPhase::MoveProxy(u32 proxyId, const b3AABB& aabb, const b3Vec3& displacement)
 {
-	if (m_tree.GetAABB(proxyId).Contains(aabb))
+	bool buffer = m_tree.MoveProxy(proxyId, aabb, displacement);
+	if (buffer)
 	{
-		// Do nothing if the new AABB is contained in the old AABB.
-		return false;
+		// Buffer the moved proxy.
+		BufferMove(proxyId);
 	}
-
-	// Extend the AABB.
-	b3AABB fatAABB = aabb;
-	fatAABB.Extend(B3_AABB_EXTENSION);
-
-	// Predict AABB displacement.
-	b3Vec3 d = B3_AABB_MULTIPLIER * displacement;
-
-	if (d.x < scalar(0))
-	{
-		fatAABB.lowerBound.x += d.x;
-	}
-	else
-	{
-		fatAABB.upperBound.x += d.x;
-	}
-
-	if (d.y < scalar(0))
-	{
-		fatAABB.lowerBound.y += d.y;
-	}
-	else
-	{
-		fatAABB.upperBound.y += d.y;
-	}
-
-	if (d.z < scalar(0))
-	{
-		fatAABB.lowerBound.z += d.z;
-	}
-	else
-	{
-		fatAABB.upperBound.z += d.z;
-	}
-
-	// Update proxy with the extented AABB.
-	m_tree.UpdateNode(proxyId, fatAABB);
-	
-	// Buffer the moved proxy.
-	BufferMove(proxyId);
-	
-	// Notify the proxy has moved.
-	return true;
 }
 
 void b3BroadPhase::TouchProxy(u32 proxyId)
